@@ -162,39 +162,3 @@ int principale(char *input, char *output_file){
      if ((i==-1)|(j==-1)){return -4;}
      return 0;
 }
-
-int sum_file(char *filename) {
-    int k = open(filename,O_RDONLY);
-    if (k == -1){return -1;}
-
-    struct stat buf;
-    int fs = fstat(k,&buf);
-    if (fs == -1){
-        int j = close(k);
-        if (j == -1){return -2;}
-        return -5;}
-
-    int size = buf.st_size;
-    int nbre = size/4;
-
-    int *tab =(int *) mmap(NULL,size,PROT_READ|PROT_WRITE,MAP_SHARED,k,0);
-    if (tab == MAP_FAILED){
-        int j = close(k);
-        if (j == -1) { return -2; }
-        return -3;
-    }
-    int somme = 0;
-    for (int i = 0; i < nbre; i++){
-        somme += tab[i];
-    }
-
-    int u = munmap(tab,size);
-    if (u == -1){
-        int j = close(k);
-        if (j == -1){return -2;}
-        return -4;}
-
-    int j = close(k);
-    if (j == -1){return -2;}
-    return somme;
-}
