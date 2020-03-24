@@ -8,6 +8,7 @@
 #include <sys/mman.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 typedef struct repertoire{
     long maximum;
