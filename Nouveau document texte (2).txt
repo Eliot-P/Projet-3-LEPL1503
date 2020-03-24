@@ -1,0 +1,2 @@
+1) Clone le fichier:
+git clone "lien du fichier (https)"
