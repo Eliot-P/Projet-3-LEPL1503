@@ -79,7 +79,8 @@ int principale(char *input, char *output_file){
          close(out);
          return -2;
      }
-
+     
+     // eviter d utiliser mmap
      int *tabout = (int *) mmap(NULL,size,PROT_WRITE|PROT_READ,MAP_SHARED,out,0);
      if (*tabout == -1){
          munmap(tabin,size);
