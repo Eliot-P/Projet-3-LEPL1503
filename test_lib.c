@@ -1,4 +1,4 @@
-#include "Premier_pas.h"
+#include "Prime.h"
 int test(){
 	return O;
 }
