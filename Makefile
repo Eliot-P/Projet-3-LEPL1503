@@ -6,3 +6,7 @@ test_lib.o : test_lib.c Prime.h
 	gcc -c test_lib.c
 Prime.o : Prime.c
 	gcc -c Prime.c
+
+clean : 
+	rm -rf *.o
+	rm -rf Prog
