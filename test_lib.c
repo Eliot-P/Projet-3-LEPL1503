@@ -1,4 +1,4 @@
 #include "Prime.h"
 int test(){
-	return O;
+	return 0;
 }
