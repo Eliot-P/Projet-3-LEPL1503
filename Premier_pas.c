@@ -1,10 +1,9 @@
-
 /*
  Created by Constantin on 16-03-20.
 
     - Traduction du code python -
 
-Last Update: 24/03
+Last update: 25/03
 */
 #include <sys/fcntl.h>
 #include <unistd.h>
@@ -38,28 +37,31 @@ int  is_prime(long number, Repertoire_t *tab){
      */
     if ((*tab).nbre_elem == 0){   // cas du premier appel
 
-        (*tab).liste = (long *) malloc(sizeof(((*tab).nbre_elem + 1) * sizeof(long)));
+        (*tab).liste = (long *) malloc(sizeof(long));
         if ((*tab).liste == NULL){ return -1;}
 
         (*tab).liste[0] = (long) 2;
         (*tab).nbre_elem = (long) 1;
         (*tab).maximum = (long) 2;
 
-        for (long i = 3; i <= number; i++) {
+        for (long i = 3; i <= number; i++){
+            if (i%2 == 0){ continue;}   // On saute directement les nbre paires
+
             int div = 0;
-            for (long j = (*tab).liste[0]; j < (*tab).liste[(*tab).nbre_elem - 1]; j++) {
+            for (long j = 0; j < (*tab).nbre_elem; j++) {
                 // On regarde si i est un multiple d'un nbre premier
-                if (i % j == 0) {
+                if (i % (*tab).liste[j] == 0) {
                     div++;
                     break;
                 }
             }
             if ((div == 0) && (i > (*tab).maximum)) {
-                for (long j = (*tab).maximum; j < i; j++)
+                for (long j = (*tab).maximum; j < i; j++) {     // Moyen d'encore optimiser ?
                     if (i % j == 0) {
                         div++;
                         break;
                     }
+                }
             }
             if (div == 0) {
                 (*tab).liste = realloc((*tab).liste, sizeof(((*tab).nbre_elem + 1) * sizeof(long)));
@@ -72,24 +74,25 @@ int  is_prime(long number, Repertoire_t *tab){
     }
     else {
         for (long i = 0; i < (*tab).nbre_elem; i++) {
-            //printf("%ld",(*tab).liste[i]);
             if ((*tab).liste[i] == number) { return 1; }
-            if (number % (*tab).liste[i] == 0) {
+            if (number % (*tab).liste[i] == 0) {  // Cas où on est multiple d'un nbre premier
                 break;
-            }  // cas où number est un multiple d'un des nbre premiers
+            }
         }
 
         for (long i = (*tab).maximum; i <= number; i++){
+            if (i%2 == 0){ continue;}
+
             int div = 0;
-            for (long j = 2; j < (*tab).nbre_elem; j++){ // On regarde élément par élement si c'est un nbre premier
+            for (long j = 0; j < (*tab).nbre_elem; j++){ // On regarde élément par élement si c'est un nbre premier
                 if (i % (*tab).liste[j] == 0){  // cas où l'élément i est un multiple d'un nbre premier connu
                     div++;                      // cette boucle permet d'éliminer une grosse partie des nbre
                     break;                      // > paires, multiples de 3 etc...
                 }
             } // On a donc un nbre i qui est fort intéressant...
             if (div == 0){  // signifie qu'aucun nbre premier de la liste ne divise i
-                for (long a = (*tab).maximum; a < i; a++){
-                    if (i%a == 0){  //on regarde alors si aucun nbre ne divise i
+                for (long a = (*tab).maximum; a < i; a++){  // Moyen d'encore optimiser ?
+                    if (i%a == 0){
                         div++;
                         break;
                     }
