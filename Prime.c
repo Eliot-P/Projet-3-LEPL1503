@@ -3,20 +3,25 @@
 
     - Traduction du code python -
 
-Last update: 25/03
+Last update: 15:54:40  25/03/2020
 */
 #include <sys/fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 typedef struct repertoire{  //Initialiser à maximum = 0 et nbre_elem = 0
     long maximum;
     int nbre_elem;
     long *liste;
 } Repertoire_t;
+
+void imprimer(Repertoire_t *tab){
+    for (int i = 0; i < tab->nbre_elem; i++){
+        printf("%li, ",tab->liste[i]);
+    }
+}
 
 int is_div(long number, long i){  // True si i divise number, sinon false
     return number%i == 0;
@@ -56,16 +61,16 @@ int  is_prime(long number, Repertoire_t *tab){
                     break;
                 }
             }
-            if ((div == 0) && (i > (*tab).maximum)) {
-                for (long j = (*tab).maximum; j < i; j++) {     // Moyen d'encore optimiser ?
-                    if (i % j == 0) {
+            if (div == 0) {
+                for (long z = (*tab).maximum; z < i; z++) {     // Moyen d'encore optimiser ?
+                    if (i % z == 0) {
                         div++;
                         break;
                     }
                 }
             }
             if (div == 0) {
-                (*tab).liste = realloc((*tab).liste, sizeof(((*tab).nbre_elem + 1) * sizeof(long)));
+                (*tab).liste = (long *) reallocarray((*tab).liste,(*tab).nbre_elem +1, sizeof(long));
                 if ( (*tab).liste == NULL) { return -1; } //> comment gérer l'erreur de realloc ?
                 (*tab).liste[(*tab).nbre_elem++] = i;
                 (*tab).maximum = i;
@@ -100,7 +105,8 @@ int  is_prime(long number, Repertoire_t *tab){
                 }
             }
             if (div == 0){  //On a bien un nbre premier et donc on doit réajuster la taille de la structure pour le stocker
-                (*tab).liste = realloc(& (*tab).liste, sizeof(((*tab).nbre_elem +1) * sizeof(long)));
+                (*tab).liste =  (long *) reallocarray((*tab).liste,(*tab).nbre_elem +1, sizeof(long));
+                //(*tab).liste = realloc(& (*tab).liste, sizeof(((*tab).nbre_elem +1) * sizeof(long)));
                 if ( (*tab).liste == NULL){ return  -1;}
                 (*tab).liste[(*tab).nbre_elem++] = i;
                 (*tab).maximum = i;
@@ -188,9 +194,9 @@ int principale(char *input, char *output_file) {
         return -6;
     }
 
-    rep->nbre_elem = 0;
+    rep->nbre_elem =
     rep->maximum = 0;
-
+    is_prime(1000,rep);
     for (long i = 0; i < buf.st_size / sizeof(long); i++) {
         long number = tabin[i];
 
