@@ -10,6 +10,7 @@ Last update: 25/03
 #include <sys/mman.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 typedef struct repertoire{  //Initialiser à maximum = 0 et nbre_elem = 0
     long maximum;

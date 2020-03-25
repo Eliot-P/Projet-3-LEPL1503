@@ -1,5 +1,5 @@
-#ifndef _Premier_pas_H_
-#define _Premier_pas_H_
+#ifndef _PRIME_H_
+#define _PRIME_H_
 	typedef struct repertoire{
     long maximum;
     int nbre_elem;

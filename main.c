@@ -1,5 +1,5 @@
 #include "test_lib.h"
-#include "Premier_pas.h"
+#include "Prime.h"
 #include <stdio.h>
 #include <stdlib.h>
 int main(int argc, char *argv[]){
