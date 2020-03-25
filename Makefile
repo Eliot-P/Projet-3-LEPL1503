@@ -10,3 +10,4 @@ Prime.o : Prime.c
 clean : 
 	rm -rf *.o
 	rm -rf Prog
+	clear
