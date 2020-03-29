@@ -1,11 +1,27 @@
-#include "test_lib.h"
-#include "Prime.h"
-#include <stdio.h>
-#include <stdlib.h>
-int main(int argc, char *argv[]){
-    Repertoire_t *rep = (Repertoire_t *) malloc(struct repertoire);
-    rep->maximum = 0;
-    rep->nbre_elem = 0;
-    printf(is_prime(300000,rep));
-	return 0;
+include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include "Trad_python.c"
+
+
+
+int main() {
+    Repertoire_t *a = (Repertoire_t *) malloc(sizeof(struct repertoire));
+    a->liste = (long *) malloc(sizeof(long) *4);
+    a->liste[0] = (long) 2; a->liste[1] = (long) 3; a->liste[2] = (long) 5; a->liste[3] = (long) 7;
+    a->maximum = 7;
+    a->nbre_elem = 4;
+
+    time_t depart = time(NULL);
+    is_prime(2000000,a);
+    time_t intermediaire = time(NULL);
+    //is_prime(1000000,a);
+    time_t fin = time(NULL);
+    printf("Nombre d'élements: %i\nPlus grand nombre premier: %ld\n",a->nbre_elem,a->maximum);
+    printf("Temps mis pour 2 000 000 : %li [s]\nTemps mis pour 1 000 000 : %li [s]",(intermediaire-depart),(fin-intermediaire));
+    /*
+    char *mess = prime_divs(100,a);
+    printf("%c",*mess);
+    */
+    return 0;
 }
