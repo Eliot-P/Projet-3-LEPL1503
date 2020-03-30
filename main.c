@@ -1,7 +1,9 @@
-include <stdio.h>
+#include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <time.h>
-#include "Trad_python.c"
+#include "Prime.h"
+#include "test_lib.h"
 
 
 
