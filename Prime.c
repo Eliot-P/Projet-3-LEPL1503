@@ -3,7 +3,7 @@
 
     - Traduction du code python -
 
-Last update: 23:20:17  30/03/2020
+Last update: 20:00:17  31/03/2020
 */
 
 #include <sys/fcntl.h>
@@ -13,9 +13,9 @@ Last update: 23:20:17  30/03/2020
 #include <string.h>
 #include <stdio.h>
 
-typedef struct repertoire{  //Initialiser à maximum = 0 et nbre_elem = 0
+typedef struct repertoire{
     int nbre_elem;
-    long *liste;
+    long *liste;    // Array qui contiendra les nbres premiers (mélangés !)
 } Repertoire_t;
 
 int is_div(long number, long i){  // True si i divise number, sinon false
@@ -24,14 +24,12 @@ int is_div(long number, long i){  // True si i divise number, sinon false
 
 int  is_prime(long number, Repertoire_t *tab){
     /*
-     * Retourne 1 si number est premier, 0 si number ne l'est pas et -1 en cas d'erreur
-     * La fonction va calculer tout les nombres premier jusque number, PEUT IMPORTE LA VALEUR DE NUMBER !
-     * On considère que tab contient déjà quelques nombres premier et donc n'est pas vide !!
-     * La manière de procéder est la suivante :
+     * retourne 1 si number est un nombre premier et retourne 0 sinon
      *
-     *      - On regarde si number est un (/mutliple d'un des) éléments  de (*tab).liste
-     *      - Sinon, on va regarder du (*tab).maximum à number -1 et à nouveau, ajouter tout les nbres premiers que l'on
-     *      rencontre dans (*tab).liste et si jamais number est un nbre premier on l'ajoute également dans la liste.
+     * La fonction procède de la sorte:
+     *      - 1) Elle vérifie si number est divisible par un des nbre premiers contenu dans tab->liste
+     *      - 2) Si aucun nbre  premier divise number, on va vérifier si number en est un en appliquant la définition
+     *      mathématique (aucun diviseur entre 2 et number/2) et s'il est premier on l'ajoute dans le tableau d'array
      */
     if (number < 0){    // exception où on aurait un nbre négatif (sinon les boucles for plantent )
         number = number * -1;
@@ -47,16 +45,23 @@ int  is_prime(long number, Repertoire_t *tab){
             return 0;
         }
     }
-    tab->liste = (long *) reallocarray((*tab).liste,(*tab).nbre_elem +1, sizeof(long));
+    tab->liste = (long *) realloc((*tab).liste,(*tab).nbre_elem +1 * sizeof(long));
     if ((*tab).liste == NULL) { return -1; }
     tab->liste[(*tab).nbre_elem++] = number;
     return 1;
 }
 
 long *prime_divs(long number, Repertoire_t *tab){
-    /*  retourne un pointeur vers un tableau de long contenant tout les diviseurs premiers de number
-     * > alloue dynamiquement de la mémoire pour créer le tableau
-    */
+    /*  retourne un pointeur vers un tableau de long contenant tout les diviseurs premiers de number ou -1 pour une
+     * erreur de malloc (le tableau contenant les diviseurs est aloué dynamiquement)
+     *
+     * La fonction procède de la manière suivante:
+     *      - 1) Elle regarde si number est premier, si c'est le cas elle retourne directement (long *) number
+     *
+     *      - 2) Ensuite elle va regarder tous les chiffres i € [2, number/2]
+     *          > Si i divise number et est premier, alors il est ajouté au tableau
+     *          > Sinon on passe au prochain nombre
+     */
 
     if (is_prime(number,tab) == 1){
         return (long *) number;
@@ -68,14 +73,17 @@ long *prime_divs(long number, Repertoire_t *tab){
     long size = sizeof(number);
     arr[index++] = number;
 
-    for (long j = 2; j < number/2 +1; j++){
+    for (long j = 2; j < number/2; j++){
 
         if  ((is_div(number,j)) && (is_prime(j,tab))){
             size = size + sizeof(j); // (char) long +1
-            arr = (long *) reallocarray(arr, size, sizeof(long));
+            arr = (long *) realloc(arr, size*sizeof(long));
             if (arr == NULL){ return  (long *) -1;}
             arr[index++] = j;
         }
+    }
+    for (int i =0; i < index; i++){
+        printf("%ld ",arr[i]);
     }
     return arr;
 }
@@ -110,19 +118,15 @@ int principale(char *input_file, char *output_file) {
     char chaine[sizeof(long)];
     int i = 0;
     while (fgets(chaine,sizeof(long),filein) != NULL){ // Je comprend pas pk 'chaine' est considéré comme un pointeur
-        long number = strtol(chaine,NULL,16); // Comment gérer les erreurs si ça fonctionne pas..?
+        //long number = strtol(chaine,NULL,16); // Comment gérer les erreurs si ça fonctionne pas..?
+        long number = atol(chaine);
         if (number < 2){
             fprintf(fileout,"Erreur à la %ie ligne (%ld < 2)\n",i,number);
         }
         else{
             long *divs = prime_divs(number,rep);
-            int taille = sizeof(divs)/8;
-
-            fprintf(fileout,"%ld ",number);
-            //fprintf(fileout,"%ld",divs);
-            //if (taille == 1){ continue;}
-            for (int s = 0; s < taille; s++){
-                fprintf(fileout,"%ld ",divs[s]);
+            for (long x = 0; x < sizeof(*divs)/sizeof(long); x++){
+                fprintf(fileout,"%ld ",divs[x]);
             }
             fprintf(fileout,"\n");
             free(divs);  // libère bien le contenu du pointeur ??? XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
