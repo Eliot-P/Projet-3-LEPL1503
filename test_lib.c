@@ -1,5 +1,6 @@
 #include "Prime.h"
-#include "Cunit.h"
+#include "CUnit/CUnit.h"
+#include <sys/fcntl.h>
 
 void test(){
     /*is_prime :
@@ -42,19 +43,19 @@ void test(){
         
     //test prime_divs()
     for(int i = 0; i < 9; i++){
-        CU_ASSERT_EQUALS(*prime_divs(prime[i], a), prime[i]);
+        CU_ASSERT_EQUALS(prime_divs(prime[i], a), prime[i]);
     }
-    CU_ASSERT_EQUALS(*prime_divs(4, a), 2);
-    int ret[] = {2, 3, 5};
+    CU_ASSERT_EQUALS(prime_divs(4, a), 2);
+    int ret1[] = {2, 3, 5};
     for(int i = 0; i < 3; i++){
-        CU_ASSERT_EQUALS(*(prime_divs(4, a) + i), ret[i]);
+        CU_ASSERT_EQUALS((prime_divs(4, a) + i), ret1[i]);
     }
-    for(int i = 0; i < ; i++){
-        CU_ASSERT_EQUALS(*(prime_divs(4, a) + i), ret[i]);
+    for(int i = 0; i < 3; i++){
+        CU_ASSERT_EQUALS((prime_divs(4, a) + i), ret1[i]);
     }
-    int ret[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293}
+    int ret2[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293};
     for(int i = 0; i < 62 ; i++){
-        CU_ASSERT_EQUALS(*(prime_divs(4, a) + i), ret[i]);
+        CU_ASSERT_EQUALS((prime_divs(4, a) + i), ret2[i]);
     }
     
     //test principale()
