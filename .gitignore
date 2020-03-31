@@ -11,3 +11,5 @@
 #ignorer le dossier CUnit (p-e à retirer)
 
 /CUnit-2.1-3
+
+testPrincipaleOutput.txt
