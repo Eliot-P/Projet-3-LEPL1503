@@ -18,7 +18,7 @@ void test(){
     -input_file vide
     -ligne != int/long*/
     
-    
+    /*
     //test is_div()
     CU_ASSERT_TRUE(is_div(2, 2));
     CU_ASSERT_TRUE(is_div(15, 3));
@@ -57,15 +57,9 @@ void test(){
     for(int i = 0; i < 62 ; i++){
         CU_ASSERT_EQUAL((prime_divs(4, a) + i), ret2[i]);
     }
-    
+    */
     //test principale()
-    int fdIn = open("testPrincipaleInput.txt", O_CREAT | O_RDWR );
-    if(fdIn == -1){return -1;}
-    close(fdIn);
-    int fdOut = open("testPrincipaleOutput.txt", O_CREAT | O_RDWR,S_IRWXU);
-    if(fdOut == -1){return -1;}
-    close(fdOut);
-    principale("testPrincipaleInput","testPrincipaleOutput");
+    principale("testPrincipaleInput.txt","testPrincipaleOutput.txt");
     
     //je ne sais pas trop comment créer les fichiers
     
