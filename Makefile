@@ -6,11 +6,11 @@ test_lib.o : test_lib.c Prime.h
 	gcc -c test_lib.c -w -std=gnu9x 
 Prime.o : Prime.c
 	gcc -c Prime.c -w -std=gnu9x 
-execute :
-	make
-	./Prog
-	make clean
 clean : 
 	rm -rf *.o
 	rm -rf Prog
+	rm -rf testPrincipaleOutput.txt
 	clear
+execute :
+	make
+	./Prog
