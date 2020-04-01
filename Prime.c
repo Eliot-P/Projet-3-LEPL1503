@@ -21,6 +21,11 @@ typedef struct repertoire{
 int is_div(long number, long i){  // True si i divise number, sinon false
     return number%i == 0;
 }
+void imprimer(Repertoire_t *tab){
+    for (int i = 0; i < tab->nbre_elem; i++){
+        printf("%ld",tab->liste[i]);
+    }
+}
 
 int  is_prime(long number, Repertoire_t *tab){
     /*
@@ -31,16 +36,14 @@ int  is_prime(long number, Repertoire_t *tab){
      *      - 2) Si aucun nbre  premier divise number, on va vérifier si number en est un en appliquant la définition
      *      mathématique (aucun diviseur entre 2 et number/2) et s'il est premier on l'ajoute dans le tableau d'array
      */
-    if (number < 0){    // exception où on aurait un nbre négatif (sinon les boucles for plantent )
-        number = number * -1;
-    }
+
     for (long i = 0; i < tab->nbre_elem; i++){
         if (tab->liste[i] == number){return 1;}
-        if (number % tab->liste[i] == 0){
+        if ((tab->liste[i]) && (number % tab->liste[i] == 0)){
             return 0;
         }
     }
-    for (long i = 2; i < number/2; i++) {
+    for (long i = 2; i <= number/2; i++) {
         if (is_div(number, i)) {
             return 0;
         }
@@ -62,16 +65,15 @@ long *prime_divs(long number, Repertoire_t *tab){
      *          > Si i divise number et est premier, alors il est ajouté au tableau
      *          > Sinon on passe au prochain nombre
      */
-
-    if (is_prime(number,tab) == 1){
-        return (long *) number;
-    }
     long *arr = (long *) malloc(sizeof(number));
     if (arr == NULL){ return (long *) -1;}
 
     int index = 0;
     long size = sizeof(number);
     arr[index++] = number;
+
+    if (is_prime(number,tab) == 1){
+        return arr;}
 
     for (long j = 2; j < number/2; j++){
 
@@ -116,12 +118,12 @@ int principale(char *input_file, char *output_file) {
     rep->nbre_elem = 4;
 
     char chaine[sizeof(long)];
-    int i = 0;
-    while (fgets(chaine,sizeof(long),filein) != NULL){ // Je comprend pas pk 'chaine' est considéré comme un pointeur
-        //long number = strtol(chaine,NULL,16); // Comment gérer les erreurs si ça fonctionne pas..?
+    //long i = 0;
+    while (fgets(chaine,11,filein) != NULL){ // Je comprend pas pk 'chaine' est considéré comme un pointeur
+        //long number = strtol(chaine,NULL,32); // Comment gérer les erreurs si ça fonctionne pas..?
         long number = atol(chaine);
         if (number < 2){
-            fprintf(fileout,"Erreur à la %ie ligne (%ld < 2)\n",i,number);
+            fprintf(fileout,"Erreur à la ligne (%ld < 2)\n",number);
         }
         else{
             long *divs = prime_divs(number,rep);
@@ -131,8 +133,9 @@ int principale(char *input_file, char *output_file) {
             fprintf(fileout,"\n");
             free(divs);  // libère bien le contenu du pointeur ??? XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         }
-        i++;
+        //i++;
     }
+    imprimer(rep);
     free(rep);
     int x = fclose(filein);
     if (x != 0){
@@ -145,147 +148,3 @@ int principale(char *input_file, char *output_file) {
     }
     return 0;
 }
-
-/*
-int principale(char *input, char *output_file) {
-    /*
-     * pré: input != NULL ; output_file != NULL  Ce sont des fichiers
-     * input est un fichier qui contient un élément (int,char,float,...) par ligne
-     *
-     * post: écris dans chaque ligne de output_file la liste des diviseurs premiers du INT à la ligne correspondante dans
-     * input. Si jamais l'élément n'est pas un int, écris une erreur.
-     *
-     * return : 0 -> aucune erreur survenue
-     *         -1 -> erreur causée par open()
-     *         -2 -> erreur causée par un mmap
-     *         -3 -> erreur causée par un munmap
-     *         -4 -> erreur causée par close()
-     *         -5 -> erreur causée par fstat()
-     *          -6 -> erreur causée par malloc()
-     *          -7 -> erreur causée par msync()
-
-    int in = open(input, O_RDONLY);
-    if (in == -1) { return -1; }
-    int out = open(output_file, O_RDWR | O_TRUNC | O_CREAT, S_IRWXU);
-    if (out == -1) { return -1; }
-
-    struct stat buf;
-    int fs = fstat(in, &buf);
-    if (fs == -1) {
-        close(in);
-        close(out);
-        return -5;
-    }
-
-    if (buf.st_size == 0) {        //exception où le fichier est vide
-        int j = close(in);
-        if (j == -1) { return -1; }
-        return close(out);
-    }
-
-    long *tabin = (long *) mmap(NULL, buf.st_size, PROT_READ, MAP_SHARED, in, 0);
-    if (*tabin == -1) {
-        close(in);
-        close(out);
-        return -2;
-    }
-    int size = 0;
-    Repertoire_t *rep = (Repertoire_t *) malloc(sizeof(struct repertoire));
-    if (rep == NULL) {
-        munmap(tabin, buf.st_size);
-        close(in);
-        close(out);
-        return -6;
-    }
-
-    rep->nbre_elem =
-    rep->maximum = 0;
-    is_prime(1000, rep);
-    for (long i = 0; i < buf.st_size / sizeof(long); i++) {
-        long number = tabin[i];
-
-        if (number < 2) {
-            char *message = (char *) malloc(sizeof("Erreur: nombre inférieur à 2 !\n")); // +1 pr le \0 ??
-            if (message == NULL) { return -6; }
-            message = "Erreur: nombre inférieur à 2 !\n";
-
-            size += sizeof(message);
-            int ff = ftruncate(out, size);      // On modifie la taille du fichier pr pouvoir écrire dedans
-            if (ff == -1) {
-                munmap(tabin, buf.st_size);
-                close(in);
-                close(out);
-                printf("Mémoire insufisante dans le fichier de sortie");
-                return -5;
-            }
-            char *tabout = (char *) mmap(NULL, size, PROT_WRITE | PROT_READ, MAP_SHARED, out, 0);
-            if ((int) *tabout == -1) {
-                munmap(tabin, size);
-                close(in);
-                close(out);
-                return -2;
-            }
-            memcpy(tabout, message, sizeof(&message));
-
-            int s = msync(tabout, size, MS_SYNC);
-            free(message);     // Libère la mémoire
-
-            if (s == -1) {
-                munmap(tabin, buf.st_size);
-                munmap(tabout, buf.st_size);
-                close(in);
-                close(out);
-                return -7;
-            }
-            int f = munmap(tabout, size);
-            if (f == -1) {
-                munmap(tabin, buf.st_size);
-                close(in);
-                close(out);
-                return -3;
-            }
-        } else {
-
-            char *message = prime_divs(number, rep);
-            size += sizeof(*message);  // !!!! Est-ce que ca fait bien référence au contenu de message ?!!!!!!
-
-            char *tabout = (char *) mmap(NULL, size, PROT_WRITE | PROT_READ, MAP_SHARED, out, 0);
-            if ((int) *tabout == -1) {
-                munmap(tabin, size);
-                close(in);
-                close(out);
-                return -2;
-            }
-            memcpy(tabout, &message, sizeof(*message));
-            int s = msync(tabout, size, MS_SYNC);
-
-            free(&message);     // Libère la mémoire
-
-            if (s == -1) {
-                munmap(tabin, buf.st_size);
-                munmap(tabout, buf.st_size);
-                close(in);
-                close(out);
-                return -7;
-            }
-            int f = munmap(tabout, size);
-            if (f == -1) {
-                munmap(tabin, buf.st_size);
-                close(in);
-                close(out);
-                return -3;
-            }
-        }
-    }
-
-    int m = munmap(tabin, buf.st_size);
-    if (m == -1) {
-        close(in);
-        close(out);
-        return -3;
-    }
-    int j = close(in);
-    int i = close(out);
-    if ((i == -1) | (j == -1)) { return -4; }
-    return 0;
-}*/
