@@ -39,7 +39,7 @@ int  is_prime(long number, Repertoire_t *tab){
 
     for (long i = 0; i < tab->nbre_elem; i++){
         if (tab->liste[i] == number){return 1;}
-        if ((tab->liste[i]) && (number % tab->liste[i] == 0)){
+        if ((tab->liste[i] != 0) && (number % tab->liste[i] == 0)){
             return 0;
         }
     }
