@@ -8,6 +8,7 @@
 
 
 int main() {
+    /*
     Repertoire_t *a = (Repertoire_t *) malloc(sizeof(struct repertoire));
     a->liste = (long *) malloc(sizeof(long) *4);
     a->liste[0] = (long) 2; a->liste[1] = (long) 3; a->liste[2] = (long) 5; a->liste[3] = (long) 7;
@@ -25,5 +26,6 @@ int main() {
     char *mess = prime_divs(100,a);
     printf("%c",*mess);
     */
+    test();
     return 0;
 }

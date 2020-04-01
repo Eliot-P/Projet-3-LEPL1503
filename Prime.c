@@ -40,7 +40,7 @@ int  is_prime(long number, Repertoire_t *tab){
             return 0;
         }
     }
-    for (long i = 2; i <= number/2; i++) {
+    for (long i = 2; i < number/2; i++) {
         if (is_div(number, i)) {
             return 0;
         }
