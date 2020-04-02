@@ -3,7 +3,7 @@
 
     - Traduction du code python -
 
-Last update: 20:00:17  31/03/2020
+Last update: 17:05:12  1/04/2020
 */
 
 #include <sys/fcntl.h>
@@ -23,7 +23,7 @@ int is_div(long number, long i){  // True si i divise number, sinon false
 }
 void imprimer(Repertoire_t *tab){
     for (int i = 0; i < tab->nbre_elem; i++){
-        printf("%ld",tab->liste[i]);
+        printf("%ld ",tab->liste[i]);
     }
 }
 
@@ -39,38 +39,43 @@ int  is_prime(long number, Repertoire_t *tab){
 
     for (long i = 0; i < tab->nbre_elem; i++){
         if (tab->liste[i] == number){return 1;}
-        if ((tab->liste[i] != 0) && (number % tab->liste[i] == 0)){
+        if (is_div(number,tab->liste[i])){
             return 0;
         }
     }
-    for (long i = 2; i <= number/2; i++) {
+    for (long i = 2; i < number/2; i++) {   // On peut pe optimiser avec un max et en repartant du max si number<max
         if (is_div(number, i)) {
             return 0;
         }
     }
-    tab->liste = (long *) realloc((*tab).liste,(*tab).nbre_elem +1 * sizeof(long));
+    tab->liste = (long *) realloc((*tab).liste,((*tab).nbre_elem + 1) * sizeof(long));
     if ((*tab).liste == NULL) { return -1; }
     tab->liste[(*tab).nbre_elem++] = number;
     return 1;
 }
 
-long *prime_divs(long number, Repertoire_t *tab){
-    /*  retourne un pointeur vers un tableau de long contenant tout les diviseurs premiers de number ou -1 pour une
-     * erreur de malloc (le tableau contenant les diviseurs est aloué dynamiquement)
-     *
+Repertoire_t *prime_divs(long number, Repertoire_t *tab){
+    /*  retourne un pointeur vers une structure Reperetoire_t contenant une liste de tout les diviseurs premiers de
+     * number et le nbre de diviseurs ou NULL pour une erreur de malloc (le tableau contenant les diviseurs est
+     * aloué dynamiquement).
      * La fonction procède de la manière suivante:
      *      - 1) Elle regarde si number est premier, si c'est le cas elle retourne directement (long *) number
      *
      *      - 2) Ensuite elle va regarder tous les chiffres i € [2, number/2]
      *          > Si i divise number et est premier, alors il est ajouté au tableau
      *          > Sinon on passe au prochain nombre
+     *
+     *  !!! On est "obligé" de retourner une structure car si on retourne simplement un tableau de long on ne connait
+     *  pas sa taille et donc il est impossible d'itérer dessus sans avoir d'erreur. Il nous faut une variable qui nous
+     *  donne le nombre d'éléments dans le tableau.
      */
-    long *arr = (long *) malloc(sizeof(number));
-    if (arr == NULL){ return (long *) -1;}
+    Repertoire_t *arr = (Repertoire_t *) malloc(sizeof(struct repertoire));
+    if (arr == NULL){ return NULL;}
+    arr->liste = (long *) malloc(sizeof(number));
+    if (arr->liste == NULL){ return  NULL;}
 
-    int index = 0;
-    long size = sizeof(number);
-    arr[index++] = number;
+    arr->nbre_elem = 0;
+    arr->liste[arr->nbre_elem++] = number;
 
     if (is_prime(number,tab) == 1){
         return arr;}
@@ -78,14 +83,10 @@ long *prime_divs(long number, Repertoire_t *tab){
     for (long j = 2; j < number/2; j++){
 
         if  ((is_div(number,j)) && (is_prime(j,tab))){
-            size = size + sizeof(j); // (char) long +1
-            arr = (long *) realloc(arr, size*sizeof(long));
-            if (arr == NULL){ return  (long *) -1;}
-            arr[index++] = j;
+            arr->liste = (long *) realloc(arr->liste, (arr->nbre_elem +1)*sizeof(long));
+            if (arr->liste == NULL){ return  NULL;}
+            arr->liste[arr->nbre_elem++] = j;
         }
-    }
-    for (int i =0; i < index; i++){
-        printf("%ld ",arr[i]);
     }
     return arr;
 }
@@ -117,25 +118,25 @@ int principale(char *input_file, char *output_file) {
     rep->liste[0] = (long) 2; rep->liste[1] = (long) 3; rep->liste[2] = (long) 5; rep->liste[3] = (long) 7;
     rep->nbre_elem = 4;
 
-    char chaine[sizeof(long)];
-    //long i = 0;
-    while (fgets(chaine,11,filein) != NULL){ // Je comprend pas pk 'chaine' est considéré comme un pointeur
+    char chaine[50];
+    long i = 0;
+    while (fgets(chaine,50,filein) != NULL){ // Je comprend pas pk 'chaine' est considéré comme un pointeur
         //long number = strtol(chaine,NULL,32); // Comment gérer les erreurs si ça fonctionne pas..?
         long number = atol(chaine);
         if (number < 2){
-            fprintf(fileout,"Erreur à la ligne (%ld < 2)\n",number);
+            fprintf(fileout,"Erreur à la ligne %ld (%ld < 2)\n",i,number);
         }
         else{
-            long *divs = prime_divs(number,rep);
-            for (long x = 0; x < sizeof(*divs)/sizeof(long); x++){
-                fprintf(fileout,"%ld ",divs[x]);
+            Repertoire_t *divs = prime_divs(number,rep);
+            for (long x = 0; x < divs->nbre_elem; x++){
+                fprintf(fileout,"%ld ",divs->liste[x]);
             }
-            fprintf(fileout,"\n");
+            fputc(13,fileout);  // retour à la ligne sous (certains) windows !!!!
+            fputc(10,fileout); // retour à la ligne standar (\n)
             free(divs);  // libère bien le contenu du pointeur ??? XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         }
-        //i++;
+        i++;
     }
-    imprimer(rep);
     free(rep);
     int x = fclose(filein);
     if (x != 0){
