@@ -2,7 +2,7 @@
 #include "CUnit/CUnit.h"
 #include <sys/fcntl.h>
 
-void test(){
+void test_CUNIT(){
     /*is_prime :
     -number < 0
     -tab == NULL
@@ -18,7 +18,7 @@ void test(){
     -input_file vide
     -ligne != int/long*/
     
-    /*
+    
     //test is_div()
     CU_ASSERT_TRUE(is_div(2, 2));
     CU_ASSERT_TRUE(is_div(15, 3));
@@ -57,9 +57,8 @@ void test(){
     for(int i = 0; i < 62 ; i++){
         CU_ASSERT_EQUAL((prime_divs(4, a) + i), ret2[i]);
     }
-    */
+    
     //test principale()
-    principale("testPrincipaleInput.txt","testPrincipaleOutput.txt");
     
     //je ne sais pas trop comment créer les fichiers
     
