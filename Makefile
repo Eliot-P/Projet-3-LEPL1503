@@ -13,6 +13,7 @@ clean :
 	rm -rf debug
 	rm -rf *xml
 	rm -rf DebugOutput.txt
+	rm -rf stats.txt
 
 debug : main.c Prime.c test_files.c Prime.h test_files.h
 	make clean
@@ -26,3 +27,14 @@ debug : main.c Prime.c test_files.c Prime.h test_files.h
 	echo  "\n" >> DebugOutput.txt
 	echo  "\n" >> DebugOutput.txt
 	./debug >> DebugOutput.txt
+
+stat : 
+	echo "Statistiques git à la date du :">>stats.txt
+	date >>stats.txt
+	gitinspector >> stats.txt
+	echo "\n" >> stats.txt
+	echo "nombres de commit" >>stats.txt
+	git shortlog -sn >> stats.txt
+push :
+	git commit -a -m "git auto command"
+	git push
