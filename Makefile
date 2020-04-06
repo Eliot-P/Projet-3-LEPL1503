@@ -1,11 +1,13 @@
-Prog : main.o Prime.o test_files.o
-	gcc -o Prog main.o Prime.o test_files.o -w -std=gnu9x -lcunit
-main.o : main.c Prime.h test_files.h
+Prog : main.o Prime.o test_files.o Prime_thread.o
+	gcc -o Prog main.o Prime.o Prime_thread.o test_files.o -w -std=gnu9x -lcunit
+main.o : main.c Prime.h test_files.h Prime_thread.h
 	gcc -c main.c -w -std=gnu9x -lcunit
-test_files.o : test_files.c Prime.h 
+test_files.o : test_files.c Prime.h Prime_thread.h
 	gcc -c test_files.c -w -std=gnu9x -lcunit
 Prime.o : Prime.c
 	gcc -c Prime.c -w -std=gnu9x -lcunit
+Prime_thread.o : Prime_thread.c
+	gcc -c Prime_thread.c -w -std=gnu9x -lcunit
 clean : 
 	rm -rf *.o
 	rm -rf Prog
