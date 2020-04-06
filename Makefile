@@ -18,16 +18,18 @@ clean :
 	rm -rf DebugOutput.txt
 	rm -rf stats.txt
 
-debug : main.c Prime.c test_files.c Prime.h test_files.h
+debug : main.c Prime.c Prime_thread.c test_files.c Prime.h test_files.h
 	make clean
 	gcc -c Prime.c -w -std=gnu9x -lcunit
 	gcc -c Prime_thread.c -w -std=gnu9x -lcunit
 	gcc -c test_files.c -w -std=gnu9x -lcunit
 	gcc -c main.c -w -std=gnu9x -lcunit
-	gcc -o Prog main.o Prime.o Prime_thread.o  test_files.o -w -std=gnu9x -lcunit
+	gcc -o debug main.o Prime.o Prime_thread.o  test_files.o -w -std=gnu9x -lcunit
 	valgrind --leak-check=yes --log-file="DebugOutput.txt" -q ./debug
 	echo  "\n" >> DebugOutput.txt
 	cppcheck --enable=all --inconclusive  Prime.c 2>> DebugOutput.txt
+	echo  "\n" >> DebugOutput.txt
+	cppcheck --enable=all --inconclusive  Prime_thread.c 2>> DebugOutput.txt
 	echo  "\n" >> DebugOutput.txt
 	echo  "\n" >> DebugOutput.txt
 	./debug >> DebugOutput.txt
