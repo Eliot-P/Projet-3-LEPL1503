@@ -29,7 +29,7 @@ debug : main.c Prime.c test_files.c Prime.h test_files.h
 	./debug >> DebugOutput.txt
 
 stat : 
-	echo "Statistiques git à la date du :">>stats.txt
+	echo "Statistiques git à la date du :">stats.txt
 	date >>stats.txt
 	gitinspector >> stats.txt
 	echo "\n" >> stats.txt
