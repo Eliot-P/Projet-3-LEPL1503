@@ -46,9 +46,3 @@ stat :
 push :
 	git commit -a -m "git auto command"
 	git push
-
-test :
-	gcc -c Prime.c -w -std=gnu9x -lcunit
-	gcc -c Prime_thread.c -w -std=gnu9x -lcunit
-	gcc -c test_lib.c -w -std=gnu9x -lcunit
-	gcc -o test Prime.o Prime_thread.o  test_lib.o -w -std=gnu9x -lcunit

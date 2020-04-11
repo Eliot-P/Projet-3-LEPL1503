@@ -44,7 +44,7 @@ def main(input, output):
 		logger.debug(res)
 		nline +=1
 
-In = open("testPrincipaleInput.txt","r")
+In = open("Input.txt","r")
 Out = open("PythonOUT.txt","w+")
 main(In,Out)
 In.close()
