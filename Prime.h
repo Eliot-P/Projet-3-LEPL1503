@@ -9,4 +9,5 @@
 	int  is_prime(long, Repertoire_t *);
 	char prime_divs(long,Repertoire_t *);
 	int principale(char *, char *);
+	void imprimer(Repertoire_t *);
 #endif

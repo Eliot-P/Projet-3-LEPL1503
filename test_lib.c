@@ -1,46 +1,47 @@
 #include "Prime.h"
-#include "CUnit/CUnit.h"
+#include <CUnit/CUnit.h>
+#include <CUnit/Basic.h>
 #include <sys/fcntl.h>
+#include <sys/fcntl.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
-void test_CUNIT(){
-    /*is_prime :
-    -number < 0
-    -tab == NULL
-    -number == 1, 2, 3, 5, 7, 11, 1223, 51991, 802499 ==> retourne 1
-               4, 10, 303, 18252 ==> retourne 0
-
-    prime_divs :
-    -tab == NULL
-    -number == 2, 3, 5, 7, 11, 1223, 51991, 802499 ==> retourne lui-même
-               4, 10, 100 ==> retourne [2] [2,3,5] [2,3,5,...]
-
-    principale:
-    -input_file vide
-    -ligne != int/long*/
-    
-    
-    //test is_div()
+void test_is_div(){
     CU_ASSERT_TRUE(is_div(2, 2));
-    CU_ASSERT_TRUE(is_div(15, 3));
+    CU_ASSERT_TRUE(is_div(8, 2));
     CU_ASSERT_FALSE(is_div(19, 2));
-    
-    //test is_prime()
-    Repertoire_t *a = (Repertoire_t *) malloc(sizeof(struct repertoire));
-    a->liste = (long *) malloc(sizeof(long) *4);
-    a->liste[0] = (long) 2; a->liste[1] = (long) 3; a->liste[2] = (long) 5; a->liste[3] = (long) 7;
-    a->nbre_elem = 4;
+    CU_ASSERT_FALSE(is_div(19, 3));
 
-    CU_ASSERT_TRUE(is_prime(-5, a));
-    CU_ASSERT_FALSE(is_prime(-10, a));
-    int prime[] = {1, 2, 3, 5, 7, 11, 1223, 51991, 802499};
+}
+int test_is_prime(){
+    Repertoire_t *test_array = (Repertoire_t *) malloc(sizeof(struct repertoire));
+    if (test_array == NULL){ return -1;}
+    test_array->liste = (long *) malloc(sizeof(long) *4);
+    if (test_array->liste == NULL){return -1;}
+    test_array->liste[0] = (long) 2;
+    test_array->liste[1] = (long) 3;
+    test_array->liste[2] = (long) 5;
+    test_array->liste[3] = (long) 7;
+    CU_ASSERT_TRUE(is_prime(13,test_array));
+    
+    CU_ASSERT_FALSE(is_prime(10, test_array));
+    int prime_test_array[] = {1, 2, 3, 5, 7, 11, 1223, 51991, 802499};
     for(int i = 0; i < 9; i++){
-        CU_ASSERT_TRUE(is_prime(prime[i], a));
+        CU_ASSERT_TRUE(is_prime(prime_test_array[i], test_array));
     }
-    int l[] = {4, 10, 303, 18252};
+    int not_prime_test_array[] = {4, 10, 303, 18252};
     for(int i = 0; i < 9; i++){
-        CU_ASSERT_FALSE(is_prime(l[i], a));
-    }
-        
+        CU_ASSERT_FALSE(is_prime(not_prime_test_array[i], test_array));
+    }   
+    return 0;
+}
+    /*
+
+
+
     //test prime_divs()
     for(int i = 0; i < 9; i++){
         CU_ASSERT_EQUAL(prime_divs(prime[i], a), prime[i]);
@@ -57,14 +58,13 @@ void test_CUNIT(){
     for(int i = 0; i < 62 ; i++){
         CU_ASSERT_EQUAL((prime_divs(4, a) + i), ret2[i]);
     }
-    
-    //test principale()
-    
-    //je ne sais pas trop comment créer les fichiers
-    
-    //test avec un fichier vide
-    
-    //test avec juste des nombres
-    
-    //test avec des chars,strings..
+    */
+int main (){
+    CU_initialize_registry();
+    CU_pSuite suite = CU_add_suite("Prime test", 0, 0);
+    CU_add_test(suite, "is_div Test", test_is_div);
+    CU_add_test(suite,"is_prime_test",test_is_prime);
+    CU_basic_run_tests();
+    CU_cleanup_registry();
+    return 0;
 }
