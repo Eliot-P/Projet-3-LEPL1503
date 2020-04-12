@@ -20,14 +20,13 @@ int test_is_prime(){
     test_array->liste[2] = (long) 5;
     test_array->liste[3] = (long) 7;
     CU_ASSERT_TRUE(is_prime(13,test_array));
-    
     CU_ASSERT_FALSE(is_prime(10, test_array));
-    int prime_test_array[] = {2, 3, 5, 7, 11, 1223, 51991, 802499};
-    for(int i = 0; i < 9; i++){
+    long prime_test_array[] = {2, 3, 5, 7, 11, 1223, 51991, 802499};
+    for(int i = 0; i < 7; i++){
         CU_ASSERT_TRUE(is_prime(prime_test_array[i], test_array));
     }
-    int not_prime_test_array[] = {4, 10, 303, 18252};
-    for(int i = 0; i < 9; i++){
+    long not_prime_test_array[] = {4, 10, 303, 18252};
+    for(int i = 0; i < 3; i++){
         CU_ASSERT_FALSE(is_prime(not_prime_test_array[i], test_array));
     }   
     return 0;
@@ -44,7 +43,7 @@ int test_prime_divs(){
     test_array->liste[2] = (long) 5;
     test_array->liste[3] = (long) 7;
 
-    for(int i = 0; i < 9; i++){
+    for(int i = 0; i < 7; i++){
         int prime_test_array[] = {2, 3, 5, 7, 11, 1223, 51991, 802499};
         CU_ASSERT_EQUAL(prime_divs(prime_test_array[i], test_array), prime_test_array[i]);
     }
@@ -57,7 +56,7 @@ int test_prime_divs(){
         CU_ASSERT_EQUAL((prime_divs(4, test_array) + i), ret1[i]);
     }
     int ret2[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293};
-    for(int i = 0; i < 62 ; i++){
+    for(int i = 0; i < (sizeof(ret2)/sizeof(ret2[0])) ; i++){
         CU_ASSERT_EQUAL((prime_divs(4, test_array) + i), ret2[i]);
     }
     return 0;

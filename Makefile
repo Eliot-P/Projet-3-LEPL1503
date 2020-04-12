@@ -10,6 +10,7 @@ clean :
 	rm -rf Prime
 	rm -rf debug
 	rm -rf test_files
+	rm -rf test_lib
 
 	rm -rf Output_simple.txt
 	rm -rf Output_thread.txt
