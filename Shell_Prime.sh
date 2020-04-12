@@ -53,6 +53,7 @@ if [ $execution_mode -eq 3 ]; then
 fi
 
 if [ $execution_mode -eq 4 ]; then
+    make clean > /dev/null
 	gcc -c Prime_thread.c -std=gnu9x
 	gcc -c main.c -std=gnu9x
 	gcc -o debug main.o Prime_thread.o  -std=gnu9x
@@ -65,6 +66,7 @@ if [ $execution_mode -eq 4 ]; then
     read choice
     if [ $choice -eq 0 ]; then
         rm -rf DebugOutput.txt
+        make clean > /dev/null
     else
         exit 0
     fi

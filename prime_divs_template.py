@@ -45,7 +45,7 @@ def main(input, output):
 		nline +=1
 
 In = open("Input.txt","r")
-Out = open("PythonOUT.txt","w+")
+Out = open("Output_python.txt","w+")
 main(In,Out)
 In.close()
 Out.close()
