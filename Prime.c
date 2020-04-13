@@ -16,17 +16,16 @@ Last update: 11:05:12  13/04/2020
 
 typedef struct repertoire{
     int nbre_elem;
-    long *liste;    // Array qui contiendra les nbres premiers (mélangés !)
+    unsigned long long *liste;    // Array qui contiendra les nbres premiers (mélangés !)
 } Repertoire_t;
 
-
-int is_div(long number, long i){  // True si i divise number, sinon false
+int is_div(unsigned long long number, unsigned long long i){  // True si i divise number, sinon false
     return number%i == 0;
 }
 
-int  is_prime(long number, Repertoire_t *tab){
+int  is_prime(unsigned long long number, Repertoire_t *tab){
     /*
-     * retourne 1 si number est un nombre premier et À sinon
+     * retourne 1 si number est un nombre premier et retourne 0 sinon
      *
      * La fonction procède de la sorte:
      *      - 1) Elle vérifie si number est divisible par un des nbre premiers contenu dans tab->liste
@@ -34,24 +33,24 @@ int  is_prime(long number, Repertoire_t *tab){
      *      mathématique (aucun diviseur entre 2 et number/2) et s'il est premier on l'ajoute dans le tableau d'array
      */
 
-    for (long i = 0; i < tab->nbre_elem; i++){
+    for (unsigned long long i = 0; i < tab->nbre_elem; i++){
         if (tab->liste[i] == number){return 1;}
         if (is_div(number,tab->liste[i])){
             return 0;
         }
     }
-    for (long i = 2; i < number/2; i++) {   // On peut pe optimiser avec un max et en repartant du max si number<max
+    for (unsigned long long i = 2; i < number/2; i++) {   // On peut pe optimiser avec un max et en repartant du max si number<max
         if (is_div(number, i)) {
             return 0;
         }
     }
-    tab->liste = (long *) realloc((*tab).liste,((*tab).nbre_elem + 1) * sizeof(long));
+    tab->liste = (unsigned long long *) realloc((*tab).liste,((*tab).nbre_elem + 1) * sizeof(unsigned long long));
     if ((*tab).liste == NULL) { return -1; }
     tab->liste[(*tab).nbre_elem++] = number;
     return 1;
 }
 
-Repertoire_t *prime_divs(long number, Repertoire_t *tab){
+Repertoire_t *prime_divs(unsigned long long number, Repertoire_t *tab){
     /*  retourne un pointeur vers une structure Reperetoire_t contenant une liste de tout les diviseurs premiers de
      * number et le nbre de diviseurs ou NULL pour une erreur de malloc (le tableau contenant les diviseurs est
      * aloué dynamiquement).
@@ -66,9 +65,9 @@ Repertoire_t *prime_divs(long number, Repertoire_t *tab){
      *  pas sa taille et donc il est impossible d'itérer dessus sans avoir d'erreur. Il nous faut une variable qui nous
      *  donne le nombre d'éléments dans le tableau.
      */
-    Repertoire_t *arr = (Repertoire_t *) malloc(sizeof(struct repertoire_t));
+    Repertoire_t *arr = (Repertoire_t *) malloc(sizeof(struct repertoire));
     if (arr == NULL){ return NULL;}
-    arr->liste = (long *) malloc(sizeof(number));
+    arr->liste = (unsigned long long *) malloc(sizeof(number));
     if (arr->liste == NULL){ return  NULL;}
 
     arr->nbre_elem = 0;
@@ -77,10 +76,10 @@ Repertoire_t *prime_divs(long number, Repertoire_t *tab){
     if (is_prime(number,tab) == 1){
         return arr;}
 
-    for (long j = 2; j < number/2; j++){
+    for (unsigned long long j = 2; j < number/2; j++){
 
         if  ((is_div(number,j)) && (is_prime(j,tab))){
-            arr->liste = (long *) realloc(arr->liste, (arr->nbre_elem +1)*sizeof(long));
+            arr->liste = (unsigned long long int *) realloc(arr->liste, (arr->nbre_elem + 1) * sizeof(unsigned long long));
             if (arr->liste == NULL){ return  NULL;}
             arr->liste[arr->nbre_elem++] = j;
         }
@@ -88,9 +87,9 @@ Repertoire_t *prime_divs(long number, Repertoire_t *tab){
     return arr;
 }
 
-int principale(char *input_file, char *output_file) {
+int principale(int N, char *input_file, char *output_file) {
     /*
-     * pré: input != NULL ; output_file != NULL  Ce sont des fichiers
+     * pré: input != NULL ; output_file != NULL  N > 0 et peut être NULL et sera alors par défaut = 4
      * input est un fichier qui contient un élément (int,char,float,...) par ligne
      *
      * post: écris dans chaque ligne de output_file la liste des diviseurs premiers du INT à la ligne correspondante dans
@@ -102,39 +101,45 @@ int principale(char *input_file, char *output_file) {
      *         -3 -> erreur causée par fclose()
      */
 
+    // == OUVERTURE == //
     FILE *filein = fopen(input_file,"r");
     if (filein == NULL){return -1;}
     FILE *fileout = fopen(output_file,"w");
-    if (fileout == NULL){return -1;}
+    if (fileout == NULL){
+        fclose(filein);
+        return -1;}
 
-    
+
+    // == PRÉPARATION == //
     Repertoire_t *rep = (Repertoire_t *) malloc(sizeof(struct repertoire));
-    rep->liste = (long *) malloc(sizeof(long) *4);
-    if (rep->liste == NULL){
-        return -2;}
-    rep->liste[0] = (long) 2; rep->liste[1] = (long) 3; rep->liste[2] = (long) 5; rep->liste[3] = (long) 7;
-    rep->nbre_elem = 4;
+    if (rep == NULL){
+        fclose(filein);
+        fclose(fileout);
+        return -2;
+    }
+    rep->nbre_elem = 0;
 
-    
 
+
+
+
+    // == DÉBUT == //
     char chaine[50];
-    long i = 0;
-    while (fgets(chaine,50,filein) != NULL){
+    while (fgets(chaine,50,filein) != NULL){ // Je comprend pas pk 'chaine' est considéré comme un pointeur
         //long number = strtol(chaine,NULL,32); // Comment gérer les erreurs si ça fonctionne pas..?
-        long number = atol(chaine);
+        unsigned long long number = atol(chaine);
         if (number < 2){
-            fprintf(fileout,"Erreur à la ligne %ld (%ld < 2)\n",i,number);
+            fprintf(fileout,"Erreur: %llu < 2\n",number);
         }
         else{
             Repertoire_t *divs = prime_divs(number,rep);
-            for (long x = 0; x < divs->nbre_elem; x++){
-                fprintf(fileout,"%ld ",divs->liste[x]);
+            for (unsigned long long x = 0; x < divs->nbre_elem; x++){
+                fprintf(fileout,"%llu ",divs->liste[x]);
             }
-            //fputc(13,fileout);   retour à la ligne sous (certains) windows !!!!
+            fputc(13,fileout);  // retour à la ligne sous (certains) windows !!!!
             fputc(10,fileout); // retour à la ligne standar (\n)
             free(divs);  // libère bien le contenu du pointeur ??? XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         }
-        i++;
     }
     free(rep);
     int x = fclose(filein);
@@ -149,11 +154,9 @@ int principale(char *input_file, char *output_file) {
     return 0;
 }
 
-
-///// FONCTIONS AUXILIAIRES  \\\\\ 
-
-void imprimer_th(Repertoire_t *tab){
+/// Fonction auxiliaires \\\*
+void imprimer(Repertoire_t *tab){
     for (int i = 0; i < tab->nbre_elem; i++){
-        printf("%ld ",tab->liste[i]);
+        printf("%llu ",tab->liste[i]);
     }
 }
