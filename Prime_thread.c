@@ -1,9 +1,10 @@
 /*
- Copied by Eliot from Constantin on 06-04-20.
+ Created by Constantin van Ypersele on 13/04/2020
 
     - Traduction du code python -
+       - Version avec threads -
 
-Last update: 17:46:12  6/04/2020
+Last update: 10:49:19  13/04/2020
 */
 
 #include <sys/fcntl.h>
@@ -13,23 +14,20 @@ Last update: 17:46:12  6/04/2020
 #include <string.h>
 #include <stdio.h>
 
+
 typedef struct repertoire_th{
     int nbre_elem;
     long *liste;    // Array qui contiendra les nbres premiers (mélangés !)
 } Repertoire_t_th;
 
+
 int is_div_th(long number, long i){  // True si i divise number, sinon false
     return number%i == 0;
-}
-void imprimer_th(Repertoire_t_th *tab){
-    for (int i = 0; i < tab->nbre_elem; i++){
-        printf("%ld ",tab->liste[i]);
-    }
 }
 
 int  is_prime_th(long number, Repertoire_t_th *tab){
     /*
-     * retourne 1 si number est un nombre premier et retourne 0 sinon
+     * retourne 1 si number est un nombre premier et À sinon
      *
      * La fonction procède de la sorte:
      *      - 1) Elle vérifie si number est divisible par un des nbre premiers contenu dans tab->liste
@@ -91,7 +89,7 @@ Repertoire_t_th *prime_divs_th(long number, Repertoire_t_th *tab){
     return arr;
 }
 
-int principale_th(char *input_file, char *output_file) {
+int principale_th(int N = 4, char *input_file, char *output_file) {
     /*
      * pré: input != NULL ; output_file != NULL  Ce sont des fichiers
      * input est un fichier qui contient un élément (int,char,float,...) par ligne
@@ -110,7 +108,7 @@ int principale_th(char *input_file, char *output_file) {
     FILE *fileout = fopen(output_file,"w");
     if (fileout == NULL){return -1;}
 
-    // On instancie la structure
+    
     Repertoire_t_th *rep = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
     rep->liste = (long *) malloc(sizeof(long) *4);
     if (rep->liste == NULL){
@@ -118,9 +116,11 @@ int principale_th(char *input_file, char *output_file) {
     rep->liste[0] = (long) 2; rep->liste[1] = (long) 3; rep->liste[2] = (long) 5; rep->liste[3] = (long) 7;
     rep->nbre_elem = 4;
 
+    
+
     char chaine[50];
     long i = 0;
-    while (fgets(chaine,50,filein) != NULL){ // Je comprend pas pk 'chaine' est considéré comme un pointeur
+    while (fgets(chaine,50,filein) != NULL){
         //long number = strtol(chaine,NULL,32); // Comment gérer les erreurs si ça fonctionne pas..?
         long number = atol(chaine);
         if (number < 2){
@@ -131,7 +131,7 @@ int principale_th(char *input_file, char *output_file) {
             for (long x = 0; x < divs->nbre_elem; x++){
                 fprintf(fileout,"%ld ",divs->liste[x]);
             }
-            fputc(13,fileout);  // retour à la ligne sous (certains) windows !!!!
+            //fputc(13,fileout);   retour à la ligne sous (certains) windows !!!!
             fputc(10,fileout); // retour à la ligne standar (\n)
             free(divs);  // libère bien le contenu du pointeur ??? XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         }
@@ -148,4 +148,13 @@ int principale_th(char *input_file, char *output_file) {
         return -3;
     }
     return 0;
+}
+
+
+///// FONCTIONS AUXILIAIRES  \\\\\ 
+
+void imprimer_th(Repertoire_t_th *tab){
+    for (int i = 0; i < tab->nbre_elem; i++){
+        printf("%ld ",tab->liste[i]);
+    }
 }
