@@ -11,14 +11,7 @@ clean :
 	rm -rf debug
 	rm -rf test_files
 	rm -rf test_lib
-
-	rm -rf Output_simple.txt
-	rm -rf Output_thread.txt
-	rm -rf Output_python.txt
-
-	rm -rf DebugOutput.txt
 	rm -rf stats.txt
-	rm -rf *xml
 
 stat : 
 	echo "Statistiques git à la date du :">stats.txt
