@@ -14,17 +14,17 @@ Last update: 11:05:12  13/04/2020
 #include <stdio.h>
 
 
-typedef struct repertoire_th{
+typedef struct repertoire{
     int nbre_elem;
     long *liste;    // Array qui contiendra les nbres premiers (mélangés !)
-} Repertoire_t_th;
+} Repertoire_t;
 
 
-int is_div_th(long number, long i){  // True si i divise number, sinon false
+int is_div(long number, long i){  // True si i divise number, sinon false
     return number%i == 0;
 }
 
-int  is_prime_th(long number, Repertoire_t_th *tab){
+int  is_prime(long number, Repertoire_t *tab){
     /*
      * retourne 1 si number est un nombre premier et À sinon
      *
@@ -36,12 +36,12 @@ int  is_prime_th(long number, Repertoire_t_th *tab){
 
     for (long i = 0; i < tab->nbre_elem; i++){
         if (tab->liste[i] == number){return 1;}
-        if (is_div_th(number,tab->liste[i])){
+        if (is_div(number,tab->liste[i])){
             return 0;
         }
     }
     for (long i = 2; i < number/2; i++) {   // On peut pe optimiser avec un max et en repartant du max si number<max
-        if (is_div_th(number, i)) {
+        if (is_div(number, i)) {
             return 0;
         }
     }
@@ -51,7 +51,7 @@ int  is_prime_th(long number, Repertoire_t_th *tab){
     return 1;
 }
 
-Repertoire_t_th *prime_divs_th(long number, Repertoire_t_th *tab){
+Repertoire_t *prime_divs(long number, Repertoire_t *tab){
     /*  retourne un pointeur vers une structure Reperetoire_t contenant une liste de tout les diviseurs premiers de
      * number et le nbre de diviseurs ou NULL pour une erreur de malloc (le tableau contenant les diviseurs est
      * aloué dynamiquement).
@@ -66,7 +66,7 @@ Repertoire_t_th *prime_divs_th(long number, Repertoire_t_th *tab){
      *  pas sa taille et donc il est impossible d'itérer dessus sans avoir d'erreur. Il nous faut une variable qui nous
      *  donne le nombre d'éléments dans le tableau.
      */
-    Repertoire_t_th *arr = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
+    Repertoire_t *arr = (Repertoire_t *) malloc(sizeof(struct repertoire_t));
     if (arr == NULL){ return NULL;}
     arr->liste = (long *) malloc(sizeof(number));
     if (arr->liste == NULL){ return  NULL;}
@@ -74,12 +74,12 @@ Repertoire_t_th *prime_divs_th(long number, Repertoire_t_th *tab){
     arr->nbre_elem = 0;
     arr->liste[arr->nbre_elem++] = number;
 
-    if (is_prime_th(number,tab) == 1){
+    if (is_prime(number,tab) == 1){
         return arr;}
 
     for (long j = 2; j < number/2; j++){
 
-        if  ((is_div_th(number,j)) && (is_prime_th(j,tab))){
+        if  ((is_div(number,j)) && (is_prime(j,tab))){
             arr->liste = (long *) realloc(arr->liste, (arr->nbre_elem +1)*sizeof(long));
             if (arr->liste == NULL){ return  NULL;}
             arr->liste[arr->nbre_elem++] = j;
@@ -88,7 +88,7 @@ Repertoire_t_th *prime_divs_th(long number, Repertoire_t_th *tab){
     return arr;
 }
 
-int principale_th(int N, char *input_file, char *output_file) {
+int principale(char *input_file, char *output_file) {
     /*
      * pré: input != NULL ; output_file != NULL  Ce sont des fichiers
      * input est un fichier qui contient un élément (int,char,float,...) par ligne
@@ -108,7 +108,7 @@ int principale_th(int N, char *input_file, char *output_file) {
     if (fileout == NULL){return -1;}
 
     
-    Repertoire_t_th *rep = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
+    Repertoire_t *rep = (Repertoire_t *) malloc(sizeof(struct repertoire));
     rep->liste = (long *) malloc(sizeof(long) *4);
     if (rep->liste == NULL){
         return -2;}
@@ -126,7 +126,7 @@ int principale_th(int N, char *input_file, char *output_file) {
             fprintf(fileout,"Erreur à la ligne %ld (%ld < 2)\n",i,number);
         }
         else{
-            Repertoire_t_th *divs = prime_divs_th(number,rep);
+            Repertoire_t *divs = prime_divs(number,rep);
             for (long x = 0; x < divs->nbre_elem; x++){
                 fprintf(fileout,"%ld ",divs->liste[x]);
             }
@@ -152,7 +152,7 @@ int principale_th(int N, char *input_file, char *output_file) {
 
 ///// FONCTIONS AUXILIAIRES  \\\\\ 
 
-void imprimer_th(Repertoire_t_th *tab){
+void imprimer_th(Repertoire_t *tab){
     for (int i = 0; i < tab->nbre_elem; i++){
         printf("%ld ",tab->liste[i]);
     }
