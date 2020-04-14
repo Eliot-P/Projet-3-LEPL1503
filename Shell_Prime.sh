@@ -24,12 +24,25 @@ if [ $execution_mode -eq 2 ]; then
     echo "ex : 1 1 1 --> 1 et 2 et 3"
     read thread normal python
     make clean > /dev/null
+    rm -rf Output_simple.txt > /dev/null
+	rm -rf Output_thread.txt > /dev/null
+	rm -rf Output_python.txt > /dev/null
     gcc -c Prime.c -w -std=gnu9x
 	gcc -c Prime_thread.c -w -std=gnu9x
-	gcc -c test_files.c -w -std=gnu9x -I/usr/include/python3.6 
-	gcc -o test_files Prime.o Prime_thread.o  test_files.o -w -std=gnu9x -lpython2.7
+	gcc -c test_files.c -w -std=gnu9x -I/usr/include/python3.6
+	gcc -o test_files Prime.o Prime_thread.o  test_files.o -w -std=gnu9x $(python3.6-config --cflags) $(python3.6-config --ldflags)
     ./test_files $normal $thread $python
     make clean > /dev/null
+    echo "Garder les fichiers d'output ?"
+    echo "0 == Non"
+    read choice
+    if [ $choice -eq 0 ]; then
+    rm -rf Output_simple.txt > /dev/null
+	rm -rf Output_thread.txt > /dev/null
+	rm -rf Output_python.txt > /dev/null
+    else
+        exit 0
+    fi
 fi
 
 if [ $execution_mode -eq 3 ]; then
@@ -54,11 +67,12 @@ fi
 
 if [ $execution_mode -eq 4 ]; then
     make clean > /dev/null
+    rm -rf DebugOutput.txt > /dev/null
 	gcc -c Prime_thread.c -std=gnu9x
 	gcc -c main.c -std=gnu9x
 	gcc -o debug main.o Prime_thread.o  -std=gnu9x
 	valgrind --leak-check=yes --log-file="DebugOutput.txt" -q ./debug
-	#cppcheck --enable=all --inconclusive  Prime_thread.c 2>> DebugOutput.txt
+	cppcheck --enable=all --inconclusive  Prime_thread.c 2>> DebugOutput.txt
 	./debug Input.txt >> DebugOutput.txt
     cat DebugOutput.txt
     cho "Garder le fichier texte ?"

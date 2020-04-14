@@ -19,11 +19,11 @@ typedef struct repertoire{
     unsigned long long *liste;    // Array qui contiendra les nbres premiers (mélangés !)
 } Repertoire_t;
 
-int is_div(unsigned long long number, unsigned long long i){  // True si i divise number, sinon false
+int is_div_simple(unsigned long long number, unsigned long long i){  // True si i divise number, sinon false
     return number%i == 0;
 }
 
-int  is_prime(unsigned long long number, Repertoire_t *tab){
+int  is_prime_simple(unsigned long long number, Repertoire_t *tab){
     /*
      * retourne 1 si number est un nombre premier et retourne 0 sinon
      *
@@ -35,12 +35,12 @@ int  is_prime(unsigned long long number, Repertoire_t *tab){
 
     for (unsigned long long i = 0; i < tab->nbre_elem; i++){
         if (tab->liste[i] == number){return 1;}
-        if (is_div(number,tab->liste[i])){
+        if (is_div_simple(number,tab->liste[i])){
             return 0;
         }
     }
     for (unsigned long long i = 2; i < number/2; i++) {   // On peut pe optimiser avec un max et en repartant du max si number<max
-        if (is_div(number, i)) {
+        if (is_div_simple(number, i)) {
             return 0;
         }
     }
@@ -50,7 +50,7 @@ int  is_prime(unsigned long long number, Repertoire_t *tab){
     return 1;
 }
 
-Repertoire_t *prime_divs(unsigned long long number, Repertoire_t *tab){
+Repertoire_t *prime_divs_simple(unsigned long long number, Repertoire_t *tab){
     /*  retourne un pointeur vers une structure Reperetoire_t contenant une liste de tout les diviseurs premiers de
      * number et le nbre de diviseurs ou NULL pour une erreur de malloc (le tableau contenant les diviseurs est
      * aloué dynamiquement).
@@ -73,12 +73,12 @@ Repertoire_t *prime_divs(unsigned long long number, Repertoire_t *tab){
     arr->nbre_elem = 0;
     arr->liste[arr->nbre_elem++] = number;
 
-    if (is_prime(number,tab) == 1){
+    if (is_prime_simple(number,tab) == 1){
         return arr;}
 
     for (unsigned long long j = 2; j < number/2; j++){
 
-        if  ((is_div(number,j)) && (is_prime(j,tab))){
+        if  ((is_div_simple(number,j)) && (is_prime_simple(j,tab))){
             arr->liste = (unsigned long long int *) realloc(arr->liste, (arr->nbre_elem + 1) * sizeof(unsigned long long));
             if (arr->liste == NULL){ return  NULL;}
             arr->liste[arr->nbre_elem++] = j;
@@ -87,7 +87,7 @@ Repertoire_t *prime_divs(unsigned long long number, Repertoire_t *tab){
     return arr;
 }
 
-int principale(int N, char *input_file, char *output_file) {
+int principale_simple(int N, char *input_file, char *output_file) {
     /*
      * pré: input != NULL ; output_file != NULL  N > 0 et peut être NULL et sera alors par défaut = 4
      * input est un fichier qui contient un élément (int,char,float,...) par ligne
@@ -132,7 +132,7 @@ int principale(int N, char *input_file, char *output_file) {
             fprintf(fileout,"Erreur: %llu < 2\n",number);
         }
         else{
-            Repertoire_t *divs = prime_divs(number,rep);
+            Repertoire_t *divs = prime_divs_simple(number,rep);
             for (unsigned long long x = 0; x < divs->nbre_elem; x++){
                 fprintf(fileout,"%llu ",divs->liste[x]);
             }
@@ -155,7 +155,7 @@ int principale(int N, char *input_file, char *output_file) {
 }
 
 /// Fonction auxiliaires \\\*
-void imprimer(Repertoire_t *tab){
+void imprimer_simple(Repertoire_t *tab){
     for (int i = 0; i < tab->nbre_elem; i++){
         printf("%llu ",tab->liste[i]);
     }

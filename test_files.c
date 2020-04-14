@@ -15,7 +15,7 @@ double *test(char *argv[],double *time_array){
 	if (atoi(argv[1])){
 		clock_t t;
 		t = clock();
-		principale("Input.txt","Output_simple.txt");
+		principale_simple("Input.txt","Output_simple.txt");
 		t = clock()-t;
 		time_simple =(((double)t)/CLOCKS_PER_SEC)*1000;
 	}
@@ -25,7 +25,7 @@ double *test(char *argv[],double *time_array){
 	if (atoi(argv[2])){
 	clock_t t_thread;
 	t_thread = clock();
-	principale_th("Input.txt","Output_thread.txt");
+	principale("Input.txt","Output_thread.txt");
 	t_thread = clock()-t_thread;
 	time_thread = (((double)t_thread)/CLOCKS_PER_SEC)*1000;
 	}
