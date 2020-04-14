@@ -13,4 +13,5 @@ test_lib
 test_files
 Prime
 
+#pour ceux qui utilisent vscode
 /.vscode
