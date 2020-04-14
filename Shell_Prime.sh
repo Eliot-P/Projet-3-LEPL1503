@@ -72,7 +72,7 @@ if [ $execution_mode -eq 4 ]; then
 	gcc -c main.c -std=gnu9x
 	gcc -o debug main.o Prime_thread.o  -std=gnu9x
 	valgrind --leak-check=yes --log-file="DebugOutput.txt" -q ./debug
-	#cppcheck --enable=all --inconclusive  Prime_thread.c 2>> DebugOutput.txt
+	cppcheck --enable=all --inconclusive  Prime_thread.c 2>> DebugOutput.txt
 	./debug Input.txt >> DebugOutput.txt
     cat DebugOutput.txt
     cho "Garder le fichier texte ?"
