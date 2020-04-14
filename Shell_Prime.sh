@@ -29,8 +29,8 @@ if [ $execution_mode -eq 2 ]; then
 	rm -rf Output_python.txt > /dev/null
     gcc -c Prime.c -w -std=gnu9x
 	gcc -c Prime_thread.c -w -std=gnu9x
-	gcc -c test_files.c -w -std=gnu9x -I/usr/include/python3.6 
-	gcc -o test_files Prime.o Prime_thread.o  test_files.o -w -std=gnu9x -lpython2.7
+	gcc -c test_files.c -w -std=gnu9x -I/usr/include/python3.6
+	gcc -o test_files Prime.o Prime_thread.o  test_files.o -w -std=gnu9x $(python3.6-config --cflags) $(python3.6-config --ldflags)
     ./test_files $normal $thread $python
     make clean > /dev/null
     echo "Garder les fichiers d'output ?"
