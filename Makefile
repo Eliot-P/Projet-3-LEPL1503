@@ -13,6 +13,12 @@ clean :
 	rm -rf test_lib
 	rm -rf stats.txt
 
+clean output :
+	rm -rf Output_simple.txt
+	rm -rf Output_thread.txt
+	rm -rf Output_python.txt
+	rm -rf DebugOutput.txt
+
 stat : 
 	echo "Statistiques git à la date du :">stats.txt
 	date >>stats.txt
