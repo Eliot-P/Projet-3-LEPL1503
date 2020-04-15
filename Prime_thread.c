@@ -148,9 +148,9 @@ void lecture(Lecteur_Th *lect){
      * lecture est une fonction à un seul argument (comme ça on peut employer des threads dessus)
      * lit la ligne, et place dans le lect->buffer le résultat
      *  >> Comment gérer les fails de malloc ?*/
-    while (fgets(lect->ligne,sizeof(unsigned long long),lect->fichier) != NULL) {
+    while (fgets(lect->ligne,50,lect->fichier) != NULL) {
         unsigned long long number = atol(lect->ligne);
-        if (lect->tableau->nbre == lect->tableau->size){
+        while (lect->tableau->nbre == lect->tableau->size){
             sem_wait(&(lect->semaphore[0]));
         }
         pthread_mutex_lock(&(lect->flag)); // bloque le tableau1 pour ajouter l'élément
@@ -166,10 +166,10 @@ void lecture(Lecteur_Th *lect){
 
 void calcul(Usine_Th *usine) {
     int ok1 = 0;
-    while ((ok1 == 0)| (usine->tabin->nbre != 0)) {
+    while ((ok1 == 0) || (usine->tabin->nbre != 0)) {
         sem_getvalue(usine->semaphores[2], &ok1);
 
-        if (usine->tabin->nbre == 0) {
+        while (usine->tabin->nbre == 0) {
             sem_wait(usine->semaphores[0]);}    //Attend d'avoir des éléments à prendre
 
         pthread_mutex_lock(usine->flags[0]);
@@ -181,11 +181,11 @@ void calcul(Usine_Th *usine) {
 
         // On calcule les diviseurs premiers de number puis on libère la mémoire allouée pour son stockage
         Repertoire_t *resultat = prime_divs(entree.liste[0], usine->rep, usine->flags[2]);
-        pthread_mutex_lock(usine->flags[0]);
-        free(&entree);
-        pthread_mutex_unlock(usine->flags[0]);
+        //pthread_mutex_lock(usine->flags[0]);
+        //free(&entree);
+        //pthread_mutex_unlock(usine->flags[0]);
 
-        if (usine->tabout->nbre ==  usine->tabout->size) {
+        while (usine->tabout->nbre ==  usine->tabout->size) {
             sem_wait(usine->semaphores[1]);  // Attend qu'il y ait de la place pr déposer son élément
         }
         pthread_mutex_lock(usine->flags[1]);    // Protège le 2e tableau
@@ -199,10 +199,10 @@ void calcul(Usine_Th *usine) {
 
 void ecriture(Imprimerie_Th *impr) {
     int a = 0;
-    while ((a == 0) | (impr->tabout->nbre != 0)) {
+    while ((a == 0) || (impr->tabout->nbre != 0)) {
         sem_getvalue(impr->semaphores[1], &a);
 
-        if (impr->tabout->nbre == 0) {
+        while (impr->tabout->nbre == 0) {
             sem_wait(impr->semaphores[0]);
         } // On attend que le tableau soit non vide
 
@@ -221,10 +221,9 @@ void ecriture(Imprimerie_Th *impr) {
             }
             fprintf(impr->fichierOut, "\n");
         }
-
-        pthread_mutex_lock(impr->flag); // Nécessaire de lock le tableau ?
-        free(&resultat);
-        pthread_mutex_unlock(impr->flag);
+        //pthread_mutex_lock(impr->flag); // Nécessaire de lock le tableau ?
+        //free(&resultat);
+        //pthread_mutex_unlock(impr->flag);
     }
 }
 
@@ -259,7 +258,7 @@ int principale(int N, char *input_file, char *output_file) {
     // 1) INITIALISATION DES VARIABLES //
     if (N == 0){N = 4;}
     unsigned long long maximum = N + N/2;   // C'est la taille de nos deux buffers
-    char line[sizeof(unsigned long long)]; // la dedans qu'est stockée la ligne du fichier
+    char line[50];//sizeof(unsigned long long)]; // la dedans qu'est stockée la ligne du fichier
 
     pthread_mutex_t firstmutex;  // Utilisé pour protéger l'accès au tableau1
     pthread_mutex_init(&firstmutex,NULL);
@@ -297,7 +296,7 @@ int principale(int N, char *input_file, char *output_file) {
 
     Entrepot_Th *tableau2 = (Entrepot_Th *) malloc(sizeof(struct entrepot));
     if (tableau2 == NULL){return fermer(filein,fileout,-2);}
-    tableau2->buffer = (Repertoire_t *) malloc(sizeof(struct repertoire));
+    tableau2->buffer = (Repertoire_t *) malloc(sizeof(struct repertoire) * maximum);
     if (tableau2->buffer == NULL){return fermer(filein,fileout,-2);}
     tableau2->putindex = 0;
     tableau2->takeindex = 0;
@@ -315,12 +314,16 @@ int principale(int N, char *input_file, char *output_file) {
 
     Usine_Th *calc = (Usine_Th *) malloc(sizeof(struct usine));
     if (calc == NULL){return fermer(filein,fileout,-2);}
+    calc->tabin = tableau1;
+    calc->tabout = tableau2;
+    calc->rep = rep;
     calc->semaphores[0] = &firstfull;  // Savoir si le tableau1 est rempli
     calc->semaphores[1] = &secondemtpy;  // Savoir si le tableau2 est vide
     calc->semaphores[2] = &fin; // Permet de savoir si on est arrivé à la fin du fichier
     calc->flags[0] = &firstmutex;   // Protéger le tableau1
     calc->flags[1] = &secondmutex;  //Protéger le tableau2
     calc->flags[2] = &thirdmutex;   // Protéger le repertoire qui contient tt les nbres premiers
+
 
     Imprimerie_Th *imp = (Imprimerie_Th *) malloc(sizeof(struct imprimerie));
     imp->fichierOut = fileout;  // fichier où on écrit les résultats
@@ -334,8 +337,6 @@ int principale(int N, char *input_file, char *output_file) {
     pthread_t lecteur_th;
     int l = pthread_create(&lecteur_th, NULL, (void *(*)(void *)) &lecture, lect);
     if (l != 0){ return fermer(filein,fileout,-3);}
-    int ll = pthread_join(lecteur_th,NULL);
-    if (ll != 0){ fermer(filein,fileout,-3);}
 
     pthread_t calcul_th[N];
     for (int i = 0; i < N; i++){
@@ -343,14 +344,16 @@ int principale(int N, char *input_file, char *output_file) {
         if (c != 0){return fermer(filein,fileout,-3);}
     }
 
+    pthread_t imprimeur_th;
+    int i = pthread_create(&imprimeur_th, NULL, (void *(*)(void *)) ecriture, imp);
+    if (i != 0){return fermer(filein,fileout,-3);}
+
+    int ll = pthread_join(lecteur_th,NULL);
+    if (ll != 0){ fermer(filein,fileout,-3);}
     for (int i = 0; i < N; i++){
         int cc = pthread_join(calcul_th[i],NULL);
         if (cc != 0){return fermer(filein,fileout,-3);}
     }
-
-    pthread_t imprimeur_th;
-    int i = pthread_create(&imprimeur_th, NULL, (void *(*)(void *)) ecriture, imp);
-    if (i != 0){return fermer(filein,fileout,-3);}
     int ii = pthread_join(imprimeur_th,NULL);
     if (ii != 0){ return fermer(filein,fileout,-3);}
 
