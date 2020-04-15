@@ -17,3 +17,4 @@ Prime
 /.vscode
 #pour ceux qui utilisent CLion
 /cmake-build-debug
+/.idea
