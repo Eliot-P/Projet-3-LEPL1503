@@ -1,9 +1,9 @@
 Prime : main.o Prime_thread.o
-	gcc -o Prime main.o Prime_thread.o  -w -std=gnu9x
+	gcc -o Prime main.o Prime_thread.o  -w -std=gnu9x -lpthread
 main.o : main.c Prime_thread.h
-	gcc -c main.c -w -std=gnu9x -lcunit 
+	gcc -c main.c -w -std=gnu9x  
 Prime_thread.o : Prime_thread.c
-	gcc -c Prime_thread.c -w -std=gnu9x -lcunit
+	gcc -c Prime_thread.c -w -std=gnu9x -lpthread
 
 clean : 
 	rm -rf *.o

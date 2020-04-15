@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <Python.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 
 double *test(char *argv[],double *time_array){
