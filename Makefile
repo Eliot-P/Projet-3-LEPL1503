@@ -13,7 +13,7 @@ clean :
 	rm -rf test_lib
 	rm -rf stats.txt
 
-clean output :
+clean_output :
 	rm -rf Output_simple.txt
 	rm -rf Output_thread.txt
 	rm -rf Output_python.txt
