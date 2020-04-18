@@ -3,18 +3,22 @@
 
     - Traduction du code python -
 
-Last update: 16:16:30  14/04/2020
+Last update: 12:38:43  17/04/2020
 */
 
-
-#include <sys/fcntl.h>
-#include <unistd.h>
-#include <sys/mman.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <pthread.h>
 #include <semaphore.h>
+
+// >> DOIT ON LOCK/UNLOCK QUAND ON LIT UNE STRUCTURE QUI POURRAIT CHANGER  ??
+
+// == VARIABLES GLOBALES == //
+
+int fin_de_lecture = 0;
+int Threads_de_calculs_finis = 0;
+
 
 // == STRUCTURES == //
 
@@ -36,8 +40,8 @@ typedef struct lecteur{  //Argument qu'on passe a la fct lecture
     char *ligne;
     FILE *fichier;
     Entrepot_Th *tableau;
-    pthread_mutex_t flag;
-    sem_t semaphore[2];
+    pthread_mutex_t *flag;
+    sem_t *semaphores[2]; // tab1_empty, tab1_full
 } Lecteur_Th;
 
 typedef struct usine{
@@ -45,25 +49,25 @@ typedef struct usine{
     Entrepot_Th *tabout;  // tableau où on stocke les Repertoire_t qui contiennent les rpses
     Repertoire_t *rep;  //La structure a protéger (contient tous les nbre premier)
     pthread_mutex_t *flags[3];
-    sem_t *semaphores[3];
+    sem_t *semaphores[4];   // tab1_empty, tab1_full, tab2_empty, tab2_full
 }Usine_Th;
 
 typedef struct imprimerie{
     FILE *fichierOut;   // Fichier où écrire
     pthread_mutex_t *flag;  // Mutex pour protéger le tableau où la fonction prend les résultats
-    sem_t *semaphores[2];   // Permet d'attendre si jamais l'entrepot est vide
+    sem_t *semaphores[2];   // tab2_empty, tab2_full
     Entrepot_Th *tabout;    // Contient les résultats à écrire
 }Imprimerie_Th;
 
 
-/// == ACCESSIBILITÉ == //
-/*
+// == ACCESSIBILITÉ == //
+
 void imprimer(Repertoire_t *tab){
     for (int i = 0; i < tab->nbre_elem; i++){
         printf("%llu ",tab->liste[i]);
     }
 }
-*/
+
 int fermer(FILE *entree, FILE *sortie,int i){  //raccourci pour fermer les fichier quand on a une erreur    fclose(entree);
     fclose(sortie);
     return i;
@@ -85,12 +89,14 @@ int  is_prime(unsigned long long number, Repertoire_t *tab,pthread_mutex_t *mute
      *      mathématique (aucun diviseur entre 2 et number/2) et s'il est premier on l'ajoute dans le tableau d'array
      */
 
+    //pthread_mutex_lock(mutex);
     for (unsigned long long i = 0; i < tab->nbre_elem; i++){
         if (tab->liste[i] == number){return 1;}
         if (is_div(number,tab->liste[i])){
             return 0;
         }
     }
+    //pthread_mutex_unlock(mutex);
     for (unsigned long long i = 2; i < number/2; i++) {   // On peut pe optimiser avec un max et en repartant du max si number<max
         if (is_div(number, i)) {
             return 0;
@@ -143,88 +149,101 @@ Repertoire_t *prime_divs(unsigned long long number, Repertoire_t *tab,pthread_mu
     return arr;
 }
 
-void lecture(Lecteur_Th *lect){
+void *lecture(void* arg){
     /*
      * lecture est une fonction à un seul argument (comme ça on peut employer des threads dessus)
      * lit la ligne, et place dans le lect->buffer le résultat
      *  >> Comment gérer les fails de malloc ?*/
-    while (fgets(lect->ligne,50,lect->fichier) != NULL) {
+    Lecteur_Th *lect =  (Lecteur_Th *) arg;
+    while (fgets(lect->ligne,30,lect->fichier) != NULL) {
         unsigned long long number = atol(lect->ligne);
-        while (lect->tableau->nbre == lect->tableau->size){
-            sem_wait(&(lect->semaphore[0]));
-        }
-        pthread_mutex_lock(&(lect->flag)); // bloque le tableau1 pour ajouter l'élément
+
+        sem_wait(lect->semaphores[0]);  // On attend une place vide
+        pthread_mutex_lock(lect->flag); // bloque le tableau1 pour ajouter l'élément
+
+        free(&((lect->tableau->buffer[lect->tableau->putindex]).liste));
+
         (lect->tableau->buffer[lect->tableau->putindex]).liste = (unsigned long long *) malloc(sizeof(unsigned long long));
         (lect->tableau->buffer[lect->tableau->putindex]).liste[0] = number;
         lect->tableau->putindex = (lect->tableau->putindex + 1) % lect->tableau->size;
         lect->tableau->nbre++;
-        pthread_mutex_unlock(&(lect->flag));
-        sem_post(&(lect->semaphore[0]));
+
+        pthread_mutex_unlock(lect->flag);
+        sem_post(lect->semaphores[1]);  //On ajoute un élément donc on réveille les "firstfill"
     }
-    sem_post(&lect->semaphore[1]);
+    fin_de_lecture++;
+    return NULL;
 }
 
-void calcul(Usine_Th *usine) {
-    int ok1 = 0;
-    while ((ok1 == 0) || (usine->tabin->nbre != 0)) {
-        sem_getvalue(usine->semaphores[2], &ok1);
+void *calcul(void* arg) {
+    Usine_Th *usine = (Usine_Th *) arg;
 
-        while (usine->tabin->nbre == 0) {
-            sem_wait(usine->semaphores[0]);}    //Attend d'avoir des éléments à prendre
+    while ((fin_de_lecture == 0) || (usine->tabin->nbre != 0)) {
 
+        sem_wait(usine->semaphores[1]);    //Attend d'avoir des éléments à prendre : firstfill
         pthread_mutex_lock(usine->flags[0]);
+
         Repertoire_t entree = usine->tabin->buffer[usine->tabin->takeindex];
         usine->tabin->takeindex = (usine->tabin->takeindex + 1) % usine->tabin->size;
         usine->tabin->nbre--;
+
         pthread_mutex_unlock(usine->flags[0]);
-        sem_post(usine->semaphores[0]); // signale qu'on a pris un élément
+        sem_post(usine->semaphores[0]); // signale aux "firstempty" qu'on a pris un élément
 
         // On calcule les diviseurs premiers de number puis on libère la mémoire allouée pour son stockage
         Repertoire_t *resultat = prime_divs(entree.liste[0], usine->rep, usine->flags[2]);
-        //pthread_mutex_lock(usine->flags[0]);
-        //free(&entree);
-        //pthread_mutex_unlock(usine->flags[0]);
 
-        while (usine->tabout->nbre ==  usine->tabout->size) {
-            sem_wait(usine->semaphores[1]);  // Attend qu'il y ait de la place pr déposer son élément
-        }
+        //free(&entree);  >> ca fait bug au wait
+
+        sem_wait(usine->semaphores[2]);  //Attend "secondempty"  >> une place vide ds le 2e tableau
         pthread_mutex_lock(usine->flags[1]);    // Protège le 2e tableau
+
+        free(((usine->tabout->buffer[usine->tabout->putindex]).liste));    // On nettoie la mémoire
+        //free(((usine->tabout->buffer[usine->tabout->putindex]).nbre_elem));
         usine->tabout->buffer[usine->tabout->putindex] = *resultat;
         usine->tabout->putindex = (usine->tabout->putindex + 1) % usine->tabout->size;
         usine->tabout->nbre++;
+
         pthread_mutex_unlock(usine->flags[1]);
-        sem_post(usine->semaphores[1]);
+        sem_post(usine->semaphores[3]); //On réveille les "secondfill" car on a ajouté un élément
     }
+    pthread_mutex_lock(usine->flags[2]);    // On protège l'accès à la variable globale
+    Threads_de_calculs_finis++;
+    pthread_mutex_unlock(usine->flags[2]);
+
+    return NULL;
 }
 
-void ecriture(Imprimerie_Th *impr) {
-    int a = 0;
-    while ((a == 0) || (impr->tabout->nbre != 0)) {
-        sem_getvalue(impr->semaphores[1], &a);
+void *ecriture(void* arg) {
+    Imprimerie_Th *impr = (Imprimerie_Th *) arg;
+    while ((Threads_de_calculs_finis < ((impr->tabout->size)*2)/3) || (impr->tabout->nbre != 0)) {
 
-        while (impr->tabout->nbre == 0) {
-            sem_wait(impr->semaphores[0]);
-        } // On attend que le tableau soit non vide
-
+        sem_wait(impr->semaphores[1]);  //On attend des élément dans le tableau2: "secondfill"
         pthread_mutex_lock(impr->flag); // On protège le tableau
+
         Repertoire_t resultat = impr->tabout->buffer[impr->tabout->takeindex];
         impr->tabout->takeindex = (impr->tabout->takeindex + 1) % impr->tabout->size;
         impr->tabout->nbre--;
+
         pthread_mutex_unlock(impr->flag);
-        sem_post(impr->semaphores[0]);
+        sem_post(impr->semaphores[0]);  //On réveille les "secondempty" car on a pris un élément
 
         if ((resultat.nbre_elem == 1) && (resultat.liste[0]) < 2) {    // Exception où on a number < 2
-            fprintf(impr->fichierOut, "Erreur: %lld est inférieur à 2 !\n", resultat.liste[0]);
+            fprintf(impr->fichierOut, "Erreur: %lld est inférieur à 2 !", resultat.liste[0]);
+            fputc(13,impr->fichierOut); // Que sous windows !!
+            fputc('\n',impr->fichierOut);
         } else {
             for (int i = 0; i < resultat.nbre_elem; i++) {
                 fprintf(impr->fichierOut, "%lld ", resultat.liste[i]);
             }
+            fputc(13,impr->fichierOut);
             fprintf(impr->fichierOut, "\n");
         }
         //pthread_mutex_lock(impr->flag); // Nécessaire de lock le tableau ?
         //free(&resultat);
         //pthread_mutex_unlock(impr->flag);
     }
+    return NULL;
 }
 
 
@@ -258,7 +277,7 @@ int principale(int N, char *input_file, char *output_file) {
     // 1) INITIALISATION DES VARIABLES //
     if (N == 0){N = 4;}
     unsigned long long maximum = N + N/2;   // C'est la taille de nos deux buffers
-    char line[50];//sizeof(unsigned long long)]; // la dedans qu'est stockée la ligne du fichier
+    char line[30];// la dedans qu'est stockée la ligne du fichier
 
     pthread_mutex_t firstmutex;  // Utilisé pour protéger l'accès au tableau1
     pthread_mutex_init(&firstmutex,NULL);
@@ -267,16 +286,19 @@ int principale(int N, char *input_file, char *output_file) {
     pthread_mutex_t thirdmutex;
     pthread_mutex_init(&thirdmutex,NULL);   //Utilisé pour protéger le rep où on stocke les nbre premiers
 
-    sem_t firstempty; // nbre de place vide dans tableau1
+    sem_t firstempty; // nbre de place VIDE dans tableau1
     sem_init(&firstempty,0,maximum);
-    sem_t secondemtpy;  // nbre de place vide dans tableau2
+    sem_t secondemtpy;  // nbre de place VIDE dans tableau2
     sem_init(&secondemtpy,0,maximum);
-    sem_t firstfull;    // nbre de place occupée dans le tableau1
-    sem_init(&firstfull,0,0);
-    sem_t secondfull;   // nbre de place occupée dans le tableau2
-    sem_init(&secondfull,0,0);
-    sem_t fin;
-    sem_init(&fin,0,0);
+    sem_t firstfill;    // nbre de place REMPLIE dans le tableau1
+    sem_init(&firstfill, 0, 0);
+    sem_t secondfill;   // nbre de place REMPLIE dans le tableau2
+    sem_init(&secondfill, 0, 0);
+
+    /*
+    sem_t fichier_a_lire;
+    sem_init(&fichier_a_lire,0,1);
+    */
     // 2) INITIALISATION DES STRUCTURES //
 
     Repertoire_t *rep = (Repertoire_t *) malloc(sizeof(struct repertoire));
@@ -308,18 +330,21 @@ int principale(int N, char *input_file, char *output_file) {
     lect->ligne = line;
     lect->fichier = filein;
     lect->tableau = tableau1;
-    lect->flag = firstmutex;
-    lect->semaphore[0] = firstempty;
-    lect->semaphore[1] = fin;
+    lect->flag = &firstmutex;
+    lect->semaphores[0] = &firstempty;
+    lect->semaphores[1] = &firstfill;
+    //lect->semaphores[2] = &fichier_a_lire;
 
     Usine_Th *calc = (Usine_Th *) malloc(sizeof(struct usine));
     if (calc == NULL){return fermer(filein,fileout,-2);}
     calc->tabin = tableau1;
     calc->tabout = tableau2;
     calc->rep = rep;
-    calc->semaphores[0] = &firstfull;  // Savoir si le tableau1 est rempli
-    calc->semaphores[1] = &secondemtpy;  // Savoir si le tableau2 est vide
-    calc->semaphores[2] = &fin; // Permet de savoir si on est arrivé à la fin du fichier
+    calc->semaphores[0] = &firstempty;
+    calc->semaphores[1] = &firstfill;
+    calc->semaphores[2] = &secondemtpy;
+    calc->semaphores[3] = &secondfill;
+    //calc->semaphores[4] = &fichier_a_lire;
     calc->flags[0] = &firstmutex;   // Protéger le tableau1
     calc->flags[1] = &secondmutex;  //Protéger le tableau2
     calc->flags[2] = &thirdmutex;   // Protéger le repertoire qui contient tt les nbres premiers
@@ -328,57 +353,39 @@ int principale(int N, char *input_file, char *output_file) {
     Imprimerie_Th *imp = (Imprimerie_Th *) malloc(sizeof(struct imprimerie));
     imp->fichierOut = fileout;  // fichier où on écrit les résultats
     imp->tabout = tableau2;     // Tableau où on prend les éléments
-    imp->semaphores[0] = &secondfull;   // Savoir si le tableau2 est rempli
-    imp->semaphores[1] = &fin;
+    imp->semaphores[0] = &secondemtpy;
+    imp->semaphores[1] = &secondfill;
     imp->flag = &secondmutex;       // Protéger tableau2 lors des accès
 
     // 3) INITIALISATION DES THREADS //
 
     pthread_t lecteur_th;
-    int l = pthread_create(&lecteur_th, NULL, (void *(*)(void *)) &lecture, lect);
+    int l = pthread_create(&lecteur_th, NULL, &lecture, (void *) lect);
     if (l != 0){ return fermer(filein,fileout,-3);}
 
     pthread_t calcul_th[N];
     for (int i = 0; i < N; i++){
-        int c = pthread_create(&calcul_th[i], NULL, (void *(*)(void *)) &calcul, calc);
+        int c = pthread_create(&(calcul_th[i]), NULL, &calcul, (void *) calc);
         if (c != 0){return fermer(filein,fileout,-3);}
     }
-
     pthread_t imprimeur_th;
-    int i = pthread_create(&imprimeur_th, NULL, (void *(*)(void *)) ecriture, imp);
-    if (i != 0){return fermer(filein,fileout,-3);}
+    int I = pthread_create(&imprimeur_th, NULL, &ecriture, (void *) imp);
+    if (I != 0){return fermer(filein,fileout,-3);}
 
     int ll = pthread_join(lecteur_th,NULL);
     if (ll != 0){ fermer(filein,fileout,-3);}
-    for (int i = 0; i < N; i++){
-        int cc = pthread_join(calcul_th[i],NULL);
+    for (int k = 0; k < N; k++){
+        int cc = pthread_join(calcul_th[k],NULL);
         if (cc != 0){return fermer(filein,fileout,-3);}
     }
     int ii = pthread_join(imprimeur_th,NULL);
     if (ii != 0){ return fermer(filein,fileout,-3);}
 
-    /*
-    // == DÉBUT == //
-    char chaine[65];
-    while (fgets(chaine,65,filein) != NULL){
-        unsigned long long number = atol(chaine);
-        if (number < 2){
-            fprintf(fileout,"Erreur: %llu < 2\n",number);
-        }
-        else{
-            Repertoire_t *divs = prime_divs(number,rep);
-            for (unsigned long long x = 0; x < divs->nbre_elem; x++){
-                fprintf(fileout,"%llu ",divs->liste[x]);
-            }
-            fputc(13,fileout);  // retour à la ligne sous (certains) windows !!!!
-            fputc(10,fileout); // retour à la ligne standar (\n)
-            free(divs);  // libère bien le contenu du pointeur ??? XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        }
-    }
-    free(rep);
-     */
+
     // == FREE == //
 
+    free(tableau1);
+    free(tableau2);
     free(lect);
     free(calc);
     free(imp);
