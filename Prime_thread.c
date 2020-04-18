@@ -6,6 +6,9 @@
 Last update: 12:38:43  17/04/2020
 */
 
+#include <sys/fcntl.h>
+#include <unistd.h>
+#include <sys/mman.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
