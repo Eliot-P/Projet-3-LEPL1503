@@ -3,7 +3,7 @@
 
     - Traduction du code python -
 
-Last update: 12:38:43  17/04/2020
+Last update: 11:37:40  19/04/2020
 */
 
 #include <sys/fcntl.h>
@@ -203,6 +203,7 @@ void *calcul(void* arg) {
 
         free(((usine->tabout->buffer[usine->tabout->putindex]).liste));    // On nettoie la mémoire
         //free(((usine->tabout->buffer[usine->tabout->putindex]).nbre_elem));
+
         usine->tabout->buffer[usine->tabout->putindex] = *resultat;
         usine->tabout->putindex = (usine->tabout->putindex + 1) % usine->tabout->size;
         usine->tabout->nbre++;
@@ -371,6 +372,7 @@ int principale(int N, char *input_file, char *output_file) {
         int c = pthread_create(&(calcul_th[i]), NULL, &calcul, (void *) calc);
         if (c != 0){return fermer(filein,fileout,-3);}
     }
+
     pthread_t imprimeur_th;
     int I = pthread_create(&imprimeur_th, NULL, &ecriture, (void *) imp);
     if (I != 0){return fermer(filein,fileout,-3);}
@@ -386,14 +388,19 @@ int principale(int N, char *input_file, char *output_file) {
 
 
     // == FREE == //
-
     free(tableau1);
     free(tableau2);
     free(lect);
     free(calc);
     free(imp);
+    free(rep);
 
     // == FERMETURE == //
+
+    pthread_cancel(lecteur_th);
+    for (int i = 0; i < N; i++){
+        pthread_cancel(calcul_th[i]);}
+    pthread_cancel(imprimeur_th);
 
     int x = fclose(filein);
     if (x != 0){
@@ -401,7 +408,7 @@ int principale(int N, char *input_file, char *output_file) {
         return -4;}
 
     int y = fclose(fileout);
-    if (y != 0){
-        return -4;}
+    if (y != 0){return -4;}
+
     return 0;
 }
