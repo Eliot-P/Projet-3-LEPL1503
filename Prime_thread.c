@@ -3,7 +3,7 @@
 
     - Traduction du code python -
 
-Last update: 11:37:40  19/04/2020
+Last update: 19:34:26  20/04/2020
 */
 
 #include <sys/fcntl.h>
@@ -56,6 +56,8 @@ typedef struct usine{
 }Usine_Th;
 
 typedef struct imprimerie{
+    int N;  //On a besoin du nbre exact de thread pour pouvoir affirmer que tt les threads de
+//calculs ont finis. Si on tente de récuperer N via la taille du 'tabout' >> erreur quand N=1 !!!!
     FILE *fichierOut;   // Fichier où écrire
     pthread_mutex_t *flag;  // Mutex pour protéger le tableau où la fonction prend les résultats
     sem_t *semaphores[2];   // tab2_empty, tab2_full
@@ -100,11 +102,18 @@ int  is_prime(unsigned long long number, Repertoire_t *tab,pthread_mutex_t *mute
         }
     }
     //pthread_mutex_unlock(mutex);
-    for (unsigned long long i = 2; i < number/2; i++) {   // On peut pe optimiser avec un max et en repartant du max si number<max
-        if (is_div(number, i)) {
-            return 0;
-        }
+
+    for (unsigned long long i = 2; i < (number/2); i++) {
+        if (is_div(number, i)){return 0;}
     }
+    /*
+   unsigned long long i = 2;
+   if (is_div(number,i)){ return 0;}
+   i++;
+   while (i < number/2 +1){
+       if (is_div(number,i)){ return 0;}
+       i+=2;} */
+
     pthread_mutex_lock(mutex);  // On protège l'accès au répertoire quand on ajoute un nbre premier
     tab->liste = (unsigned long long *) realloc((*tab).liste,((*tab).nbre_elem + 1) * sizeof(unsigned long long));
     if ((*tab).liste == NULL) { return -1; }
@@ -141,7 +150,7 @@ Repertoire_t *prime_divs(unsigned long long number, Repertoire_t *tab,pthread_mu
     if (is_prime(number,tab,mutex) == 1){
         return arr;}
 
-    for (unsigned long long j = 2; j < number/2; j++){
+    for (unsigned long long j = 2; j < (number/2) +1; j++){
 
         if  ((is_div(number,j)) && (is_prime(j,tab,mutex))){
             arr->liste = (unsigned long long int *) realloc(arr->liste, (arr->nbre_elem + 1) * sizeof(unsigned long long));
@@ -174,7 +183,9 @@ void *lecture(void* arg){
         pthread_mutex_unlock(lect->flag);
         sem_post(lect->semaphores[1]);  //On ajoute un élément donc on réveille les "firstfill"
     }
+    pthread_mutex_lock(lect->flag);
     fin_de_lecture++;
+    pthread_mutex_unlock(lect->flag);
     return NULL;
 }
 
@@ -220,7 +231,7 @@ void *calcul(void* arg) {
 
 void *ecriture(void* arg) {
     Imprimerie_Th *impr = (Imprimerie_Th *) arg;
-    while ((Threads_de_calculs_finis < ((impr->tabout->size)*2)/3) || (impr->tabout->nbre != 0)) {
+    while ((Threads_de_calculs_finis < impr->N) || (impr->tabout->nbre != 0)) {
 
         sem_wait(impr->semaphores[1]);  //On attend des élément dans le tableau2: "secondfill"
         pthread_mutex_lock(impr->flag); // On protège le tableau
@@ -355,6 +366,7 @@ int principale(int N, char *input_file, char *output_file) {
 
 
     Imprimerie_Th *imp = (Imprimerie_Th *) malloc(sizeof(struct imprimerie));
+    imp->N = N;
     imp->fichierOut = fileout;  // fichier où on écrit les résultats
     imp->tabout = tableau2;     // Tableau où on prend les éléments
     imp->semaphores[0] = &secondemtpy;
