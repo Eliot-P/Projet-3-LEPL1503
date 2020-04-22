@@ -46,11 +46,13 @@ fi
 if [ $execution_mode -eq 3 ]; then
     echo "Entrer le fichier Input"
     read Inputfile
+    echo "Nombre de thread ?"
+    read N_thread
     make clean > /dev/null
 	gcc -c Prime_thread.c -w -std=gnu9x -lpthread
 	gcc -c main.c -w -std=gnu9x
     gcc -o Prime main.o Prime_thread.o  -w -std=gnu9x -lpthread
-    ./Prime $Inputfile
+    ./Prime $Inputfile $N_thread
     make clean > /dev/null
     cat Output_thread.txt
     echo "Garder le fichier texte ?"
@@ -71,7 +73,7 @@ if [ $execution_mode -eq 4 ]; then
 	gcc -o debug main.o Prime_thread.o  -std=gnu9x -lpthread -g
 	valgrind --leak-check=yes --log-file="DebugOutput.txt" -q ./debug
 	cppcheck --enable=all --inconclusive  Prime_thread.c 2>> DebugOutput.txt
-	./debug Input.txt >> DebugOutput.txt
+	./debug Input.txt 4 >> DebugOutput.txt
     cat DebugOutput.txt
     echo "Garder le fichier texte ?"
     echo "0 == Non"
