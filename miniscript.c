@@ -10,6 +10,12 @@ double *mini_test(double *time_array){
 
 	double time_simple;
 	double time_thread;
+
+	clock_t start_thread,end_thread;
+	start_thread = clock();
+	principale(4,"Input.txt","Output_thread.txt");
+	end_thread = clock();
+	time_thread =1000*((double)(end_thread - start_thread) / (double)(CLOCKS_PER_SEC));
 	
 	clock_t start_simple,end_simple;
 	start_simple = clock();
@@ -17,15 +23,7 @@ double *mini_test(double *time_array){
 	end_simple = clock();
 	time_simple =1000*((double)(end_simple - start_simple) / (double)(CLOCKS_PER_SEC));
 	
-	
-	clock_t start_thread,end_thread;
-	start_thread = clock();
-	principale(4,"Input.txt","Output_thread.txt");
-	end_thread = clock();
-	time_thread =1000*((double)(end_thread - start_thread) / (double)(CLOCKS_PER_SEC));
-	
-
-	time_array[0] = 0; time_array[1] = 0;
+	time_array[0] = time_simple; time_array[1] = time_thread;
 	return time_array;
 }
 
