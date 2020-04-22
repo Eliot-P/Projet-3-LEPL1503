@@ -2,6 +2,7 @@
 #les fichiers objets
 *.o
 #les fichiers text
+Output.txt
 DebugOutput.txt
 Output_simple.txt
 Output_thread.txt
