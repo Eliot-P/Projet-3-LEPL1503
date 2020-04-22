@@ -10,7 +10,7 @@ double *test(double *time_array){
 
 	double time_simple;
 	double time_thread;
-
+	
 	clock_t t;
 	t = clock();
 	principale_simple("Input.txt","Output_simple.txt");
