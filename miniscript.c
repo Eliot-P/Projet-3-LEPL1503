@@ -1,10 +1,10 @@
 #include "Prime.h"
 #include "Prime_thread.h"
-#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <sys/time.h>
 
 double *mini_test(double *time_array){
 
@@ -27,22 +27,36 @@ double *mini_test(double *time_array){
 	return time_array;
 }
 
-long applaudissement20H(){
-    struct timeva chrono;
+long chrono_simple(){
+    struct timeval chrono;
+    gettimeofday(&chrono, NULL) ;
+    long debut = chrono.tv_usec;
+    principale_simple("Input.txt","Output_thread.txt");
+    gettimeofday(&chrono,NULL);
+    long fin = chrono.tv_usec;
+    return (fin-debut)/1000;
+}
+long chrono_thread(){
+    struct timeval chrono;
     gettimeofday(&chrono, NULL) ;
     long debut = chrono.tv_usec;
     principale(4,"Input.txt","Output_thread.txt");
-    gettimeofdays(&chrono,NULL);
+    gettimeofday(&chrono,NULL);
     long fin = chrono.tv_usec;
     return (fin-debut)/1000;
 }
 
+
 int main() {
+	/*
 	double time_array[2];
     double * time_ptr = mini_test(time_array);
 	printf("temps mis pour l'execution de l'exemple d'input normal : %f [ms]\n",time_ptr[0]);
 	printf("temps mis pour l'execution de l'exemple d'input avec thread : %f [ms]\n",time_ptr[1]);
-	long time = applaudissement20H();
-	printf("temps mis avec le programme mutlitrhead %ld",time);
+	*/
+	long time_thread = chrono_thread();
+	long time_simple = chrono_simple();
+	printf("temps mis pour l'execution de l'exemple d'input normal : %ld [ms]\n",time_simple);
+	printf("temps mis pour l'execution de l'exemple d'input avec thread : %ld [ms]\n",time_thread);
 	return 0;
 }
