@@ -66,14 +66,14 @@ fi
 if [ $execution_mode -eq 4 ]; then
     make clean > /dev/null
     rm -rf DebugOutput.txt > /dev/null
-	gcc -c Prime_thread.c -std=gnu9x -lpthread
-	gcc -c main.c -std=gnu9x 
-	gcc -o debug main.o Prime_thread.o  -std=gnu9x -lpthread
+	gcc -c Prime_thread.c -std=gnu9x -lpthread -g
+	gcc -c main.c -std=gnu9x -g
+	gcc -o debug main.o Prime_thread.o  -std=gnu9x -lpthread -g
 	valgrind --leak-check=yes --log-file="DebugOutput.txt" -q ./debug
 	cppcheck --enable=all --inconclusive  Prime_thread.c 2>> DebugOutput.txt
 	./debug Input.txt >> DebugOutput.txt
     cat DebugOutput.txt
-    cho "Garder le fichier texte ?"
+    echo "Garder le fichier texte ?"
     echo "0 == Non"
     read choice
     if [ $choice -eq 0 ]; then
