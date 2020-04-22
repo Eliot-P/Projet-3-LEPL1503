@@ -1,0 +1,11 @@
+# ce fichier est à placer dans votre dossier $HOME/.ssh
+# Assurez-vous que les permissions de la clé ssh sont bien mises à 600
+# Si ce n'est pas le cas, lancez la commande `chmod 600 chemin_vers_la_cle_ssh`
+# pour y remédier
+
+
+Host studsrv2.info.ucl.ac.be studsrv3.info.ucl.ac.be studsrv4.info.ucl.ac.be
+  ProxyCommand ssh -4 studssh.info.ucl.ac.be -W %h:%p -q
+  User [nom d'utilisateur de votre groupe pour les machines d'expériences (par exemple guest009)]
+  IdentityFile [chemin vers la clé ssh que vous utilisez pour vous connecter aux machines d'expériences]
+
