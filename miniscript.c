@@ -27,7 +27,7 @@ double *mini_test(double *time_array){
 	return time_array;
 }
 
-long *applaudissement20H(){
+long applaudissement20H(){
     struct timeva chrono;
     gettimeofday(&chrono, NULL) ;
     long debut = chrono.tv_usec;
