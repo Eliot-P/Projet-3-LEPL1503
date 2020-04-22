@@ -18,6 +18,7 @@ clean :
 	rm -rf test
 	rm -rf fact
 	rm -rf stats.txt
+	rm -rf Output.txt
 
 clean_output :
 	rm -rf Output_simple.txt

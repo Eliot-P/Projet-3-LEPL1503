@@ -173,7 +173,7 @@ void *lecture(void* arg){
         sem_wait(lect->semaphores[0]);  // On attend une place vide
         pthread_mutex_lock(lect->flag); // bloque le tableau1 pour ajouter l'élément
 
-        free(&((lect->tableau->buffer[lect->tableau->putindex]).liste));
+        //free(&((lect->tableau->buffer[lect->tableau->putindex]).liste));
 
         (lect->tableau->buffer[lect->tableau->putindex]).liste = (unsigned long long *) malloc(sizeof(unsigned long long));
         (lect->tableau->buffer[lect->tableau->putindex]).liste[0] = number;
@@ -400,19 +400,22 @@ int principale(int N, char *input_file, char *output_file) {
 
 
     // == FREE == //
+    
     free(tableau1);
     free(tableau2);
     free(lect);
     free(calc);
     free(imp);
     free(rep);
+    
 
     // == FERMETURE == //
-
+    /*
     pthread_cancel(lecteur_th);
     for (int i = 0; i < N; i++){
         pthread_cancel(calcul_th[i]);}
     pthread_cancel(imprimeur_th);
+    */
 
     int x = fclose(filein);
     if (x != 0){
