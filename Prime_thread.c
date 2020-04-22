@@ -14,6 +14,7 @@ Last update: 18:40:53  22/04/2020
 #include <stdio.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <time.h>
 
 // >> DOIT ON LOCK/UNLOCK QUAND ON LIT UNE STRUCTURE QUI POURRAIT CHANGER  ??
 
@@ -419,3 +420,14 @@ int principale(int N, char *input_file, char *output_file) {
 
     return 0;
 }
+/*
+int main(){
+    clock_t start_thread,end_thread;
+	start_thread = clock();
+	principale(4,"Input.txt","Output_thread.txt");
+	end_thread = clock();
+	double time_thread =1000*((double)(end_thread - start_thread) / (double)(CLOCKS_PER_SEC));
+    printf("temps : %f\n",time_thread);
+    return 0;
+}
+*/
