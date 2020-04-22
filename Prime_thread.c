@@ -26,17 +26,17 @@ int Threads_de_calculs_finis = 0;
 // == STRUCTURES == //
 
 // >> quand le type se termine par "Th" c'est que la structure est faite exclusivement pour les threads
-typedef struct repertoire{
+typedef struct repertoire_th{
     int nbre_elem;
     unsigned long long *liste;
-} Repertoire_t;
+} Repertoire_t_th;
 
 typedef struct entrepot{
     int size;   // Taille du tableau
     int nbre;   // Nombre d'éléments dans le tableau
     int putindex;
     int takeindex;
-    Repertoire_t *buffer;  // On aura un tableau de Repertoire_t
+    Repertoire_t_th *buffer;  // On aura un tableau de Repertoire_t_th
 } Entrepot_Th;
 
 typedef struct lecteur{  //Argument qu'on passe a la fct lecture
@@ -49,8 +49,8 @@ typedef struct lecteur{  //Argument qu'on passe a la fct lecture
 
 typedef struct usine{
     Entrepot_Th *tabin; // tableau où on prend les number
-    Entrepot_Th *tabout;  // tableau où on stocke les Repertoire_t qui contiennent les rpses
-    Repertoire_t *rep;  //La structure a protéger (contient tous les nbre premier)
+    Entrepot_Th *tabout;  // tableau où on stocke les Repertoire_t_th qui contiennent les rpses
+    Repertoire_t_th *rep;  //La structure a protéger (contient tous les nbre premier)
     pthread_mutex_t *flags[3];
     sem_t *semaphores[4];   // tab1_empty, tab1_full, tab2_empty, tab2_full
 }Usine_Th;
@@ -67,7 +67,7 @@ typedef struct imprimerie{
 
 // == ACCESSIBILITÉ == //
 
-void imprimer(Repertoire_t *tab){
+void imprimer(Repertoire_t_th *tab){
     for (int i = 0; i < tab->nbre_elem; i++){
         printf("%llu ",tab->liste[i]);
     }
@@ -84,7 +84,7 @@ int is_div(unsigned long long number, unsigned long long i){  // True si i divis
     return number%i == 0;
 }
 
-int  is_prime(unsigned long long number, Repertoire_t *tab,pthread_mutex_t *mutex){
+int  is_prime(unsigned long long number, Repertoire_t_th *tab,pthread_mutex_t *mutex){
     /*
      * retourne 1 si number est un nombre premier et retourne 0 sinon
      *
@@ -122,7 +122,7 @@ int  is_prime(unsigned long long number, Repertoire_t *tab,pthread_mutex_t *mute
     return 1;
 }
 
-Repertoire_t *prime_divs(unsigned long long number, Repertoire_t *tab,pthread_mutex_t *mutex){
+Repertoire_t_th *prime_divs(unsigned long long number, Repertoire_t_th *tab,pthread_mutex_t *mutex){
     /*  retourne un pointeur vers une structure Reperetoire_t contenant une liste de tout les diviseurs premiers de
      * number et le nbre de diviseurs ou NULL pour une erreur de malloc (le tableau contenant les diviseurs est
      * aloué dynamiquement).
@@ -137,7 +137,7 @@ Repertoire_t *prime_divs(unsigned long long number, Repertoire_t *tab,pthread_mu
      *  pas sa taille et donc il est impossible d'itérer dessus sans avoir d'erreur. Il nous faut une variable qui nous
      *  donne le nombre d'éléments dans le tableau.
      */
-    Repertoire_t *arr = (Repertoire_t *) malloc(sizeof(struct repertoire));
+    Repertoire_t_th *arr = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
     if (arr == NULL){ return NULL;}
     arr->liste = (unsigned long long *) malloc(sizeof(number));
     if (arr->liste == NULL){ return  NULL;}
@@ -197,7 +197,7 @@ void *calcul(void* arg) {
         sem_wait(usine->semaphores[1]);    //Attend d'avoir des éléments à prendre : firstfill
         pthread_mutex_lock(usine->flags[0]);
 
-        Repertoire_t entree = usine->tabin->buffer[usine->tabin->takeindex];
+        Repertoire_t_th entree = usine->tabin->buffer[usine->tabin->takeindex];
         usine->tabin->takeindex = (usine->tabin->takeindex + 1) % usine->tabin->size;
         usine->tabin->nbre--;
 
@@ -205,7 +205,7 @@ void *calcul(void* arg) {
         sem_post(usine->semaphores[0]); // signale aux "firstempty" qu'on a pris un élément
 
         // On calcule les diviseurs premiers de number puis on libère la mémoire allouée pour son stockage
-        Repertoire_t *resultat = prime_divs(entree.liste[0], usine->rep, usine->flags[2]);
+        Repertoire_t_th *resultat = prime_divs(entree.liste[0], usine->rep, usine->flags[2]);
 
         //free(&entree);  >> ca fait bug au wait
 
@@ -236,7 +236,7 @@ void *ecriture(void* arg) {
         sem_wait(impr->semaphores[1]);  //On attend des élément dans le tableau2: "secondfill"
         pthread_mutex_lock(impr->flag); // On protège le tableau
 
-        Repertoire_t resultat = impr->tabout->buffer[impr->tabout->takeindex];
+        Repertoire_t_th resultat = impr->tabout->buffer[impr->tabout->takeindex];
         impr->tabout->takeindex = (impr->tabout->takeindex + 1) % impr->tabout->size;
         impr->tabout->nbre--;
 
@@ -316,14 +316,14 @@ int principale(int N, char *input_file, char *output_file) {
     */
     // 2) INITIALISATION DES STRUCTURES //
 
-    Repertoire_t *rep = (Repertoire_t *) malloc(sizeof(struct repertoire));
+    Repertoire_t_th *rep = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
     if (rep == NULL){return fermer(filein,fileout,-2);}
     rep->nbre_elem = 0;
 
 
     Entrepot_Th *tableau1 = (Entrepot_Th *) malloc(sizeof(struct entrepot));
     if (tableau1 == NULL){return fermer(filein,fileout,-2);}
-    tableau1->buffer = (Repertoire_t *) malloc(sizeof(struct repertoire) * maximum);//On aura un tableau de
+    tableau1->buffer = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th) * maximum);//On aura un tableau de
     if (tableau1->buffer == NULL){return fermer(filein,fileout,-2);} // (N +N/2) repertoire
     tableau1->putindex = 0;
     tableau1->takeindex = 0;
@@ -333,7 +333,7 @@ int principale(int N, char *input_file, char *output_file) {
 
     Entrepot_Th *tableau2 = (Entrepot_Th *) malloc(sizeof(struct entrepot));
     if (tableau2 == NULL){return fermer(filein,fileout,-2);}
-    tableau2->buffer = (Repertoire_t *) malloc(sizeof(struct repertoire) * maximum);
+    tableau2->buffer = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th) * maximum);
     if (tableau2->buffer == NULL){return fermer(filein,fileout,-2);}
     tableau2->putindex = 0;
     tableau2->takeindex = 0;

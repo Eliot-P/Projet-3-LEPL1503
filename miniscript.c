@@ -31,7 +31,7 @@ double *test(double *time_array){
 
 int main() {
 	double time_array[2];
-    double * time_ptr = test(argv,time_array);
+    double * time_ptr = test(time_array);
 	printf("temps mis pour l'execution de l'exemple d'input normal : %f [ms]\n",time_ptr[0]);
 	printf("temps mis pour l'execution de l'exemple d'input avec thread : %f [ms]\n",time_ptr[1]);
 	return 0;

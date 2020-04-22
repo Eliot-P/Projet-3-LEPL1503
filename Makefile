@@ -17,6 +17,7 @@ clean :
 	rm -rf test_lib
 	rm -rf test
 	rm -rf fact
+	rm -rf minirun
 	rm -rf stats.txt
 	rm -rf Output.txt
 

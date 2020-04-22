@@ -5,17 +5,17 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-	typedef struct repertoire{
+	typedef struct repertoire_th{
     int nbre_elem;
     unsigned long long *liste;
-} Repertoire_t;
+} Repertoire_t_th;
 
 	typedef struct entrepot{
     int size;
     int nbre;
     int putindex;
     int takeindex;
-    Repertoire_t *buffer;
+    Repertoire_t_th *buffer;
 } Entrepot_Th;
 
 	typedef struct lecteur{
@@ -29,7 +29,7 @@
 	typedef struct usine{
     Entrepot_Th *tabin;
 	Entrepot_Th *tabout;
-	Repertoire_t *rep;
+	Repertoire_t_th *rep;
 	pthread_mutex_t *flags[3];
     sem_t *semaphores[4];
 }Usine_Th;
@@ -43,12 +43,12 @@
 }Imprimerie_Th;
 
 	int is_div(int, int);
-	int  is_prime(long, Repertoire_t *);
-	char prime_divs(long,Repertoire_t *);
+	int  is_prime(long, Repertoire_t_th *);
+	char prime_divs(long,Repertoire_t_th *);
 	int principale(int,char *, char *);
 	void *ecriture(void*);
 	void *calcul(void*);
 	void *lecture(void*);
 	int fermer(FILE *, FILE *,int );
-	void imprimer(Repertoire_t *);
+	void imprimer(Repertoire_t_th *);
 #endif
