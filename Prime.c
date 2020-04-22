@@ -76,7 +76,7 @@ Repertoire_t *prime_divs_simple(unsigned long long number, Repertoire_t *tab){
     if (is_prime_simple(number,tab) == 1){
         return arr;}
 
-    for (unsigned long long j = 2; j < number/2; j++){
+    for (unsigned long long j = 2; j < (number/2) +1; j++){
 
         if  ((is_div_simple(number,j)) && (is_prime_simple(j,tab))){
             arr->liste = (unsigned long long int *) realloc(arr->liste, (arr->nbre_elem + 1) * sizeof(unsigned long long));
@@ -87,9 +87,9 @@ Repertoire_t *prime_divs_simple(unsigned long long number, Repertoire_t *tab){
     return arr;
 }
 
-int principale_simple(int N, char *input_file, char *output_file) {
+int principale_simple(char *input_file, char *output_file) {
     /*
-     * pré: input != NULL ; output_file != NULL  N > 0 et peut être NULL et sera alors par défaut = 4
+     * pré: input != NULL ; output_file != NULL  
      * input est un fichier qui contient un élément (int,char,float,...) par ligne
      *
      * post: écris dans chaque ligne de output_file la liste des diviseurs premiers du INT à la ligne correspondante dans
@@ -120,9 +120,6 @@ int principale_simple(int N, char *input_file, char *output_file) {
     rep->nbre_elem = 0;
 
 
-
-
-
     // == DÉBUT == //
     char chaine[50];
     while (fgets(chaine,50,filein) != NULL){ // Je comprend pas pk 'chaine' est considéré comme un pointeur
@@ -138,7 +135,7 @@ int principale_simple(int N, char *input_file, char *output_file) {
             }
             fputc(13,fileout);  // retour à la ligne sous (certains) windows !!!!
             fputc(10,fileout); // retour à la ligne standar (\n)
-            free(divs);  // libère bien le contenu du pointeur ??? XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            free(divs);  // libère bien le contenu du pointeur ??? 
         }
     }
     free(rep);
