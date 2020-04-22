@@ -7,4 +7,4 @@ gcc -c miniscript.c -w -std=gnu9x
 gcc -o minirun Prime.o Prime_thread.o  miniscript.o -w -std=gnu9x -lpthread
 ./minirun
 make clean > /dev/null
-make clean_output
+make clean_output > /dev/null
