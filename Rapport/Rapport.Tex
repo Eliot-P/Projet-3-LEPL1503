@@ -11,6 +11,7 @@
 
 \usepackage{natbib}
 \usepackage{graphicx}
+\usepackage{fourier}
 \begin{document}
 
 \maketitle
@@ -19,12 +20,18 @@
 Les nombres premiers sont des nombres définis comme ayant pour unique diviseur le chiffre 1 et le nombre lui-même. Connus depuis bien longtemps, ils ne cessent de fasciner les mathématiciens. Avec l'apparition d'internet, ils ont été et sont toujours fortement employés dans les systèmes de cryptage.
 
 \section{Choix de conceptions}
-Afin d'implémenter un algorithme efficace, différents choix se présentèrent. Il a été décidé d'utiliser le principe de $mémoïsation$: chaque nombre premier calculé sera stocké dans une structure (nommée $repertoire$) afin d'éviter de devoir calculer plusieurs fois le même nombre premier. Cette même structure sera passée comme argument de la fonction $isprime$ et $primedivs$ afin de considérablement améliorer les performances du programme. Il est important de remarquer que la variable $liste$ de la structure est un tableau dont la taille est celle du nombre d'éléments qu'elle contient. Á chaque nouveau nombre premier, on réaloue dynamiquement de la mémoire afin de pouvoir le stocker. Une alternative aurait été d'alouer une certaine mémoire à la variable et d'en doubler sa taille chaque fois que la capacité maximale est atteinte mais nous avons remarqué après des tests que les deux alternatives étaient totalement identiques d'un point de vue des performances. La 1e solution a donc été retenue afin de ne pas utiliser inutilement de la mémoire. \\
-Ensuite, un double système de $producer - consumer$ a été employé pour implémenter la partie multithreads du programme. Le but étant de maximiser le temps accordé aux threads de calcul (car ce sont eux qui effectuent la partie la plus lente du programme, à savoir calculer les diviseurs premiers de chaque nombre). Concrètement, un premier thread ($lecteur$) est initialisé avec la fonction $lecture$ qui, comme son nom l'indique, est chargée de la lecture du fichier d'entrée. Ce thread est également initialisé avec une structure $lect$ qui contient tout les arguments nécessaires. Cette fonction est le premier $producer$. Elle lit chaque ligne du fichier, la caste en un $unsigned$ $long$ $long$ et place le résultat dans le premier $buffer$ ($tableau1$). Ce $buffer$  est une structure ($entrepot$) dont les noms des variables sont assez explicites pour ne pas être détaillés. La taille du $buffer$  dépend directement du nombre $N$ de thread de calcul utilisés. Il a été décidé que cette taille serait de $\frac{3N}{2}$. Nous avons prévu une marge pour éviter le cas où plusieurs threads de calcul devraient attendre d'avoir de nouveaux nombres à traiter. 
-\\
-Arrivent ensuite les threads
 
-\section{Conclusion}
+\subsection{Optimisation du code de base}
+Afin d'augmenter les performances des fonctions de bases, à savoir $isprime$ et $primedivs$, le principe de mémoïsation a été choisi. Chaque nombre premier trouvé sera stocké dans une seule et même structure de type $Repertoire\_t$ passée en argument à ces fonctions. Cette structure contient une variable $nbre\_elem$ qui compte le nombre de nombre premier contenu dans la varible $liste$. \\ \\
+\danger La taille de la mémoire $liste$ est alloué dynamiquement en ajoutant la mémoire strictement nécessaire pour ajouter chaque élément. Une alternative aurait été de doubler la mémoire chaque fois que celle-ci est remplie afin d'éviter de devoir la modifier à chaque ajout. Après plusieurs tests, il est apparu que les deux choix étaient identiques d'un point de vue performances. La 1e option a donc été retenue afin de minimiser le gaspillage de mémoire. 
+
+\subsection{Multhithreading}
+Pour implémenter un programme concurrent, un système composé d'un double producer-consummer de type $FIFO$ a été choisi. D'une part un premier thread lit le fichier d'entré et place les nombres trouvés dans une structure de type $Entrepot\_th$. Ensuite, les N threads de calculs récupèrent ces nombres, calculent leurs diviseurs premiers et placent à leur tour leur résultat dans une deuxième structure $Entepot\_t$. Enfin, un thread d'écriture récupère et écrit ces résultats dans le fichier de sortie. Le fonctionnement des différentes fonctions est décrit plus en détail dans les sous-sections ci-dessous.\\ \\
+\danger Lorsque l'on crée un thread, il faut lui donner une fonction (sur laquelle il s'exécutera) et \underline{un} seul argument. Étant donné que les fonctions nécessitent plus d'un argument, des structures spécifiques à chaque fonctions ont été créés. Celles-ci contiennent tous les arguments nécessaires.
+
+\subsubsection{Lecture}
+La lecture du fichier se fait via la fonction $lecture$ qui prend comme argument une structure de type $Lecteur\_Th$. Cette fonction joue le rôle du premier producteur. Son fonctionnement est le suivant: tant que le thread n'est pas arrivé à la fin du fichier, il lit chaque ligne et la transforme en un $unsigned long long$. Ensuite, grâce à une sémaphore, il attend une place dans la variable $tableau$ (qui est de taille $2N$ où $N$ est le nombre de thread de calcul).Lorsqu'une place est disponible, il protège l'accès au tableau grâce à un mutex, ajoute le nombre et fait appel à la fonction $sem\_post$ pour prévenir qu'un élément a été ajouté dans le premier tableau.
+Le comportement du thread lorsqu'il arrive à la fin du fichier est expliqué dans la partie communication entre thread.
 
 \bibliographystyle{plain}
 \bibliography{references}
