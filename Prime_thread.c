@@ -427,3 +427,8 @@ int principale(int N, char *input_file, char *output_file) {
 
     return 0;
 }
+/*
+void main(){
+    principale(4,"Input.txt","Output.txt");
+}
+*/

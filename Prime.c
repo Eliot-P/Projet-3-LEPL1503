@@ -157,3 +157,8 @@ void imprimer_simple(Repertoire_t *tab){
         printf("%llu ",tab->liste[i]);
     }
 }
+/*
+void main(){
+    principale_simple("Input.txt","Output.txt");
+}
+*/
