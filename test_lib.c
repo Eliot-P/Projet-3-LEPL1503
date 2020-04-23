@@ -1,5 +1,5 @@
 #include "Prime.h"
-#include "Prime_thread.c"
+//#include "Prime_thread.c"
 #include <pthread.h>
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
@@ -40,7 +40,7 @@ int test_is_prime(){
     pthread_mutex_t mutex;
     unsigned long long p[] = {2, 13, 97, 997, 3456863};
     for (int i = 0; i < 5; i++){
-        CU_ASSERT_TRUE(is_prime(p[i],a,&mutex));
+        CU_ASSERT_TRUE(is_prime_simple(p[i],a));//,&mutex));
     }
     return 0;
 }
@@ -82,7 +82,7 @@ int main (){
     CU_add_test(suite, "is_div_simple Test", test_is_div_simple);
     CU_add_test(suite,"is_prime_simple_test",test_is_prime_simple);
     CU_add_test(suite,"prime_divs_simple_test",test_prime_divs_simple);
-    CU_add_test(suite,"is_prime",test_is_prime);
+    CU_add_test(suite,"test_is_prime",test_is_prime);
     CU_basic_run_tests();
     CU_cleanup_registry();
     return 0;
