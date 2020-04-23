@@ -1,4 +1,6 @@
 #include "Prime.h"
+#include "Prime_thread.c"
+#include <pthread.h>
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 
@@ -32,6 +34,17 @@ int test_is_prime_simple(){
     return 0;
 }
     
+int test_is_prime(){
+     Repertoire_t *a = (Repertoire_t *) malloc(sizeof(struct repertoire));
+    if (a == NULL){ return -1;}
+    pthread_mutex_t mutex;
+    unsigned long long p[] = {2, 13, 97, 997, 3456863};
+    for (int i = 0; i < 5; i++){
+        CU_ASSERT_TRUE(is_prime(p[i],a,&mutex));
+    }
+    return 0;
+}
+
 
 int test_prime_divs_simple(){
     Repertoire_t *test_array = (Repertoire_t *) malloc(sizeof(struct repertoire));
@@ -62,12 +75,14 @@ int test_prime_divs_simple(){
     return 0;
 }
 
+
 int main (){
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("Prime test", 0, 0);
     CU_add_test(suite, "is_div_simple Test", test_is_div_simple);
     CU_add_test(suite,"is_prime_simple_test",test_is_prime_simple);
     CU_add_test(suite,"prime_divs_simple_test",test_prime_divs_simple);
+    CU_add_test(suite,"is_prime",test_is_prime);
     CU_basic_run_tests();
     CU_cleanup_registry();
     return 0;
