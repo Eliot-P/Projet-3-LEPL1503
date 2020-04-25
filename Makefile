@@ -1,7 +1,7 @@
 fact : main.o Prime_thread.o
 	gcc -o fact main.o Prime_thread.o  -w -std=gnu9x -lpthread
 test : test.o Prime_thread.o
-	gcc -o test_lib Prime_thread.o  test_lib.o -w -std=gnu9x -lcunit -lpthread
+	gcc -o test Prime_thread.o  test_lib.o -w -std=gnu9x -lcunit -lpthread
 test.o : test_lib.c Prime_thread.h
 	gcc -c test_lib.c -w -std=gnu9x -lcunit
 main.o : main.c Prime_thread.h

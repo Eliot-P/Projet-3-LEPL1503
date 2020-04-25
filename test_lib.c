@@ -1,5 +1,4 @@
-//#include "Prime.h"
-#include "Prime_thread.c"
+#include "Prime_thread.h"
 #include <pthread.h>
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>

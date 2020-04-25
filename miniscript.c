@@ -27,39 +27,54 @@ double *mini_test(double *time_array){
 	return time_array;
 }
 
-long chrono_simple(){
-    struct timeval chrono;
-    gettimeofday(&chrono, NULL) ;
-    long debut = chrono.tv_usec;
+time_t chrono_simple(){
+    time_t start,end;
+    start = time(NULL);
     principale_simple("Input.txt","Output_thread.txt");
-    gettimeofday(&chrono,NULL);
-    long fin = chrono.tv_usec;
-    return (fin-debut)/1000;
+    end = time(NULL);
+    return (end - start);
 }
-long chrono_thread(){
-    struct timeval chrono;
-    gettimeofday(&chrono, NULL) ;
-    long debut = chrono.tv_usec;
+time_t chrono_thread(){
+    time_t start,end;
+    start = time(NULL);
     principale(4,"Input.txt","Output_thread.txt");
-    gettimeofday(&chrono,NULL);
-    long fin = chrono.tv_usec;
-    return (fin-debut)/1000;
+    end = time(NULL);
+    return (end - start);
 }
 
+double chrono_thread_2(){
+    struct timeval start,end;
+    gettimeofday(&start, NULL) ;
+    principale(4,"Input.txt","Output_thread.txt");
+    gettimeofday(&end,NULL);
+	double time_taken; 
+    time_taken = (end.tv_sec - start.tv_sec) * 1e6; 
+    time_taken = (time_taken + (end.tv_usec -  start.tv_usec)) * 1e-6; 
+    return time_taken;
+}
 
+double chrono_simple_2(){
+    struct timeval start,end;
+    gettimeofday(&start, NULL) ;
+    principale_simple("Input.txt","Output_thread.txt");
+    gettimeofday(&end,NULL);
+	double time_taken; 
+    time_taken = (end.tv_sec - start.tv_sec) * 1e6; 
+    time_taken = (time_taken + (end.tv_usec -  start.tv_usec)) * 1e-6; 
+    return time_taken;
+}
 int main() {
-	
+	/*
 	double time_array[2];
     double * time_ptr = mini_test(time_array);
-	printf("temps mis pour l'execution de l'exemple d'input normal : %f [ms]\n",time_ptr[0]);
-	printf("temps mis pour l'execution de l'exemple d'input avec thread : %f [ms]\n",time_ptr[1]);
-	
-/*
-	long time_thread = chrono_thread();
-	long time_simple = chrono_simple();
-	printf("temps mis pour l'execution de l'exemple d'input normal : %ld [ms]\n",time_simple);
-	printf("temps mis pour l'execution de l'exemple d'input avec thread : %ld [ms]\n",time_thread);
-	return 0;
+	printf("temps mis pour l'execution de l'exemple d'input normal : %ld [ms]\n",time_ptr[0]);
+	printf("temps mis pour l'execution de l'exemple d'input avec thread : %ld [ms]\n",time_ptr[1]);
 	*/
+
+	double time_thread = chrono_thread_2()*1000;
+	double time_simple = chrono_simple_2()*1000;
+	printf("temps mis pour l'execution de l'exemple d'input normal : %f [ms]\n",time_simple);
+	printf("temps mis pour l'execution de l'exemple d'input avec thread : %f [ms]\n",time_thread);
+	return 0;
 	
 }
