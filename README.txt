@@ -3,9 +3,10 @@ Vous trouverez dans ce dossier .zip:
 
 Prime_thread.c : le programme C du projet
 Prime_thread.h : les headers du programme
-Main.c :  la fonction main permettant de lancer le programme
-Main.h : les headers de la fonction main
+main.c :  la fonction main permettant de lancer le programme
 Makefile : le Makefile contenant les commandes demandées
+test_lib.c :  des tests unitaires
+test_lib.h : les headers des tests
 
 ///  Description du programme  \\\
 
