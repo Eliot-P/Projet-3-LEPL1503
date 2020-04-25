@@ -116,7 +116,7 @@ Repertoire_t_th *prime_divs(unsigned long long number, Repertoire_t_th *tab,pthr
      *  pas sa taille et donc il est impossible d'itérer dessus sans avoir d'erreur. Il nous faut une variable qui nous
      *  donne le nombre d'éléments dans le tableau.
      */
-    Repertoire_t_th *arr = (Repertoire_t *) malloc(sizeof(struct repertoire_th));
+    Repertoire_t_th *arr = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
     if (arr == NULL){ return NULL;}
     arr->liste = (unsigned long long *) malloc(sizeof(number));
     if (arr->liste == NULL){ return  NULL;}
