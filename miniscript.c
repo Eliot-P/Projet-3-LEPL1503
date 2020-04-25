@@ -48,15 +48,18 @@ long chrono_thread(){
 
 
 int main() {
-	/*
+	
 	double time_array[2];
     double * time_ptr = mini_test(time_array);
 	printf("temps mis pour l'execution de l'exemple d'input normal : %f [ms]\n",time_ptr[0]);
 	printf("temps mis pour l'execution de l'exemple d'input avec thread : %f [ms]\n",time_ptr[1]);
-	*/
+	
+/*
 	long time_thread = chrono_thread();
 	long time_simple = chrono_simple();
 	printf("temps mis pour l'execution de l'exemple d'input normal : %ld [ms]\n",time_simple);
 	printf("temps mis pour l'execution de l'exemple d'input avec thread : %ld [ms]\n",time_thread);
 	return 0;
+	*/
+	
 }

@@ -42,9 +42,9 @@
 	Entrepot_Th *tabout;   
 }Imprimerie_Th;
 
-	int is_div(int, int);
-	int  is_prime(long, Repertoire_t_th *);
-	char prime_divs(long,Repertoire_t_th *);
+	int is_div(unsigned long long, unsigned long long);
+	int  is_prime(unsigned long long, Repertoire_t_th *,pthread_mutex_t *);
+	Repertoire_t_th *prime_divs(unsigned long long , Repertoire_t_th *,pthread_mutex_t *);
 	int principale(int,char *, char *);
 	void *ecriture(void*);
 	void *calcul(void*);
