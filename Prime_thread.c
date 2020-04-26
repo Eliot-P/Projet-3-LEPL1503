@@ -180,6 +180,11 @@ void *lecture(void* arg){
 }
 
 void *calcul(void* arg) {
+    /*
+     * calcul est une fonction à un seul argument (comme ça on peut employer des threads dessus)
+     * qui calcule les diviseurs premiers d'un entier
+     */
+
     Usine_Th *usine = (Usine_Th *) arg;
 
     while ((fin_de_lecture == 0) || (usine->tabin->nbre != 0)){
