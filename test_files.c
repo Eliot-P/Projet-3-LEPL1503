@@ -14,21 +14,23 @@ double *test(char *argv[],double *time_array){
 	double time_python;
 
 	if (atoi(argv[1])){
-		clock_t t;
-		t = clock();
+    	struct timeval start,end;
+    	gettimeofday(&start, NULL) ;
 		principale_simple("Input.txt","Output_simple.txt");
-		t = clock()-t;
-		time_simple =(((double)t)/CLOCKS_PER_SEC)*1000;
+		gettimeofday(&end,NULL);
+		time_simple = (end.tv_sec - start.tv_sec) * 1e6; 
+		time_simple = (time_simple + (end.tv_usec -  start.tv_usec)) * 1e-6; 
 	}
 	if (!(atoi(argv[1]))){time_simple = -1;}
 
 
 	if (atoi(argv[2])){
-	clock_t t_thread;
-	t_thread = clock();
-	principale(4,"Input.txt","Output_thread.txt");
-	t_thread = clock()-t_thread;
-	time_thread = (((double)t_thread)/CLOCKS_PER_SEC)*1000;
+    	struct timeval start,end;
+    	gettimeofday(&start, NULL) ;
+		principale_simple("Input.txt","Output_simple.txt");
+		gettimeofday(&end,NULL);
+		time_thread = (end.tv_sec - start.tv_sec) * 1e6; 
+		time_thread = (time_thread + (end.tv_usec -  start.tv_usec)) * 1e-6; 
 	}
 	if (!(atoi(argv[2]))){time_thread = -1;}
 
@@ -36,13 +38,14 @@ double *test(char *argv[],double *time_array){
 	if (atoi(argv[3])){
 		Py_Initialize();
 		FILE *py = fopen("prime_divs_template.py","r");
-		clock_t t_python;
-		t_python = clock();
+    	struct timeval start,end;
+    	gettimeofday(&start, NULL) ;
 		PyRun_SimpleFile(py,"prime_divs_template.py");
-		t_python = clock()-t_python;
-		time_python = (((double)t_python)/CLOCKS_PER_SEC)*1000;
+		gettimeofday(&end,NULL);
 		fclose(py);
 		Py_Finalize();
+		time_python = (end.tv_sec - start.tv_sec) * 1e6; 
+		time_python = (time_python + (end.tv_usec -  start.tv_usec)) * 1e-6; 
 	}
 	if (!(atoi(argv[3]))){time_python = -1;}
 
