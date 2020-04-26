@@ -45,8 +45,8 @@ typedef struct lecteur{  //Argument qu'on passe a la fct lecture
 } Lecteur_Th;
 
 typedef struct usine{   // Argument de la fonction calcul
-    Entrepot_Th *tabin;
-    Entrepot_Th *tabout;
+    Entrepot_Th *tabin;    // tableau 1
+    Entrepot_Th *tabout;    // tableau 2
     Repertoire_t_th *rep;  //La structure de la fct primedivs (contient tous les nbre premier)
     pthread_mutex_t *flags[3]; // pour protéger: tableau 1, tableau 2, rep
     sem_t *semaphores[4];   // tab1_empty, tab1_full, tab2_empty, tab2_full
