@@ -3,6 +3,7 @@
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 
+// test de la fonction is_div_simple //
 int test_is_div(){
     CU_ASSERT_TRUE(is_div(2, 2));
     CU_ASSERT_TRUE(is_div(8, 2));
@@ -11,6 +12,7 @@ int test_is_div(){
     return 0;
 }
 
+// test de la fonction is_prime_simple //
 int test_is_prime(){
     Repertoire_t_th *test_struct = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
     if (test_struct == NULL){ return -1;}
@@ -31,7 +33,7 @@ int test_is_prime(){
     return 0;
 }
 
-
+// test de la fonction prime_divs_simple //
 int test_prime_divs(){
     Repertoire_t_th *test_struct = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
     if (test_struct == NULL){ return -1;}

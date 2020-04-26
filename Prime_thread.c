@@ -31,8 +31,8 @@ typedef struct repertoire_th{
 typedef struct entrepot{    // Tableau
     int size;   // Taille du tableau
     int nbre;   // Nombre d'éléments dans le tableau
-    int putindex;
-    int takeindex;
+    int putindex;    // Index de l'endroit ou l'on insère un elem
+    int takeindex;    // Index de l'endroit ou l'on prend un elem
     Repertoire_t_th *buffer;  // On aura un tableau de Repertoire_t
 } Entrepot_Th;
 
@@ -45,8 +45,8 @@ typedef struct lecteur{  //Argument qu'on passe a la fct lecture
 } Lecteur_Th;
 
 typedef struct usine{   // Argument de la fonction calcul
-    Entrepot_Th *tabin;
-    Entrepot_Th *tabout;
+    Entrepot_Th *tabin;    // tableau 1
+    Entrepot_Th *tabout;    // tableau 2
     Repertoire_t_th *rep;  //La structure de la fct primedivs (contient tous les nbre premier)
     pthread_mutex_t *flags[3]; // pour protéger: tableau 1, tableau 2, rep
     sem_t *semaphores[4];   // tab1_empty, tab1_full, tab2_empty, tab2_full
@@ -180,6 +180,10 @@ void *lecture(void* arg){
 }
 
 void *calcul(void* arg) {
+    /*
+     * calcul est une fonction à un seul argument (comme ça on peut employer des threads dessus)
+     * qui calcule les diviseurs premiers d'un entier
+     */
     Usine_Th *usine = (Usine_Th *) arg;
 
     while ((fin_de_lecture == 0) || (usine->tabin->nbre != 0)){
@@ -219,6 +223,10 @@ void *calcul(void* arg) {
 }
 
 void *ecriture(void* arg) {
+    /*
+     * ecriture est une fonction à un seul argument (comme ça on peut employer des threads dessus)
+     * qui écrit les diviseurs premiers d'un entier dans un fichier
+     */
     Imprimerie_Th *impr = (Imprimerie_Th *) arg;
     while ((Threads_de_calculs_finis < (impr->tabout->size)/2) || (impr->tabout->nbre != 0)) {
 
@@ -383,6 +391,8 @@ int principale(int N, char *input_file, char *output_file) {
 
 
     // == FREE == //
+    // libère les blocs de mémoire alloué dynamiquement dans le heap pour éviter les memory leaks //
+    
     free(tableau1->buffer);
     free(tableau1);
 
