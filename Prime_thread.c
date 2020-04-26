@@ -383,6 +383,7 @@ int principale(int N, char *input_file, char *output_file) {
 
 
     // == FREE == //
+    // libère les blocs de mémoire alloué dynamiquement dans le heap pour éviter les memory leaks //
     free(tableau1->buffer);
     free(tableau1);
 
