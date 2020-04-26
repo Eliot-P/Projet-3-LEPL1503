@@ -6,6 +6,8 @@
 #include <semaphore.h>
 #include <sys/time.h>
 
+// Chrono pour mesurer le temps d'execution d'un programme //
+
 double *mini_test(double *time_array){
 
 	double time_simple;
