@@ -31,8 +31,8 @@ typedef struct repertoire_th{
 typedef struct entrepot{    // Tableau
     int size;   // Taille du tableau
     int nbre;   // Nombre d'éléments dans le tableau
-    int putindex;
-    int takeindex;
+    int putindex;    // Index de l'endroit ou l'on insère un elem
+    int takeindex;    // Index de l'endroit ou l'on prend un elem
     Repertoire_t_th *buffer;  // On aura un tableau de Repertoire_t
 } Entrepot_Th;
 
