@@ -15,6 +15,7 @@ Last update: 17:43:53  25/04/2020
 #include <pthread.h>
 #include <semaphore.h>
 #include <time.h>
+#include <sys/time.h>
 // == VARIABLES GLOBALES == //
 
 int fin_de_lecture = 0;
@@ -152,7 +153,7 @@ void *lecture(void* arg){
         sem_wait(lect->semaphores[0]);  // On attend une place vide  > "firstempty"
         pthread_mutex_lock(lect->flag); // bloque le tableau1 pour ajouter l'élément
 
-        free((lect->tableau->buffer[lect->tableau->putindex].liste)); //> parfois ça passe parfois ça bug...
+        //free((lect->tableau->buffer[lect->tableau->putindex].liste)); //> parfois ça passe parfois ça bug...
 
         (lect->tableau->buffer[lect->tableau->putindex]).liste = (unsigned long long *) malloc(sizeof(unsigned long long));
         (lect->tableau->buffer[lect->tableau->putindex]).liste[0] = number;
@@ -392,7 +393,7 @@ int principale(int N, char *input_file, char *output_file) {
 
     // == FREE == //
     // libère les blocs de mémoire alloué dynamiquement dans le heap pour éviter les memory leaks //
-    
+
     free(tableau1->buffer);
     free(tableau1);
 
@@ -419,3 +420,10 @@ int principale(int N, char *input_file, char *output_file) {
 
     return 0;
 }
+
+int exec(int N, char *filename){
+    principale(N,"Input.txt",filename);
+    return 0;
+}
+
+//int main(){principale(4,"Input.txt","Output_thread.txt");}
