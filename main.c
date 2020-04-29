@@ -18,7 +18,7 @@ int main(int argc,char *modes[]) {
         double time_taken; 
         time_taken = (end.tv_sec - start.tv_sec) * 1e6; 
         time_taken = (time_taken + (end.tv_usec -  start.tv_usec)) * 1e-6;
-        printf("%f\n",time_taken*1000);
+        printf("%f\n",time_taken);
     }
     
     else {

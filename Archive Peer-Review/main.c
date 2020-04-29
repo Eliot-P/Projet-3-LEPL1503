@@ -9,7 +9,7 @@ int main(int argc,char *modes[]) {
     //Le nombre de thread optimal peut être changé au début du fichier, à noté que ce nombre est totalement aribitraire
     
     if (strcmp(modes[1],"-N")==0){
-    printf("Ouverture des fichiers %s et %s\nExecution avec %s threads\n",modes[3],modes[4],modes[2]);
+    printf("Ouverture des fichiers %s et %s\nExecution avec %d threads\n",modes[3],modes[4],modes[2]);
     principale(atoi(modes[2]),modes[3],modes[4]);
     }
 
