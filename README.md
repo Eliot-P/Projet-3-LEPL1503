@@ -44,8 +44,7 @@ Nous continuons d'essayer d'améliorer les performances du programme au quotidie
 
 ![Graph](https://raw.githubusercontent.com/Eliot-P/public_png/master/Graph2.png)
 
-En espérant que ce README répondra à\
-vos questions,\
+En espérant que ce README répondra à vos questions,\
 Cordialement,\
 Le groupe Q5.
 
