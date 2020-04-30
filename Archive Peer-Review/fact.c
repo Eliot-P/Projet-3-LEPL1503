@@ -241,7 +241,7 @@ void *ecriture(void* arg) {
 
         //fputc(13,impr->fichierOut); // Que sous windows !!
         fputc('\n',impr->fichierOut);
-        free((resultat.liste));
+        //free((resultat.liste));
     }
     return NULL;
 }
