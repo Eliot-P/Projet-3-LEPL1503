@@ -3,6 +3,7 @@
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 #include <stdlib.h>
+#include <math.h>
 
 int test_is_div(){
     // Test de la fonction is_div

@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <math.h>
 
 
 // == VARIABLES GLOBALES == //
@@ -82,7 +83,7 @@ int  is_prime(unsigned long long number, Repertoire_t_th *tab,pthread_mutex_t *m
         }
     }
 
-    for (unsigned long long i = 2; i < (number/2); i++) {
+    for (unsigned long long i = 2; i < sqrt(number); i++) {
         if (is_div(number, i)){return 0;}
     }
     pthread_mutex_lock(mutex);  // On protège l'accès au répertoire quand on ajoute un nbre premier
@@ -205,6 +206,9 @@ void *calcul(void* arg) {
     }
     pthread_mutex_lock(usine->flags[2]);    // On protège l'accès à la variable globale
     Threads_de_calculs_finis++;
+    if (Threads_de_calculs_finis == (usine->tabout->size)/2){
+        sem_post(usine->semaphores[3]);
+    }
     pthread_mutex_unlock(usine->flags[2]);
 
     return NULL;
@@ -215,6 +219,8 @@ void *ecriture(void* arg) {
     while ((Threads_de_calculs_finis < (impr->tabout->size)/2) || (impr->tabout->nbre != 0)) {
 
         sem_wait(impr->semaphores[1]);  //On attend des élément dans le tableau2: "secondfill"
+        if ((Threads_de_calculs_finis == (impr->tabout->size)/2) && (impr->tabout->nbre == 0)){break;}
+
         pthread_mutex_lock(impr->flag); // On protège le tableau
 
         Repertoire_t_th resultat = impr->tabout->buffer[impr->tabout->takeindex];
@@ -233,7 +239,7 @@ void *ecriture(void* arg) {
             }
         }
 
-        fputc(13,impr->fichierOut); // Que sous windows !!
+        //fputc(13,impr->fichierOut); // Que sous windows !!
         fputc('\n',impr->fichierOut);
         free((resultat.liste));
     }
