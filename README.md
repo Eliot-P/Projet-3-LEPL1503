@@ -52,5 +52,4 @@ Le groupe Q5.
 >**Contacts** **:**
 >
 >Constantin Van Yperzeel
->
 >Eliot Peeters
