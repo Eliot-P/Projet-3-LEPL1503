@@ -10,7 +10,7 @@
 |Prime_thread.h|fichier header de Prime_thread.c|
 |main.c|le fichier main necessaire afin d'exécuter Prime_thread.c|
 |test_lib.c|le code des test unitaires|
-|test_files.c|code permettant de faire des mesure temporelle sur le Prime.c, Prime_thread.c et le code Python original|
+|test_files.c|le code permettant de faire des mesure temporelle sur le Prime.c, Prime_thread.c et le code Python original|
 |Makefile|le makefile afin d executer le code|
 |.gitignore|le fichier permettant d'éviter d'upload des fichiers inutiles sur le git|
 |README.md|le README en markdown|
@@ -26,4 +26,4 @@
 
 ## Comment executer le programme ?
 
-Il y a plusieurs manière d'executer le programme
+Il y a plusieurs manière d'executer le programme et plusieurs script shell disponnible afin de rendre cette execution plus simple
