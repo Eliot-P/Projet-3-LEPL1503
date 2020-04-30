@@ -382,7 +382,7 @@ int principale(int N, char *input_file, char *output_file) {
     if (I != 0){return fermer(filein,fileout,-3);}
 
     int ll = pthread_join(lecteur_th,NULL);
-    if (ll != 0){ fermer(filein,fileout,-3);}
+    if (ll != 0){return fermer(filein,fileout,-3);}
     for (int k = 0; k < N; k++){
         int cc = pthread_join(calcul_th[k],NULL);
         if (cc != 0){return fermer(filein,fileout,-3);}
