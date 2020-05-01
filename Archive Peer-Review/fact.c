@@ -7,45 +7,9 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <math.h>
-//#include "fact.h"
+#include "fact.h"
 
 
-	typedef struct repertoire_th{
-    int nbre_elem;
-    unsigned long long *liste;
-} Repertoire_t_th;
-
-	typedef struct entrepot{
-    int size;
-    int nbre;
-    int putindex;
-    int takeindex;
-    Repertoire_t_th *buffer;
-} Entrepot_Th;
-
-	typedef struct lecteur{
-    char *ligne;
-    FILE *fichier;
-    Entrepot_Th *tableau;
-    pthread_mutex_t *flag;
-    sem_t *semaphores[2];
-} Lecteur_Th;
-
-	typedef struct usine{
-    Entrepot_Th *tabin;
-	Entrepot_Th *tabout;
-	Repertoire_t_th *rep;
-	pthread_mutex_t *flags[3];
-    sem_t *semaphores[4];
-}Usine_Th;
-
-	typedef struct imprimerie{
-    int N; 
-	FILE *fichierOut;   
-    pthread_mutex_t *flag;  
-	sem_t *semaphores[2];   
-	Entrepot_Th *tabout;   
-}Imprimerie_Th;
 // == VARIABLES GLOBALES == //
 int fin_de_lecture = 0;
 int Threads_de_calculs_finis = 0;
