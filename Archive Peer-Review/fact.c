@@ -7,50 +7,12 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <math.h>
+#include "fact.h"
 
 
 // == VARIABLES GLOBALES == //
 int fin_de_lecture = 0;
 int Threads_de_calculs_finis = 0;
-
-// == STRUCTURES == //
-
-// >> quand le type se termine par "Th" c'est que la structure est faite exclusivement pour les threads
-typedef struct repertoire_th{
-    int nbre_elem;
-    unsigned long long *liste;
-} Repertoire_t_th;
-
-typedef struct entrepot{    // Tableau
-    int size;   // Taille du tableau
-    int nbre;   // Nombre d'éléments dans le tableau
-    int putindex;
-    int takeindex;
-    Repertoire_t_th *buffer;  // On aura un tableau de Repertoire_t
-} Entrepot_Th;
-
-typedef struct lecteur{  //Argument qu'on passe a la fct lecture
-    char *ligne;
-    FILE *fichier;
-    Entrepot_Th *tableau;
-    pthread_mutex_t *flag;  // mutex pour protéger la tableau 1
-    sem_t *semaphores[2]; // tab1_empty, tab1_full
-} Lecteur_Th;
-
-typedef struct usine{   // Argument de la fonction calcul
-    Entrepot_Th *tabin;
-    Entrepot_Th *tabout;
-    Repertoire_t_th *rep;  //La structure de la fct primedivs (contient tous les nbre premier)
-    pthread_mutex_t *flags[3]; // pour protéger: tableau 1, tableau 2, rep
-    sem_t *semaphores[4];   // tab1_empty, tab1_full, tab2_empty, tab2_full
-}Usine_Th;
-
-typedef struct imprimerie{  // Argument de la fonction écriture
-    FILE *fichierOut;
-    pthread_mutex_t *flag;  // Mutex pour protéger tabout
-    sem_t *semaphores[2];   // tab2_empty, tab2_full
-    Entrepot_Th *tabout;    // tableau 2
-}Imprimerie_Th;
 
 
 // == ACCESSIBILITÉ == //
