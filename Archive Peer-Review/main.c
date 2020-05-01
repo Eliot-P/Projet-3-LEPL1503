@@ -31,6 +31,6 @@ int main(int argc,char* modes[]) {
     double temps = (fin.tv_sec - start.tv_sec) * 1e6;  // temps en [ms]
     temps = (temps + (fin.tv_usec - start.tv_usec)) * 1e-6;
     printf("Memory usage = %ld kBytes\n",r_usage.ru_maxrss);
-    printf("Temps d'exécution = %f [s]\n", temps);
+    printf("Temps d'exécution = %f [ms]\n", temps*1000);
     return 0;
 }
