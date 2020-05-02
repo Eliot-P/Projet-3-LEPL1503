@@ -31,7 +31,7 @@ int is_div(unsigned long long number, unsigned long long i){  // True si i divis
 
 int  is_prime(unsigned long long number, Repertoire_t_th *tab,pthread_mutex_t *mutex){
     /*
-     * retourne 1 si number est un nombre premie, retourne 0 si le nombre n'est pas premier et -1 en cas d'erreur     *
+     * retourne 1 si number est un nombre premier, retourne 0 si le nombre n'est pas premier et -1 en cas d'erreur     *
      * La fonction procède de la sorte:
      *      - 1) Elle vérifie si number est divisible par un des nbre premiers contenu dans tab->liste
      *      - 2) Si aucun nbre  premier divise number, on va vérifier si number en est un en appliquant la définition
