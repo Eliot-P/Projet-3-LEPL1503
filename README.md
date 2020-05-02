@@ -66,6 +66,11 @@ Nous continuons d'essayer d'améliorer les performances du programme au quotidie
 
 ![Graph](https://raw.githubusercontent.com/Eliot-P/public_png/master/Graph2.png)
 
+Loi de Amdahl fixe une limite théorique sur le gain que l’on peut obtenir en parallélisant un programme :
+Gain qui peut être obtenu de la parallélisation = 1/[(1-f)+f/N]. Avec f, la fraction du programme qui est parallélisable, et N, le nombre de threads.
+
+Selon cette loi et le grafique ci-dessus, 15% de notre programme est parallélisable. Attention cette loi est considérée comme un maximum théorique qui est difficile d’atteindre. Elle suppose que la parallélisation est parfaite, c’est-à-dire que la création et la terminaison de threads n’ont pas de coût en terme de performance. En pratique donc plus de 15% de notre code est parallélisable.
+
 En espérant que ce README répondra à vos questions,\
 Cordialement,\
 Le groupe Q5.
