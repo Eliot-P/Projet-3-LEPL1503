@@ -69,7 +69,8 @@ Nous continuons d'essayer d'améliorer les performances du programme au quotidie
 Loi de Amdahl fixe une limite théorique sur le gain que l’on peut obtenir en parallélisant un programme :
 - Gain qui peut être obtenu de la parallélisation = 1/[(1-f)+f/N]. Avec f, la fraction du programme qui est parallélisable, et N, le nombre de threads.
 
-Selon cette loi et le grafique ci-dessus, 15% de notre programme est parallélisable. Attention cette loi est considérée comme un maximum théorique qui est difficile d’atteindre. Elle suppose que la parallélisation est parfaite, c’est-à-dire que la création et la terminaison de threads n’ont pas de coût en terme de performance. En pratique donc plus de 15% de notre code est parallélisable.
+La fraction de notre programme qui est parallélisable f est 90%. Celle-ci est déduit en fonction du temps d'exécution du thread de lecture jusqu'au join du thread d'écriture sur le temps d'exécution total du programme.
+Attention cette loi est considérée comme un maximum théorique qui est difficile d’atteindre. Elle suppose que la parallélisation est parfaite, c’est-à-dire que la création et la terminaison de threads n’ont pas de coût en terme de performance. En pratique, c'est loin d'être le cas.
 
 En espérant que ce README répondra à vos questions,\
 Cordialement,\
