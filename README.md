@@ -26,15 +26,15 @@
 
 ## Déscription du programme 
 
-L'architecture employée est un double producer - consummer. Les tableaux servant à stocker les lignes du fichier/leur diviseurs premiers sont des structures de types "entrepots" qui contiennent différentes variables suffisamment explicites.
-Il est important de remarquer que les tableaux ne sont pas des tableaux de unsigned long long mais bien des tableaux de structure "repertoire".
+Le programme réalisé est un programme écrit en C, avec du multithreading. Celui-ci prend en entrée un fichier contenant une liste d'entier (ligne par ligne), et renvoie dans le fichier de sortie ces entiers suivis de leurs diviseurs premiers (ligne par ligne).
+L'architecture employée est un double producer - consummer. Les tableaux servant à stocker les lignes du fichier/leur diviseurs premiers sont des structures de types "entrepots" qui contiennent différentes variables suffisamment explicites. Il est important de remarquer que les tableaux ne sont pas des tableaux de unsigned long long mais bien des tableaux de structure "repertoire".
 3 types de threads sont utilisés:
 
 - 1 thread de lecture associé à la fonction "lecture" qui s'occupe de lire les lignes du fichier et de mettre les résultats dans le premier tableau
-- N threads de calculs associé à la fonction "calcul", qui prend un nombre dans le premier tableau, calcule ses diviseurs premier et stocke le résultat dans le 2e tableau (toujours sous la forme d'une structure de type "Repertoire_th"
+- N threads de calculs associé à la fonction "calcul", qui prend un nombre dans le premier tableau, calcule ses diviseurs premiers et stocke le résultat dans le 2e tableau (toujours sous la forme d'une structure de type "Repertoire_th")
 - 1 thread d'écriture associé à la fonction "écriture" qui se charge de prendre les résultats du 2e tableau et de les écrire dans le fichier de sortie
 
-De manière générale le code contient des commentaires permettant de mieux comprendre son fonctionnement .
+De manière générale le code contient des commentaires permettant de mieux comprendre son fonctionnement.
 
 ## Comment executer le programme ?
 
