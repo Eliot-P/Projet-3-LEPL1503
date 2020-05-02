@@ -36,6 +36,16 @@ L'architecture employée est un double producer - consummer. Les tableaux servan
 
 De manière générale le code contient des commentaires permettant de mieux comprendre son fonctionnement.
 
+## Déscription des fonctions principales
+
+- La fonction is_div : Retourne True si i divise number, sinon False.
+- La fonction is_prime : Retourne 1 si number est un nombre premier, retourne 0 si le nombre n'est pas premier et -1 en cas d'erreur.
+- La fonction prime_divs : Retourne un pointeur vers une structure Reperetoire_t contenant une liste de tout les diviseurs premiers de number et le nombre de diviseurs ou NULL pour une erreur de malloc.
+- La fonction principale : Écrit dans chaque ligne de output_file la liste des diviseurs premiers du int à la ligne correspondante dans input. Si jamais l'élément n'est pas un int, écrit une erreur.
+- La fonction lecture : Lit la ligne, et place dans le lect->buffer le résultat.
+- La fonction calcul : Calcul les diviseurs premiers d’un entier dans buffer.
+- La fonction ecriture : Écrit l’entier suivi de ses diviseurs premiers dans le fichier de sortie.
+
 ## Comment executer le programme ?
 
 Il y a plusieurs manière d'executer le programme et plusieurs script shell disponnible afin de rendre cette execution plus simple. Afin d'executer les scripts shell, il est nessecaire de d'abord autoriser ces scripts si il s'agit de leur première execution avec la commande suivante dans le terminal Linux :
