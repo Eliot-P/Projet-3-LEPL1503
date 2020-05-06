@@ -15,7 +15,7 @@ clean :
 	rm -rf fact
 
 val: fact
-	valgrind --tool=memcheck --leak-check=yes ./fact -N 8 Input.txt Output.txt
+	valgrind --tool=memcheck --leak-check=yes ./fact -N 4 Input.txt Output.txt
 
 run: fact
-	./fact -N 8 Input.txt Output.txt
+	./fact -N 4 Input.txt Output.txt
