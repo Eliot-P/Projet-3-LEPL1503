@@ -4,13 +4,13 @@ Vous trouverez dans ce dossier .zip:
 fact.c : le programme C du projet
 fact.h : les headers du programme
 main.c :  la fonction main permettant de lancer le programme
-Makefile : le Makefile contenant les commandes demand�es
+Makefile : le Makefile contenant les commandes demandées
 test.c :  des tests unitaires
 
 ///  Description du programme  \\\
 
 L'architecture employée est un double producer - consummer. Les tableaux servant à stocker les lignes du fichier/leur diviseurs premiers sont des structures de types "entrepots" qui contiennent différentes varibales suffisamment explicites. Il est important de remarquer que les tableaux ne sont pas des tableaux de unisgned long long mais bien des tableaux de structure "repertoire". 
-3 types de threads sont utilis�s: 
+3 types de threads sont utilisés: 
 
 - 1 thread de lecture associé à la fonction "lecture" qui s'occupe de lire les lignes du fichier et de mettre les r�sultats dans le premier tableau;
 
