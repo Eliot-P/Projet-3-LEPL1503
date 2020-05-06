@@ -12,7 +12,7 @@ test.c :  des tests unitaires
 L'architecture employée est un double producer - consummer. Les tableaux servant à stocker les lignes du fichier/leur diviseurs premiers sont des structures de types "entrepots" qui contiennent différentes varibales suffisamment explicites. Il est important de remarquer que les tableaux ne sont pas des tableaux de unisgned long long mais bien des tableaux de structure "repertoire". 
 3 types de threads sont utilisés: 
 
-- 1 thread de lecture associé à la fonction "lecture" qui s'occupe de lire les lignes du fichier et de mettre les r�sultats dans le premier tableau;
+- 1 thread de lecture associé à la fonction "lecture" qui s'occupe de lire les lignes du fichier et de mettre les résultats dans le premier tableau;
 
 - N threads de calculs associé à la fonction "calcul",  qui prend un nombre dans le premier tableau, calcule ses diviseurs premier et stocke   le résultat dans le 2e tableau (toujours sous la forme d'une structure de type "Repertoire_th";
 
