@@ -122,13 +122,6 @@ void *lecture(void* arg){
 
     for (int i = 0; i < (lect->tableau->size)/2; i++){
         sem_wait(lect->semaphores[0]);  // On attend une place vide
-        pthread_mutex_lock(lect->flag); // bloque le tableau1 pour ajouter l'élément
-
-        (lect->tableau->buffer[lect->tableau->putindex]).nbre_elem = -1;
-        lect->tableau->putindex = (lect->tableau->putindex + 1) % lect->tableau->size;
-        lect->tableau->nbre++;
-
-        pthread_mutex_unlock(lect->flag);
         sem_post(lect->semaphores[1]);  //On 'ajoute' un élément donc on réveille les "firstfill"
     }
     return NULL;
@@ -140,19 +133,16 @@ void *calcul(void* arg) {
     while ((fin_de_lecture == 0) || (usine->tabin->nbre != 0)){
 
         sem_wait(usine->semaphores[1]);  //Attend d'avoir des éléments à prendre > 'firstfill'
+        
+        if ((fin_de_lecture != 0) && (usine->tabin->nbre == 0)){break;}
+        
         pthread_mutex_lock(usine->flags[0]);
-
         Repertoire_t_th entree = usine->tabin->buffer[usine->tabin->takeindex];
         usine->tabin->takeindex = (usine->tabin->takeindex + 1) % usine->tabin->size;
         usine->tabin->nbre--;
 
         pthread_mutex_unlock(usine->flags[0]);
         sem_post(usine->semaphores[0]); // signale aux "firstempty" qu'on a pris un élément
-
-        if (entree.nbre_elem == -1){
-            free(entree.liste);
-            break;}  // Condition d'arrêt
-
         Repertoire_t_th *resultat = prime_divs(entree.liste[0], usine->rep, usine->flags[2]);
         //free(entree.liste); > ça fait bugger !
 
@@ -201,7 +191,6 @@ void *ecriture(void* arg) {
             }
         }
 
-        //fputc(13,impr->fichierOut); // Que sous windows !!
         fputc('\n',impr->fichierOut);
         //free((resultat.liste));
     }
