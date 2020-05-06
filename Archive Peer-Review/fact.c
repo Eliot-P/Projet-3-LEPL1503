@@ -104,16 +104,18 @@ void *lecture(void* arg){
     while (fgets(lect->ligne,30,lect->fichier) != NULL) {
         unsigned long long number = atol(lect->ligne);
 
+        
         sem_wait(lect->semaphores[0]);  // On attend une place vide  > "firstempty"
         pthread_mutex_lock(lect->flag); // bloque le tableau1 pour ajouter l'élément
 
-        free((lect->tableau->buffer[lect->tableau->putindex].liste)); //> parfois ça passe parfois ça bug...
+        Entrepot_Th *tab = lect->tableau;
+        free((tab->buffer[tab->putindex].liste)); //> parfois ça passe parfois ça bug...
 
-        (lect->tableau->buffer[lect->tableau->putindex]).liste = (unsigned long long *) malloc(sizeof(unsigned long long));
-        (lect->tableau->buffer[lect->tableau->putindex]).liste[0] = number;
-        (lect->tableau->buffer[lect->tableau->putindex]).nbre_elem = 1;
-        lect->tableau->putindex = (lect->tableau->putindex + 1) % lect->tableau->size;
-        lect->tableau->nbre++;
+        (tab->buffer[tab->putindex]).liste = (unsigned long long *) malloc(sizeof(unsigned long long));
+        (tab->buffer[tab->putindex]).liste[0] = number;
+        (tab->buffer[tab->putindex]).nbre_elem = 1;
+        tab->putindex = (tab->putindex + 1) % tab->size;
+        tab->nbre++;
 
         pthread_mutex_unlock(lect->flag);
         sem_post(lect->semaphores[1]);  //On ajoute un élément donc on réveille les "firstfill"
@@ -137,21 +139,25 @@ void *calcul(void* arg) {
         if ((fin_de_lecture != 0) && (usine->tabin->nbre == 0)){break;}
         
         pthread_mutex_lock(usine->flags[0]);
-        Repertoire_t_th entree = usine->tabin->buffer[usine->tabin->takeindex];
-        usine->tabin->takeindex = (usine->tabin->takeindex + 1) % usine->tabin->size;
-        usine->tabin->nbre--;
+        
+        Entrepot_Th *tab1 = usine->tabin;
+        Repertoire_t_th entree = tab1->buffer[tab1->takeindex];
+        tab1->takeindex = (tab1->takeindex + 1) % tab1->size;
+        tab1->nbre--;
 
         pthread_mutex_unlock(usine->flags[0]);
         sem_post(usine->semaphores[0]); // signale aux "firstempty" qu'on a pris un élément
+
         Repertoire_t_th *resultat = prime_divs(entree.liste[0], usine->rep, usine->flags[2]);
         //free(entree.liste); > ça fait bugger !
 
         sem_wait(usine->semaphores[2]);  //Attend "secondempty"  >> une place vide ds le 2e tableau
         pthread_mutex_lock(usine->flags[1]);    // Protège le 2e tableau
-
-        usine->tabout->buffer[usine->tabout->putindex] = *resultat;
-        usine->tabout->putindex = (usine->tabout->putindex + 1) % usine->tabout->size;
-        usine->tabout->nbre++;
+        
+        Entrepot_Th *tab2 = usine->tabout;
+        tab2->buffer[tab2->putindex] = *resultat;
+        tab2->putindex = (tab2->putindex + 1) % tab2->size;
+        tab2->nbre++;
 
         pthread_mutex_unlock(usine->flags[1]);
         sem_post(usine->semaphores[3]); //On réveille les "secondfill" car on a ajouté un élément
@@ -343,7 +349,16 @@ int principale(int N, char *input_file, char *output_file) {
     free(imp);
 
     // == FERMETURE == //
-
+    
+    pthread_mutex_destroy(&firstmutex);
+    pthread_mutex_destroy(&secondmutex);
+    pthread_mutex_destroy(&thirdmutex);
+    
+    sem_destroy(&firstempty);
+    sem_destroy(&firstfill);
+    sem_destroy(&secondemtpy);
+    sem_destroy(&secondfill);
+    
     int x = fclose(filein);
     if (x != 0){
         fclose(fileout);

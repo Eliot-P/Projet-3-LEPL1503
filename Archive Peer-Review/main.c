@@ -11,10 +11,11 @@
 int main(int argc,char* modes[]) {
     //Lecture du mode d'execution (pour savoir si le nombre de thread est spécifié ou pas)
     //Le nombre de thread optimal peut être changé au début du fichier, à noté que ce nombre est totalement aribitraire
-    int nbre_thread_opti = 4;    
+    int nbre_thread_opti = 4;   
+    int ok; 
+    
     struct timeval start, fin;
     gettimeofday(&start, NULL);
-    int ok;
     if (strcmp(modes[1],"-N")==0){
     printf("Execution avec %i threads\n",atoi(modes[2]));
     ok = principale(atoi(modes[2]),modes[3],modes[4]);
@@ -30,8 +31,15 @@ int main(int argc,char* modes[]) {
     gettimeofday(&fin, NULL);
     double temps = (fin.tv_sec - start.tv_sec) * 1e6;  // temps en [ms]
     temps = (temps + (fin.tv_usec - start.tv_usec)) * 1e-6;
-    printf("Valeur de retour : %i.\n",ok);
-    printf("Memory usage = %ld kBytes\n",r_usage.ru_maxrss);
+    
+    printf("Valeur de retour : %i",ok);
+    if (ok == -1){printf(" -> erreur à l'ouverture.");}
+    if (ok == -2){ printf(" -> erreur causée par un malloc.");}
+    if (ok == -3){printf(" -> erreur lors de la création d'un thread.");}
+    if (ok == -4){printf(" -> erreur lors de la fermeture.");}
+    printf("\n");
+    
+    printf("Mémoire utilisée = %ld kBytes\n",r_usage.ru_maxrss);
     printf("Temps d'exécution = %f [ms]\n", temps*1000);
     return 0;
 }
