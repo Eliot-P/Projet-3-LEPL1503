@@ -29,7 +29,7 @@ int main(int argc,char* modes[]) {
     struct rusage r_usage;
     getrusage(RUSAGE_SELF,&r_usage);
     gettimeofday(&fin, NULL);
-    double temps = (fin.tv_sec - start.tv_sec) * 1e6;  // temps en [ms]
+    double temps = (fin.tv_sec - start.tv_sec) * 1e6;  // temps en [s]
     temps = (temps + (fin.tv_usec - start.tv_usec)) * 1e-6;
     
     printf("Valeur de retour : %i",ok);
@@ -40,6 +40,6 @@ int main(int argc,char* modes[]) {
     printf("\n");
     
     printf("Mémoire utilisée = %ld kBytes\n",r_usage.ru_maxrss);
-    printf("Temps d'exécution = %f [ms]\n", temps*1000);
+    printf("Temps d'exécution = %f [s]\n", temps);
     return 0;
 }
