@@ -102,6 +102,51 @@ Repertoire_t_th *prime_divs(unsigned long long number, Repertoire_t_th *tab,pthr
     return arr;
 }
 
+int AppendNumber(unsigned long long number, Repertoire_t_th *rep){
+    rep->liste = (unsigned long long *) realloc(rep->liste,(rep->nbre_elem + 1)*sizeof(unsigned long long));
+    if (rep->liste == NULL){
+        free(rep->liste);
+        free(rep);
+        return -1;
+    }
+    rep->liste[rep->nbre_elem++] = number;
+    return 0;
+}
+
+Repertoire_t_th *prime_divs_opti(unsigned long long number,Repertoire_t_th *rep, pthread_mutex_t *mutex){
+    Repertoire_t_th *arr = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
+    if (arr == NULL){return NULL;}
+    
+    arr->liste = (unsigned long long *) malloc(sizeof(number));
+    if (arr->liste == NULL){ 
+        free(arr);
+        return  NULL;}
+
+    arr->nbre_elem = 0;
+    arr->liste[arr->nbre_elem++] = number;
+    if (number < 2){ return arr;}
+    
+    for (unsigned long long i = 2; i < (number/2) +1; i++){
+        if (is_div(number,i)==1){
+            int premier = 0;
+            for (unsigned long long j = 0; j < arr->nbre_elem; j++){
+                if (i % arr->liste[j] == 0){
+                    premier++;
+                    break;
+                }
+            }
+            if (premier == 0){
+                if (AppendNumber(i,arr) == -1){return NULL;}
+                pthread_mutex_lock(mutex);
+                int a = AppendNumber(i,rep);
+                pthread_mutex_unlock(mutex);
+                if (a == -1){return NULL;}
+            }
+        }
+    }
+    return arr;
+}
+
 ///== FONCTIONS PROPRES AUX BUFFERS ==\\\
 
 void putNumber(Entrepot_Th *tab,int number){
@@ -134,7 +179,7 @@ void *lecture(void* arg){
      */
     Lecteur_Th *lect =  (Lecteur_Th *) arg;
     while (fgets(lect->ligne,30,lect->fichier) != NULL) {
-        unsigned long long number = atol(lect->ligne);
+        unsigned long long number = atoll(lect->ligne);
         
         sem_wait(lect->semaphores[0]);  // On attend une place vide  > "firstempty"
         pthread_mutex_lock(lect->flag); // bloque le tableau1 pour ajouter l'élément
@@ -166,8 +211,7 @@ void *calcul(void* arg) {
         Repertoire_t_th entree = takeRepertoire(usine->tabin);
         pthread_mutex_unlock(usine->flags[0]);
         sem_post(usine->semaphores[0]); // signale aux "firstempty" qu'on a pris un élément
-
-        Repertoire_t_th *resultat = prime_divs(entree.liste[0], usine->rep, usine->flags[2]);
+        Repertoire_t_th *resultat = prime_divs_opti(entree.liste[0], usine->rep, usine->flags[2]);
 
         sem_wait(usine->semaphores[2]);  //Attend "secondempty"  >> une place vide ds le 2e tableau
         pthread_mutex_lock(usine->flags[1]);    // Protège le 2e tableau
@@ -203,7 +247,7 @@ void *ecriture(void* arg) {
             fprintf(impr->fichierOut, "Erreur: %lld est inférieur à 2 !", resultat.liste[0]);}
 
         else {
-            for (int i = 0; i < resultat.nbre_elem; i++) {fprintf(impr->fichierOut, "%lld ", resultat.liste[i]);}
+            for (int i = 0; i < resultat.nbre_elem; i++) {fprintf(impr->fichierOut, "%lld", resultat.liste[i]);}
         }
         fputc('\n',impr->fichierOut);
     }

@@ -46,6 +46,8 @@
 	int is_div(unsigned long long, unsigned long long);
 	int  is_prime(unsigned long long, Repertoire_t_th *,pthread_mutex_t *);
 	Repertoire_t_th *prime_divs(unsigned long long , Repertoire_t_th *,pthread_mutex_t *);
+	Repertoire_t_th *prime_divs_opti(unsigned long long , Repertoire_t_th *,pthread_mutex_t *);
+	int AppendNumber(unsigned long long, Repertoire_t_th *);
 	int principale(int,char *, char *);
 	void *ecriture(void*);
 	void *calcul(void*);
