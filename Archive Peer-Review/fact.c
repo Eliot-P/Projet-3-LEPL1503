@@ -115,7 +115,9 @@ int AppendNumber(unsigned long long number, Repertoire_t_th *rep){
 
 Repertoire_t_th *prime_divs_opti(unsigned long long number,Repertoire_t_th *rep, pthread_mutex_t *mutex){
     Repertoire_t_th *arr = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
-    if (arr == NULL){return NULL;}
+    if (arr == NULL){
+        free(arr);
+        return NULL;}
     
     arr->liste = (unsigned long long *) malloc(sizeof(number));
     if (arr->liste == NULL){ 
@@ -137,8 +139,27 @@ Repertoire_t_th *prime_divs_opti(unsigned long long number,Repertoire_t_th *rep,
             }
             if (premier == 0){
                 if (AppendNumber(i,arr) == -1){return NULL;}
+            }
+        }
+    }
+    if (arr->nbre_elem == 1){
+        pthread_mutex_lock(mutex);
+        int a = AppendNumber(arr->liste[0],rep);
+        pthread_mutex_unlock(mutex);
+        if (a == -1){return NULL;}
+    }
+    else{
+        for (int i = 1; i < arr->nbre_elem; i++){
+            int add = 0;
+            for (int j = 0; j < rep->nbre_elem; j++){
+                if (arr->liste[i] == rep->liste[j]){
+                    add++;
+                    break;
+                }
+            }
+            if (add == 0){
                 pthread_mutex_lock(mutex);
-                int a = AppendNumber(i,rep);
+                int a = AppendNumber(arr->liste[i],rep);
                 pthread_mutex_unlock(mutex);
                 if (a == -1){return NULL;}
             }
@@ -149,8 +170,8 @@ Repertoire_t_th *prime_divs_opti(unsigned long long number,Repertoire_t_th *rep,
 
 ///== FONCTIONS PROPRES AUX BUFFERS ==\\\
 
-void putNumber(Entrepot_Th *tab,int number){
-    free((tab->buffer[tab->putindex].liste));
+void putNumber(Entrepot_Th *tab,unsigned long long number){
+    //free((tab->buffer[tab->putindex].liste));
     (tab->buffer[tab->putindex]).liste = (unsigned long long *) malloc(sizeof(unsigned long long));
     (tab->buffer[tab->putindex]).liste[0] = number;
     (tab->buffer[tab->putindex]).nbre_elem = 1;
@@ -159,7 +180,6 @@ void putNumber(Entrepot_Th *tab,int number){
 }
 
 void putRepertoire(Repertoire_t_th *rep,Entrepot_Th *tab){
-    free(tab->buffer[tab->putindex].liste);
     tab->buffer[tab->putindex] = *rep;
     tab->putindex = (tab->putindex + 1) % tab->size;
     tab->nbre++;
@@ -180,7 +200,6 @@ void *lecture(void* arg){
     Lecteur_Th *lect =  (Lecteur_Th *) arg;
     while (fgets(lect->ligne,30,lect->fichier) != NULL) {
         unsigned long long number = atoll(lect->ligne);
-        
         sem_wait(lect->semaphores[0]);  // On attend une place vide  > "firstempty"
         pthread_mutex_lock(lect->flag); // bloque le tableau1 pour ajouter l'élément
     
@@ -211,13 +230,16 @@ void *calcul(void* arg) {
         Repertoire_t_th entree = takeRepertoire(usine->tabin);
         pthread_mutex_unlock(usine->flags[0]);
         sem_post(usine->semaphores[0]); // signale aux "firstempty" qu'on a pris un élément
-        Repertoire_t_th *resultat = prime_divs_opti(entree.liste[0], usine->rep, usine->flags[2]);
+        
+        Repertoire_t_th *resultat = prime_divs(entree.liste[0], usine->rep, usine->flags[2]);
 
         sem_wait(usine->semaphores[2]);  //Attend "secondempty"  >> une place vide ds le 2e tableau
         pthread_mutex_lock(usine->flags[1]);    // Protège le 2e tableau
         putRepertoire(resultat,usine->tabout);
         pthread_mutex_unlock(usine->flags[1]);
         sem_post(usine->semaphores[3]); //On réveille les "secondfill" car on a ajouté un élément
+        
+        free(entree.liste);
         free(resultat);
     }
 
@@ -225,12 +247,12 @@ void *calcul(void* arg) {
     Threads_de_calculs_finis++;
     if (Threads_de_calculs_finis == (usine->tabout->size)/2){sem_post(usine->semaphores[3]);}
     pthread_mutex_unlock(usine->flags[2]);
-
     return NULL;
 }
 
 void *ecriture(void* arg) {
     Imprimerie_Th *impr = (Imprimerie_Th *) arg;
+    Repertoire_t_th resultat;
     while ((Threads_de_calculs_finis < (impr->tabout->size)/2) || (impr->tabout->nbre != 0)) {
 
         sem_wait(impr->semaphores[1]);  //On attend des élément dans le tableau2: "secondfill"
@@ -238,7 +260,7 @@ void *ecriture(void* arg) {
 
         pthread_mutex_lock(impr->flag); // On protège le tableau
 
-        Repertoire_t_th resultat = takeRepertoire(impr->tabout); 
+        resultat = takeRepertoire(impr->tabout); 
 
         pthread_mutex_unlock(impr->flag);
         sem_post(impr->semaphores[0]);  //On réveille les "secondempty" car on a pris un élément
@@ -247,9 +269,11 @@ void *ecriture(void* arg) {
             fprintf(impr->fichierOut, "Erreur: %lld est inférieur à 2 !", resultat.liste[0]);}
 
         else {
-            for (int i = 0; i < resultat.nbre_elem; i++) {fprintf(impr->fichierOut, "%lld", resultat.liste[i]);}
+            for (int i = 0; i < resultat.nbre_elem; i++) {
+                fprintf(impr->fichierOut, "%lld ", resultat.liste[i]);}
         }
         fputc('\n',impr->fichierOut);
+        free(resultat.liste);
     }
     return NULL;
 }
@@ -421,7 +445,6 @@ int principale(int N, char *input_file, char *output_file) {
     // == FREE == //
     free(tableau1->buffer);
     free(tableau1);
-
     free(tableau2->buffer);
     free(tableau2);
 
