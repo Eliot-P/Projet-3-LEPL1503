@@ -80,17 +80,19 @@ int test_prime_divs(){
 }
 
 int test_output(){
+    //fichier d'entrée
     FILE *input_test= fopen("./fichiers_test/input_test.txt","r");
     if (input_test == NULL){return -1;}
+    //fichier à comparer avec la sortie
     FILE *output_test= fopen("./fichiers_test/output_test.txt","r");
     if (output_test == NULL){return -1;}
-
+    //création du fichier output
     principale(4, "./fichiers_test/input_test.txt", "./fichiers_test/output.txt");
     FILE *output= fopen("./fichiers_test/output.txt","r");
     if (output == NULL){return -1;}
     char line[30];
     char line_test[30];
-
+    //comparaison entre les deux fichiers
     while(fgets(line, 30, output) != NULL){
         fgets(line_test, 30, output_test);
         CU_ASSERT_EQUAL(*line, *line_test);
@@ -103,7 +105,7 @@ int main(){
     CU_pSuite suite = CU_add_suite("Prime test", 0, 0);
     CU_add_test(suite, "is_div Test", test_is_div);
     CU_add_test(suite,"is_prime_test",test_is_prime);
-    //CU_add_test(suite,"prime_divs_test",test_prime_divs);
+    CU_add_test(suite,"prime_divs_test",test_prime_divs);
     CU_add_test(suite,"test_output", test_output);
     CU_basic_run_tests();
     CU_cleanup_registry();
