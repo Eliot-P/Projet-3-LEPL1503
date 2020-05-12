@@ -54,6 +54,11 @@
     <property name="cf.first.check.clang-format" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/fichiers test" />
+    </key>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -64,7 +69,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1589310748976</updated>
-      <workItem from="1589310752469" duration="3977000" />
+      <workItem from="1589310752469" duration="7686000" />
     </task>
     <servers />
   </component>
@@ -83,9 +88,9 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
-    <state x="683" y="289" width="543" height="406" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1589314255079">
+    <state x="683" y="289" width="582" height="406" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1589318450750">
       <screen x="0" y="27" width="1920" height="923" />
     </state>
-    <state x="683" y="289" width="543" height="406" key="#com.intellij.fileTypes.FileTypeChooser/0.27.1920.923@0.27.1920.923" timestamp="1589314255079" />
+    <state x="683" y="289" width="582" height="406" key="#com.intellij.fileTypes.FileTypeChooser/0.27.1920.923@0.27.1920.923" timestamp="1589318450750" />
   </component>
 </project>
