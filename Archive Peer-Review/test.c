@@ -79,13 +79,32 @@ int test_prime_divs(){
     return 0;
 }
 
+int test_output(){
+    FILE *input_test= fopen("./fichiers_test/input_test.txt","r");
+    if (input_test == NULL){return -1;}
+    FILE *output_test= fopen("./fichiers_test/output_test.txt","r");
+    if (output_test == NULL){return -1;}
 
-int main (){
+    principale(4, "./fichiers_test/input_test.txt", "./fichiers_test/output.txt");
+    FILE *output= fopen("./fichiers_test/output.txt","r");
+    if (output == NULL){return -1;}
+    char line[30];
+    char line_test[30];
+
+    while(fgets(line, 30, output) != NULL){
+        fgets(line_test, 30, output_test);
+        CU_ASSERT_EQUAL(*line, *line_test);
+    }
+    return 0;
+}
+
+int main(){
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("Prime test", 0, 0);
     CU_add_test(suite, "is_div Test", test_is_div);
     CU_add_test(suite,"is_prime_test",test_is_prime);
-    CU_add_test(suite,"prime_divs_test",test_prime_divs);
+    //CU_add_test(suite,"prime_divs_test",test_prime_divs);
+    CU_add_test(suite,"test_output", test_output);
     CU_basic_run_tests();
     CU_cleanup_registry();
     return 0;
