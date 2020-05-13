@@ -1,4 +1,4 @@
-fact : ../OBJECT/main.o ../OBJECT/fact.o
+fact : ../OBJECT/main.o ../OBJECT/fact.o directories
 	gcc -o fact ../OBJECT/main.o ../OBJECT/fact.o  -w -std=gnu9x -lpthread -lm -g
 test : ../OBJECT/test.o ../OBJECT/fact.o
 	gcc -o test ../OBJECT/fact.o  ../OBJECT/test.o -w -std=gnu9x -lcunit -lpthread -lm -g
@@ -8,6 +8,8 @@ test : ../OBJECT/test.o ../OBJECT/fact.o
 	gcc -o ../OBJECT/main.o -c ../CODE/main.c -w -std=gnu9x -lm -g
 ../OBJECT/fact.o : ../CODE/fact.c
 	gcc -o ../OBJECT/fact.o -c ../CODE/fact.c -w -std=gnu9x -lpthread -lm -g
+directories :
+	mkdir -p ../OBJECT
 
 clean : 
 	rm -rf ../OBJECT/*.o
