@@ -31,7 +31,7 @@
     Entrepot_Th *tabin;
 	Entrepot_Th *tabout;
 	Repertoire_t_th *rep;
-	pthread_mutex_t *flags[3];
+	pthread_mutex_t *flags[2];
     sem_t *semaphores[4];
 }Usine_Th;
 
@@ -44,9 +44,7 @@
 }Imprimerie_Th;
 
 	int is_div(unsigned long long, unsigned long long);
-	int  is_prime(unsigned long long, Repertoire_t_th *,pthread_mutex_t *);
-	Repertoire_t_th *prime_divs(unsigned long long , Repertoire_t_th *,pthread_mutex_t *);
-	Repertoire_t_th *prime_divs_opti(unsigned long long , Repertoire_t_th *,pthread_mutex_t *);
+	Repertoire_t_th *prime_divs_opti(unsigned long long);
 	int AppendNumber(unsigned long long, Repertoire_t_th *);
 	int principale(int,char *, char *);
 	void *ecriture(void*);
