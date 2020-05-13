@@ -1,6 +1,6 @@
 fact : directories ../OBJECT/main.o ../OBJECT/fact.o
 	gcc -o fact ../OBJECT/main.o ../OBJECT/fact.o  -w -std=gnu9x -lpthread -lm -g
-test : ../OBJECT/test.o ../OBJECT/fact.o
+test : directories ../OBJECT/test.o ../OBJECT/fact.o
 	gcc -o test ../OBJECT/fact.o  ../OBJECT/test.o -w -std=gnu9x -lcunit -lpthread -lm -g
 ../OBJECT/test.o : ../CODE/test.c ../CODE/fact.h
 	gcc -o ../OBJECT/test.o -c ../CODE/test.c -w -std=gnu9x -lcunit -lm -g
