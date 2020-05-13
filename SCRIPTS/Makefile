@@ -10,12 +10,15 @@ test : ../OBJECT/test.o ../OBJECT/fact.o
 	gcc -o ../OBJECT/fact.o -c ../CODE/fact.c -w -std=gnu9x -lpthread -lm -g
 
 clean : 
-	rm -rf ../OBJECT/*.so
+	rm -rf ../OBJECT/*.o
 	rm -rf test
 	rm -rf fact
 
 val: fact
-	valgrind --tool=memcheck --leak-check=yes ./fact -N 4 Input.txt Output.txt
+	valgrind --tool=memcheck --leak-check=yes ./fact -N 4 ../IN-OUT/Input.txt ../IN-OUT/Output.txt
+
+cppcheck: ../CODE/fact.c
+	cppcheck --enable=all --inconclusive ../CODE/fact.c
 
 run: fact
 	./fact -N 4 ../IN-OUT/Input.txt ../IN-OUT/Output.txt
