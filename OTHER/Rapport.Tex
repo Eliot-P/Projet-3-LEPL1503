@@ -1,0 +1,57 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{french}
+
+
+\title{Projet 3}
+\author{Eliot Peeters 60451800}
+\author{Constantin van Ypersele 71091800}
+
+
+
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{fourier}
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+Les nombres premiers sont des nombres entiers naturels définis comme ayant pour unique diviseur le chiffre 1 et le nombre lui-même. Connus depuis bien longtemps, ils ne cessent de fasciner les mathématiciens. Avec l'apparition d'internet, ils ont été et sont toujours fortement employés dans les systèmes de cryptage.
+
+\section{Programme C}
+
+\subsection{Optimisation du code de base}
+Afin d'augmenter les performances des fonctions de bases, à savoir $is\_prime$ et $prime\_divs$, le principe de mémoïsation a été choisi. Chaque nombre premier trouvé sera stocké dans une seule et même structure de type $Repertoire\_t$ passée en argument à ces fonctions. Cette structure contient une variable $nbre\_elem$ qui compte le nombre de nombres premiers contenu dans la varible $liste$. \\ \\
+\danger La taille de la mémoire $liste$ est allouée dynamiquement en rajoutant la mémoire strictement nécessaire pour ajouter chaque élément. Une alternative aurait été de doubler la mémoire chaque fois que celle-ci est remplie afin d'éviter de devoir la modifier à chaque ajout. Après plusieurs tests, il est apparu que les deux choix étaient identiques d'un point de vue performances. La première option a donc été retenue afin de minimiser le gaspillage de mémoire. 
+
+\subsection{Multhithreading}
+Pour implémenter un programme concurrent, un système composé d'un double producer-consummer de type $FIFO$ a été choisi. D'une part un premier thread ($lecteur\_th$) lit le fichier d'entrée et place les nombres trouvés dans une structure de type $Entrepot\_th$. Ensuite, les N threads de calculs ($calcul\_th$) récupèrent ces nombres, calculent leurs diviseurs premiers et placent à leur tour leur résultat dans une deuxième structure $Entrepot\_th$. Enfin, un thread d'écriture ($imprimeur\_th$) récupère et écrit ces résultats dans le fichier de sortie. Le fonctionnement des différentes fonctions est décrit plus en détail dans les sous-sections ci-dessous.\\ 
+\\ \danger Lorsque l'on crée un thread, il faut lui donner \underline{une} fonction (sur laquelle il s'exécutera) et \underline{un} seul argument. Étant donné que les fonctions nécessitent plus d'un argument, des structures propres à chaque fonction ont été créés. Celles-ci contiennent tous les arguments nécessaires.
+
+\subsubsection{Lecture}
+La lecture du fichier se fait via la fonction $lecture$ qui prend comme argument une structure de type $Lecteur\_Th$. Cette fonction joue le rôle du premier producteur. Son fonctionnement est le suivant: tant que le thread n'est pas arrivé à la fin du fichier, il lit chaque ligne et la transforme en un $unsigned long long$. Ensuite, grâce à une sémaphore, il attend une place dans la variable $tableau$ (qui est de taille $2N$ où $N$ est le nombre de thread de calcul).Lorsqu'une place est disponible, il protège l'accès au tableau grâce à un mutex, ajoute le nombre et fait appel à la fonction $sem\_post$ pour prévenir qu'un élément a été ajouté dans le premier tableau.
+Le comportement du thread lorsqu'il arrive à la fin du fichier est expliqué dans la partie communication entre thread (voir section \ref{Com}).
+
+\subsubsection{Calcul}
+La fonction $calcul$ est la fonction sur laquelle les $N$ threads de calculs seront exécutés. Son fonctionnement est le suivant: tant que le $lecteur$ n'a pas fini de lire le fichier ou qu'il reste des éléments dans le premier tableau, le thread de calcul attend grâce à une première sémaphore qu'un élément soit déposé dans le tableau $tabin$. Ensuite il en protège l'accès, prend l'élément, met à jour les informations du tableau (nombre d'éléments et index de saisie) puis prévient le lecteur qu'une place a été libérée. Il calcule ensuite la liste des diviseurs premiers de son nombre en appelant la fonction $primedivs$. Jusqu'ici la fonction s'est comportée comme le premier $consummer$. Il est temps pour elle d'endosser le rôle du second $producer$. À nouveau, la fonction attend grâce à une sémaphore qu'une place soit disponible dans le second tableau ($tabout$), le protège, place son résultat, met à jour les informations et prévient le thread d'écriture qu'un résultat a été ajouté.\\
+\\ \danger
+Cette fonction est la partie critique du programme: c'est elle qui demande le plus de temps. Pour cette raison, il faut donner la priorité aux $N$ threads de calculs et minimiser leur temps d'inactivité. Ainsi, la taille des tableaux stockant les structures contenant les résultats est de $2*N$. Cette marge permet d'éviter le cas où plusieurs threads devraient attendre que le lecteur remplisse le premier tableau ou que des places soient libérées dans le second tableau.
+
+\subsubsection{Écriture}
+L'écriture des résultats dans le fichier de sortie est assuré par un thread qui exécute la fonction $écriture$ (deuxième consummer). Tant que la variable globale $Threads\_de\_calculs\_finis$ n'est pas égale à $N$ ou qu'il reste des éléments dans le deuxième tableau, la fonction attend grâce à une sémaphore qu'un élément soit dans le tableau $tabout$ , le sécurise, prend l'élément au bon index, met à jour les informations du tableau ($takeindex$ et $nbre$) et termine en signalant aux threads de calculs qu'une place a été libérée. Ensuite, elle va écrire les diviseurs premiers dans le fichier $fichierOut$.
+
+\subsection{Communication entre les threads} \label{Com}
+Le défi du programme C consistait à ce que les threads communiquent de manière efficace entre eux. Pour ce faire, deux variables globales ont été introduites: $fin\_de\_lecture$ et $Threads\_de\_calculs\_finis$. Comme vous l'aurez compris, lorsque le thread de lecture arrive à la fin du $fichier$, il incrémente la valeur de la variable globale correspondante mais ce n'est pas tout! Il reste une dernière boucle dans la fonction $lecture$ qui a pour but de changer avec une valeur spéciale la variable $nbre\_elem$ de $N$ structures du premier tableau. Elle réveille les threads de calculs attendant un élément grâce à une sémaphore.  Ces dernières opérations permettent de gérer des cas d'exceptions où un nombre de threads de calculs supérieur au nombre d'éléments présents dans le tableau tenteraient de récupérer un élément. Ainsi, lorsqu'un thread de calculs est réveillé, il va d'abord vérifier la valeur de la variable $nbre\_elem$ de la structure qu'il est censé retirer du tableau. Si celle-ci vaut $-1$, alors il sait que le fichier est fini et qu'il doit s'arrêter car il attend un élément qui ne viendra jamais. Si la $nbre\_elem$ vaut $1$ le thread retire la structure du tableau et s'arrête si nécessaire. La dernière opération d'un thread de calcul est d'incrémenter sa variable globale. Cette variable permet en effet à la fonction $ecriture$ de savoir quand elle doit vider pour la dernière fois le deuxième tableau et ensuite s'arrêter.
+
+\section{Tests}
+Pour les tests de notre programme, nous avons choisi de tester uniquement les fonctions de base $is\_prime$, $is\_div$ et $prime\_divs$. Le test de $is\_div$ est assez simple, il vérifie que la valeur de retour est bien égale à $true$ lorsque le deuxième nombre est un diviseur du premier et $false$ dans le cas contraire. En ce qui concerne la fonction $is\_prime$, nous commençons par la tester en utilisant la liste des 30 premiers nombres premiers. Nous vérifions que notre fonction considère chaque nombre comme un nombre premier et qu'elle les ajoute correctement à la structure $Repertoire\_th$. Nous réalisons ensuite le test inverse en utilisant, cette fois, la liste des 30 premiers nombres non-premiers. Enfin, pour la fonction $prime\_divs$, nous utilisons également la liste des 30 premiers nombres premiers et nous vérifions que chaque nombre est ajouté à la liste de la structure $Repertoire\_th$. Ensuite, nous effectuons le test inverse en utilisant la liste des non-premiers.
+\section{Performances}
+\section{Conclusion}
+Au cours de ce projet, deux défis ce sont présentés à nous. Le premier était l'apprentissage du langage C et plus particulièrement l'ulisations des threads dans celui-ci. Nous avons su le relever en utilisant, de façon originale, non pas un mais deux systèmes producer-consumer. Le deuxième était le travail en équipe via le gestionnaire de versions Git dont nous maitrisons maintenant les commandes de base. Nous sommes finalement satisfait d'avoir réussi à réaliser un travail fonctionnel remplissant la tâche attendue.
+\section{Annexes}
+\bibliographystyle{plain}
+\bibliography{references}
+- Bonaventure, O. Detal, G. Paasch, C. \textit{LEPL1503 : Introduction au langage C}. Version 2019.
+- Code python initial et exemple fichier entrée/sortie :  https://forge.uclouvain.be/LEPL1503/project-template
+\end{document}
