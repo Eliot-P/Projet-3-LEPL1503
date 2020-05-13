@@ -135,7 +135,6 @@ void *calcul(void* arg) {
         Repertoire_t_th entree = takeRepertoire(usine->tabin);
         pthread_mutex_unlock(usine->flags[0]);
         sem_post(usine->semaphores[0]); // signale aux "firstempty" qu'on a pris un élément
-        
         Repertoire_t_th *resultat = prime_divs_opti(entree.liste[0]);
         sem_wait(usine->semaphores[2]);  //Attend "secondempty"  >> une place vide ds le 2e tableau
         pthread_mutex_lock(usine->flags[1]);    // Protège le 2e tableau
@@ -220,8 +219,6 @@ int principale(int N, char *input_file, char *output_file) {
     pthread_mutex_init(&firstmutex,NULL);
     pthread_mutex_t secondmutex; //  Utilisé pour protéger l'accès au tableau2
     pthread_mutex_init(&secondmutex,NULL);
-    pthread_mutex_t thirdmutex;
-    pthread_mutex_init(&thirdmutex,NULL);   //Utilisé pour protéger le rep où on stocke les nbre premiers
 
     sem_t firstempty; // nbre de place VIDE dans tableau1
     sem_init(&firstempty,0,maximum);
@@ -300,8 +297,6 @@ int principale(int N, char *input_file, char *output_file) {
     calc->semaphores[3] = &secondfill;
     calc->flags[0] = &firstmutex;   // Protéger le tableau1
     calc->flags[1] = &secondmutex;  //Protéger le tableau2
-    calc->flags[2] = &thirdmutex;   // Protéger le repertoire qui contient tt les nbres premiers
-
 
     Imprimerie_Th *imp = (Imprimerie_Th *) malloc(sizeof(struct imprimerie));
     if (imp == NULL){
@@ -359,12 +354,10 @@ int principale(int N, char *input_file, char *output_file) {
     free(rep);
 
     free(imp);
-
     // == FERMETURE == //
     
     pthread_mutex_destroy(&firstmutex);
     pthread_mutex_destroy(&secondmutex);
-    pthread_mutex_destroy(&thirdmutex);
     
     sem_destroy(&firstempty);
     sem_destroy(&firstfill);
