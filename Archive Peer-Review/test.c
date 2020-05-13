@@ -123,6 +123,37 @@ int AppendNumber_test(){
     return 0;
 }
 
+int putNumber_test(){
+    for(int j = 0; j<10; j++) {
+        //création d'un entrepot pour le test
+        Entrepot_Th *tab = (Entrepot_Th *) malloc(sizeof(struct entrepot));
+        if (tab == NULL) {
+            return -1;
+        }
+        tab->buffer = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th) * 8);
+        if (tab->buffer == NULL) {
+            return -1;
+        }
+        tab->putindex = 0;
+        tab->takeindex = 0;
+        tab->size = 8;
+        tab->nbre = 0;
+
+
+        for (int i = 0; i < 7; i++) {
+            int number = rand() % 1000; //création d'un nombre random entre 0 et 999
+            putNumber(tab, number); // ajout de number
+
+            CU_ASSERT_EQUAL((tab->buffer[i]).liste[0], number); //vérifie si number à été ajouté
+            CU_ASSERT_EQUAL(1, (tab->buffer[i]).nbre_elem); //verifie que le nombre d'élément à été augmenté à 1
+            CU_ASSERT_EQUAL(i + 1, tab->nbre); //verifie que le nbre augmente à chaque ajout
+            //free((tab->buffer[tab->putindex]).liste);
+        }
+    }
+    return 0;
+
+}
+
 int main(){
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("Prime test", 0, 0);
@@ -131,6 +162,7 @@ int main(){
     CU_add_test(suite,"prime_divs_test",test_prime_divs_opti);
     CU_add_test(suite,"test_output", test_output);
     CU_add_test(suite,"AppendNumber_test", AppendNumber_test);
+    CU_add_test(suite,"putNumber_test", putNumber_test);
     CU_basic_run_tests();
     CU_cleanup_registry();
     return 0;
