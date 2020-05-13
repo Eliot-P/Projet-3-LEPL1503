@@ -1,8 +1,7 @@
 echo "Entrer le mode d'execution"
 echo "1) Unit test"
 echo "2) Debug"
-echo "3) Minirun"
-echo "4) Auto prime"
+echo "3) Auto prime"
 read execution_mode
 
 if [ $execution_mode -eq 1 ]; then
@@ -33,21 +32,6 @@ if [ $execution_mode -eq 2 ]; then
 fi
 
 if [ $execution_mode -eq 3 ]; then
-    make clean > /dev/null
-    rm -rf ../IN-OUT/Output_simple.txt > /dev/null
-    rm -rf ../IN-OUT/Output_thread.txt > /dev/null
-    gcc -o ../OBJECT/Prime.o -c ../CODE/Prime.c -w -std=gnu9x > /dev/null
-    gcc -o ../OBJECT/fact.o -c ../CODE/fact.c -w -std=gnu9x > /dev/null
-    gcc -o ../OBJECT/miniscript.o -c ../CODE/miniscript.c -w -std=gnu9x > /dev/null
-    gcc -o minirun ../OBJECT/Prime.o ../OBJECT/fact.o  ../OBJECT/miniscript.o -w -std=gnu9x -lpthread > /dev/null
-    ./minirun ../IN-OUT/Input.txt ../IN-OUT/Output_simple.txt ../IN-OUT/Output_thread.txt
-    make clean > /dev/null
-    rm -rf ../IN-OUT/Output_simple.txt > /dev/null
-    rm -rf ../IN-OUT/Output_thread.txt > /dev/null
-    rm -rf minirun > /dev/null
-fi
-
-if [ $execution_mode -eq 4 ]; then
     echo "Execution de fact"
     make clean > /dev/null
     gcc -o ../OBJECT/fact.o -c ../CODE/fact.c -w -std=gnu9x -lpthread > /dev/null
