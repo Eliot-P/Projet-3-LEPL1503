@@ -17,7 +17,7 @@ if [ $execution_mode -eq 2 ]; then
     make fact > /dev/null
 	valgrind --leak-check=yes --log-file="../IN-OUT/DebugOutput.txt" -q ./fact -N 4 ../IN-OUT/Input.txt ../IN-OUT/Output.txt
 	cppcheck --enable=all --inconclusive  ../CODE/fact.c 2>> ../IN-OUT/DebugOutput.txt
-	./fact -N 4 ../IN-OUT/Input.txt ../IN-OUT/Output.txt >> ../IN-OUT/DebugOutput.txt
+	./fact -N 4 -q ../IN-OUT/Input.txt ../IN-OUT/Output.txt >> ../IN-OUT/DebugOutput.txt
     cat ../IN-OUT/DebugOutput.txt
     rm -rf .../IN-OUT/Output.txt
     echo "Garder le fichier texte ?"
@@ -39,7 +39,7 @@ if [ $execution_mode -eq 3 ]; then
     gcc -o fact ../OBJECT/main.o ../OBJECT/fact.o  -w -std=gnu9x -lpthread > /dev/null
     echo "Nombre de thread ?"
     read N_thread
-    ./fact -N $N_thread ../IN-OUT/Input.txt ../IN-OUT/Output_thread.txt 
+    ./fact -N $N_thread -q ../IN-OUT/Input.txt ../IN-OUT/Output_thread.txt 
     cat ../IN-OUT/Output_thread.txt
     make clean > /dev/null
     rm -rf ../IN-OUT/Output_thread.txt > /dev/null
