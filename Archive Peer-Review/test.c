@@ -47,7 +47,7 @@ int test_is_prime(){
 }
 
 
-int test_prime_divs(){
+int test_prime_divs_opti(){
     //Test de la fonction prime_divs
     //D'abord on initialise une structure test afin que la fonction puisse effectuer les changements dessus
     Repertoire_t_th *test_struct = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
@@ -97,14 +97,91 @@ int test_tricky_cases(){
     return 0;
 }
 
+int test_output(){
+    //fichier d'entrée
+    FILE *input_test= fopen("./fichiers_test/input_test.txt","r");
+    if (input_test == NULL){return -1;}
+    //fichier à comparer avec la sortie
+    FILE *output_test= fopen("./fichiers_test/output_test.txt","r");
+    if (output_test == NULL){return -1;}
+    //création du fichier output
+    principale(4, "./fichiers_test/input_test.txt", "./fichiers_test/output.txt");
+    FILE *output= fopen("./fichiers_test/output.txt","r");
+    if (output == NULL){return -1;}
+    char line[30];
+    char line_test[30];
+    //comparaison entre les deux fichiers
+    while(fgets(line, 30, output) != NULL){
+        fgets(line_test, 30, output_test);
+        CU_ASSERT_EQUAL(*line, *line_test);
+    }
+    return 0;
+}
 
-int main (){
+int AppendNumber_test(){
+    //création d'un répertoire pour le test
+    Repertoire_t_th *rep = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
+    if (rep == NULL){
+        return -1;
+    }
+    rep->liste = (unsigned long long *) malloc(sizeof(unsigned long long));
+    if (rep->liste == NULL){
+        return  -1;
+    }
+    rep->nbre_elem = 0;
+
+    for(int i = 0; i < 100; i++){
+        int number = rand() % 1000; //création d'un nombre random entre 0 et 999
+        int err = AppendNumber(number, rep); // ajout de number
+        if(err == -1){
+            return -1;
+        }
+        CU_ASSERT_EQUAL(number, rep->liste[i]) //vérifie si number à été ajouté
+    }
+    return 0;
+}
+
+int putNumber_test(){
+    for(int j = 0; j<10; j++) {
+        //création d'un entrepot pour le test
+        Entrepot_Th *tab = (Entrepot_Th *) malloc(sizeof(struct entrepot));
+        if (tab == NULL) {
+            return -1;
+        }
+        tab->buffer = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th) * 8);
+        if (tab->buffer == NULL) {
+            return -1;
+        }
+        tab->putindex = 0;
+        tab->takeindex = 0;
+        tab->size = 8;
+        tab->nbre = 0;
+
+
+        for (int i = 0; i < 7; i++) {
+            int number = rand() % 1000; //création d'un nombre random entre 0 et 999
+            putNumber(tab, number); // ajout de number
+
+            CU_ASSERT_EQUAL((tab->buffer[i]).liste[0], number); //vérifie si number à été ajouté
+            CU_ASSERT_EQUAL(1, (tab->buffer[i]).nbre_elem); //verifie que le nombre d'élément à été augmenté à 1
+            CU_ASSERT_EQUAL(i + 1, tab->nbre); //verifie que le nbre augmente à chaque ajout
+            //free((tab->buffer[tab->putindex]).liste);
+        }
+    }
+    return 0;
+
+}
+
+int main(){
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("Prime test", 0, 0);
-    CU_add_test(suite, "is_div", test_is_div);
-    CU_add_test(suite,"is_prime",test_is_prime);
-    CU_add_test(suite,"prime_divs",test_prime_divs);
     CU_add_test(suite,"tricky_cases",test_tricky_cases);
+    CU_add_test(suite, "is_div Test", test_is_div);
+    CU_add_test(suite,"is_prime_test",test_is_prime);
+    CU_add_test(suite,"prime_divs_test",test_prime_divs_opti);
+    CU_add_test(suite,"test_output", test_output);
+    CU_add_test(suite,"AppendNumber_test", AppendNumber_test);
+    CU_add_test(suite,"putNumber_test", putNumber_test);
     CU_basic_run_tests();
     CU_cleanup_registry();
     return 0;
