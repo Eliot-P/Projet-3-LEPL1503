@@ -29,7 +29,7 @@ def grapher_time(array,n_error):
     ax.text(0.05, 0.1, '{} ERREURS'.format(n_error), fontsize=10, transform=plt.gcf().transFigure)
     ax.set_title("Execution de fact avec l'exemple d'input sur les serveurs INGI ",pad=30)
     plt.draw()
-    plt.savefig('../OTHER/Time_of_execution.png',bbox_inches='tight')
+    plt.savefig('../OTHER/Time_of_execution_INGI.png',bbox_inches='tight')
     plt.close()
     return mean_arr
 
@@ -58,7 +58,7 @@ def grapher_memory(array,n_error):
     ax2.text(0.05, 0.1, '{} ERREURS'.format(n_error), fontsize=10, transform=plt.gcf().transFigure)
     ax2.set_title("Execution de fact avec l'exemple d'input sur les serveurs INGI ",pad=30)
     plt.draw()
-    plt.savefig('../OTHER/Memory_usage.png',bbox_inches='tight')
+    plt.savefig('../OTHER/Memory_usage_INGI.png',bbox_inches='tight')
     plt.close()
 
 def grapher_Amdahl(mean_arr) :
@@ -72,7 +72,7 @@ def grapher_Amdahl(mean_arr) :
     ax.plot(Number_of_thread,mean_arr/mean_arr[0],'o--',label="Real World")
     ax.plot(Number_of_thread,Gain,"-",label="Amdahl's Law")
     plt.draw()
-    plt.savefig('../OTHER/Amdahl.png',bbox_inches='tight')
+    plt.savefig('../OTHER/Amdahl_INGI.png',bbox_inches='tight')
     plt.close()
 
 def exec (Number_of_thread) : 
