@@ -147,10 +147,10 @@ void *calcul(void* arg) {
         free(resultat);
     }
 
-    pthread_mutex_lock(usine->flags[2]);    // On protège l'accès à la variable globale
+    pthread_mutex_lock(usine->flags[1]);    // On protège l'accès à la variable globale
     Threads_de_calculs_finis++;
     if (Threads_de_calculs_finis == (usine->tabout->size)/2){sem_post(usine->semaphores[3]);}
-    pthread_mutex_unlock(usine->flags[2]);
+    pthread_mutex_unlock(usine->flags[1]);
     return NULL;
 }
 
