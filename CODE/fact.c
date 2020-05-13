@@ -169,11 +169,11 @@ void *ecriture(void* arg) {
         sem_post(impr->semaphores[0]);  //On réveille les "secondempty" car on a pris un élément
 
         if ((resultat.nbre_elem == 1) && (resultat.liste[0]) < 2) {    // Exception où on a number < 2
-            fprintf(impr->fichierOut, "Erreur: %lld est inférieur à 2 !", resultat.liste[0]);}
+            fprintf(impr->fichierOut, "Erreur: %llu est inférieur à 2 !", resultat.liste[0]);}
 
         else {
             for (int i = 0; i < resultat.nbre_elem; i++) {
-                fprintf(impr->fichierOut, "%lld ", resultat.liste[i]);}
+                fprintf(impr->fichierOut, "%llu ", resultat.liste[i]);}
         }
         fputc('\n',impr->fichierOut);
         free(resultat.liste);

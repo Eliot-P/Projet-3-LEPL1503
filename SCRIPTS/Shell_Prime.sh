@@ -1,87 +1,63 @@
 echo "Entrer le mode d'execution"
 echo "1) Unit test"
-echo "2) Test de perormance en fonction du temps"
-echo "3) Simple execution"
-echo "4) Debug"
+echo "2) Debug"
+echo "3) Minirun"
+echo "4) Auto prime"
 read execution_mode
 
 if [ $execution_mode -eq 1 ]; then
     echo "Compliation des tests CUnit"
-    make clean > /dev/null
-    gcc -c Prime.c -w -std=gnu9x
-	gcc -c test_lib.c -w -std=gnu9x -lcunit
-	gcc -o test_lib Prime.o  test_lib.o -w -std=gnu9x -lcunit -lpthread
-    ./test_lib
+    make test
+    ./test
     make clean > /dev/null
 fi
 
 if [ $execution_mode -eq 2 ]; then
-    echo "1) Execution thread"
-    echo "2) Execution normal"
-    echo "3) Execution python /!\ preds BEAUCOUP de temps"
-    echo "ex : 1 1 1 --> 1 et 2 et 3"
-    read thread normal python
     make clean > /dev/null
-    rm -rf Output_simple.txt > /dev/null
-	rm -rf Output_thread.txt > /dev/null
-	rm -rf Output_python.txt > /dev/null
-    gcc -c Prime.c -w -std=gnu9x
-	gcc -c Prime_thread.c -w -std=gnu9x -lpthread
-	gcc -c test_files.c -w -std=gnu9x -I/usr/include/python3.6
-	gcc -o test_files Prime.o Prime_thread.o  test_files.o -w -std=gnu9x -lpthread $(python3.6-config --cflags) $(python3.6-config --ldflags)
-    ./test_files $normal $thread $python
-    make clean > /dev/null
-    echo "Garder les fichiers d'output ?"
+    rm -rf ../IN-OUT/DebugOutput.txt > /dev/null
+    make fact > /dev/null
+	valgrind --leak-check=yes --log-file="../IN-OUT/DebugOutput.txt" -q ./fact -N 4 ../IN-OUT/Input.txt ../IN-OUT/Output.txt
+	cppcheck --enable=all --inconclusive  ../CODE/fact.c 2>> ../IN-OUT/DebugOutput.txt
+	./fact -N 4 ../IN-OUT/Input.txt ../IN-OUT/Output.txt >> ../IN-OUT/DebugOutput.txt
+    cat ../IN-OUT/DebugOutput.txt
+    rm -rf .../IN-OUT/Output.txt
+    echo "Garder le fichier texte ?"
     echo "0 == Non"
     read choice
     if [ $choice -eq 0 ]; then
-    rm -rf Output_simple.txt > /dev/null
-	rm -rf Output_thread.txt > /dev/null
-	rm -rf Output_python.txt > /dev/null
+        rm -rf ../IN-OUT/DebugOutput.txt
+        make clean > /dev/null
     else
         exit 0
     fi
 fi
 
 if [ $execution_mode -eq 3 ]; then
-    echo "Entrer le fichier Input"
-    read Inputfile
-    echo "Nombre de thread ?"
-    read N_thread
     make clean > /dev/null
-	gcc -c Prime_thread.c -w -std=gnu9x -lpthread
-	gcc -c main.c -w -std=gnu9x
-    gcc -o Prime main.o Prime_thread.o  -w -std=gnu9x -lpthread
-    ./Prime $N_thread $Inputfile Output_thread.txt
+    rm -rf ../IN-OUT/Output_simple.txt > /dev/null
+    rm -rf ../IN-OUT/Output_thread.txt > /dev/null
+    gcc -o ../OBJECT/Prime.o -c ../CODE/Prime.c -w -std=gnu9x > /dev/null
+    gcc -o ../OBJECT/fact.o -c ../CODE/fact.c -w -std=gnu9x > /dev/null
+    gcc -o ../OBJECT/miniscript.o -c ../CODE/miniscript.c -w -std=gnu9x > /dev/null
+    gcc -o minirun ../OBJECT/Prime.o ../OBJECT/fact.o  ../OBJECT/miniscript.o -w -std=gnu9x -lpthread > /dev/null
+    ./minirun ../IN-OUT/Input.txt ../IN-OUT/Output_simple.txt ../IN-OUT/Output_thread.txt
     make clean > /dev/null
-    cat Output_thread.txt
-    echo "Garder le fichier texte ?"
-    echo "0 == Non"
-    read choice
-    if [ $choice -eq 0 ]; then
-        rm -rf Output_thread.txt
-    else
-        exit 0
-    fi
+    rm -rf ../IN-OUT/Output_simple.txt > /dev/null
+    rm -rf ../IN-OUT/Output_thread.txt > /dev/null
+    rm -rf minirun > /dev/null
 fi
 
 if [ $execution_mode -eq 4 ]; then
+    echo "Execution de fact"
     make clean > /dev/null
-    rm -rf DebugOutput.txt > /dev/null
-	gcc -c Prime_thread.c -std=gnu9x -lpthread -g
-	gcc -c main.c -std=gnu9x -g
-	gcc -o debug main.o Prime_thread.o  -std=gnu9x -lpthread -g
-	valgrind --leak-check=yes --log-file="DebugOutput.txt" -q ./debug
-	cppcheck --enable=all --inconclusive  Prime_thread.c 2>> DebugOutput.txt
-	./debug 4 Input.txt Output_thread.txt >> DebugOutput.txt
-    cat DebugOutput.txt
-    echo "Garder le fichier texte ?"
-    echo "0 == Non"
-    read choice
-    if [ $choice -eq 0 ]; then
-        rm -rf DebugOutput.txt
-        make clean > /dev/null
-    else
-        exit 0
-    fi
+    gcc -o ../OBJECT/fact.o -c ../CODE/fact.c -w -std=gnu9x -lpthread > /dev/null
+    gcc -o ../OBJECT/main.o -c ../CODE/main.c -w -std=gnu9x > /dev/null
+    gcc -o fact ../OBJECT/main.o ../OBJECT/fact.o  -w -std=gnu9x -lpthread > /dev/null
+    echo "Nombre de thread ?"
+    read N_thread
+    ./fact -N $N_thread ../IN-OUT/Input.txt ../IN-OUT/Output_thread.txt 
+    cat ../IN-OUT/Output_thread.txt
+    make clean > /dev/null
+    rm -rf ../IN-OUT/Output_thread.txt > /dev/null
+    rm -rf fact > /dev/null
 fi

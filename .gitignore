@@ -1,18 +1,16 @@
 #Ceci est le fichier .gitignore, il permet de ne pas upload certain dossier/fichier sur le git
 #les fichiers objets
-*.o
+OBJECT/*.o
 #les fichiers text
-Output.txt
-DebugOutput.txt
-Output_simple.txt
-Output_thread.txt
-Output_python.txt
-stats.txt
+IN_OUT/Output.txt
+IN_OUT/DebugOutput.txt
+IN_OUT/Output_simple.txt
+IN_OUT/Output_thread.txt
+IN_OUT/stats.txt
 #les executables
-debug
-test_lib
-test_files
-Prime
+SCRIPTS/fact
+SCRIPTS/test
+SCRIPTS/minirun
 
 #pour ceux qui utilisent vscode
 /.vscode

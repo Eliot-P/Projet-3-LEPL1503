@@ -158,19 +158,3 @@ void imprimer_simple(Repertoire_t *tab){
         printf("%llu ",tab->liste[i]);
     }
 }
-/*
-void main(){
-    principale_simple("Input.txt","Output.txt");
-}
-*/
-/*
-int main(){
-    clock_t start_thread,end_thread;
-	start_thread = clock();
-	principale_simple("Input.txt","Output_thread.txt");
-	end_thread = clock();
-	double time_thread =1000*((double)(end_thread - start_thread) / (double)(CLOCKS_PER_SEC));
-    printf("temps : %f\n",time_thread);
-    return 0;
-}
-*/
