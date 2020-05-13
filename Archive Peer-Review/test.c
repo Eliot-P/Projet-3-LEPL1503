@@ -4,6 +4,7 @@
 #include <CUnit/Basic.h>
 #include <stdlib.h>
 #include <math.h>
+#include <limits.h>
 
 int test_is_div(){
     // Test de la fonction is_div
@@ -76,6 +77,23 @@ int test_prime_divs(){
         //Enfin on vérifie que le nombre d'élément dans la liste est toujours le même
         CU_ASSERT_EQUAL(test_struct->nbre_elem,nbr_no_change);
     }
+    free(test_struct);
+    return 0;
+}
+
+int test_tricky_cases(){
+    Repertoire_t_th *test_struct = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
+    if (test_struct == NULL){ return -1;}
+    pthread_mutex_t mutex;
+    unsigned long long array_of_tricky_number[] = {0};
+    CU_ASSERT_FALSE(is_div(1,0));
+    CU_ASSERT_TRUE(is_div(0,1));
+    for (int i = 0; i < 1; i++){
+        CU_ASSERT_EQUAL(prime_divs(array_of_tricky_number[i],test_struct,&mutex)->liste[0],array_of_tricky_number[i]);
+        CU_ASSERT_EQUAL(test_struct->nbre_elem, i+1);
+        CU_ASSERT_FALSE(is_prime(array_of_tricky_number[i],test_struct,&mutex));
+    }
+    free(test_struct);
     return 0;
 }
 
@@ -83,10 +101,12 @@ int test_prime_divs(){
 int main (){
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("Prime test", 0, 0);
-    CU_add_test(suite, "is_div Test", test_is_div);
-    CU_add_test(suite,"is_prime_test",test_is_prime);
-    CU_add_test(suite,"prime_divs_test",test_prime_divs);
+    CU_add_test(suite, "is_div", test_is_div);
+    CU_add_test(suite,"is_prime",test_is_prime);
+    CU_add_test(suite,"prime_divs",test_prime_divs);
+    CU_add_test(suite,"tricky_cases",test_tricky_cases);
     CU_basic_run_tests();
     CU_cleanup_registry();
     return 0;
 }
+

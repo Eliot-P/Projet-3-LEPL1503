@@ -247,7 +247,7 @@ void *ecriture(void* arg) {
             fprintf(impr->fichierOut, "Erreur: %lld est inférieur à 2 !", resultat.liste[0]);}
 
         else {
-            for (int i = 0; i < resultat.nbre_elem; i++) {fprintf(impr->fichierOut, "%lld", resultat.liste[i]);}
+            for (int i = 0; i < resultat.nbre_elem; i++) {fprintf(impr->fichierOut, "%lld ", resultat.liste[i]);}
         }
         fputc('\n',impr->fichierOut);
     }
