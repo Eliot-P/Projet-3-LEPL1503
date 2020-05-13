@@ -30,78 +30,6 @@ int is_div(unsigned long long number, unsigned long long i){
     return number%i == 0;
 }
 
-int  is_prime(unsigned long long number, Repertoire_t_th *tab,pthread_mutex_t *mutex){
-    /*
-     * retourne 1 si number est un nombre premier, retourne 0 si le nombre n'est pas premier et -1 en cas d'erreur     *
-     * La fonction procède de la sorte:
-     *      - 1) Elle vérifie si number est divisible par un des nbre premiers contenu dans tab->liste
-     *      - 2) Si aucun nbre  premier divise number, on va vérifier si number en est un en appliquant la définition
-     *      mathématique (aucun diviseur entre 2 et number/2) et s'il est premier on l'ajoute dans le tableau d'array
-     */
-
-    for (unsigned long long i = 0; i < tab->nbre_elem; i++){
-        if (tab->liste[i] == number){return 1;}
-        if (is_div(number,tab->liste[i])){
-            return 0;
-        }
-    }
-
-    for (unsigned long long i = 2; i < sqrt(number); i++) {
-        if (is_div(number, i)){return 0;}
-    }
-    pthread_mutex_lock(mutex);  // On protège l'accès au répertoire quand on ajoute un nbre premier
-    tab->liste = (unsigned long long *) realloc((*tab).liste,((*tab).nbre_elem + 1) * sizeof(unsigned long long));
-    if ((*tab).liste == NULL) { return -1; }
-    tab->liste[(*tab).nbre_elem++] = number;
-    pthread_mutex_unlock(mutex);
-    return 1;
-}
-
-Repertoire_t_th *prime_divs(unsigned long long number, Repertoire_t_th *tab,pthread_mutex_t *mutex){
-    /*  retourne un pointeur vers une structure Reperetoire_t contenant une liste de tout les diviseurs premiers de
-     * number et le nbre de diviseurs ou NULL pour une erreur de malloc (le tableau contenant les diviseurs est
-     * aloué dynamiquement).
-     * La fonction procède de la manière suivante:
-     *      - 1) Elle regarde si number est premier, si c'est le cas elle retourne directement (long *) number
-     *
-     *      - 2) Ensuite elle va regarder tous les chiffres i € [2, number/2]
-     *          > Si i divise number et est premier, alors il est ajouté au tableau
-     *          > Sinon on passe au prochain nombre
-     *
-     *  !!! On est "obligé" de retourner une structure car si on retourne simplement un tableau de long on ne connait
-     *  pas sa taille et donc il est impossible d'itérer dessus sans avoir d'erreur. Il nous faut une variable qui nous
-     *  donne le nombre d'éléments dans le tableau.
-     */
-    Repertoire_t_th *arr = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
-    if (arr == NULL){
-        return NULL;}
-    arr->liste = (unsigned long long *) malloc(sizeof(number));
-    if (arr->liste == NULL){ 
-        free(arr);
-        return  NULL;}
-
-    arr->nbre_elem = 0;
-    arr->liste[arr->nbre_elem++] = number;
-
-    if (number < 2){ return arr;}
-
-    if (is_prime(number,tab,mutex) == 1){
-        return arr;}
-
-    for (unsigned long long j = 2; j < (number/2) +1; j++){
-
-        if  ((is_div(number,j)) && (is_prime(j,tab,mutex))){
-            arr->liste = (unsigned long long int *) realloc(arr->liste, (arr->nbre_elem +1) * sizeof(unsigned long long));
-            if (arr->liste == NULL){ 
-                free(arr->nbre_elem);
-                free(arr);
-                return  NULL;}
-            arr->liste[arr->nbre_elem++] = j;
-        }
-    }
-    return arr;
-}
-
 int AppendNumber(unsigned long long number, Repertoire_t_th *rep){
     rep->liste = (unsigned long long *) realloc(rep->liste,(rep->nbre_elem + 1)*sizeof(unsigned long long));
     if (rep->liste == NULL){
@@ -113,7 +41,7 @@ int AppendNumber(unsigned long long number, Repertoire_t_th *rep){
     return 0;
 }
 
-Repertoire_t_th *prime_divs_opti(unsigned long long number,Repertoire_t_th *rep, pthread_mutex_t *mutex){
+Repertoire_t_th *prime_divs_opti(unsigned long long number){
     Repertoire_t_th *arr = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
     if (arr == NULL){
         free(arr);
@@ -139,29 +67,6 @@ Repertoire_t_th *prime_divs_opti(unsigned long long number,Repertoire_t_th *rep,
             }
             if (premier == 0){
                 if (AppendNumber(i,arr) == -1){return NULL;}
-            }
-        }
-    }
-    if (arr->nbre_elem == 1){
-        pthread_mutex_lock(mutex);
-        int a = AppendNumber(arr->liste[0],rep);
-        pthread_mutex_unlock(mutex);
-        if (a == -1){return NULL;}
-    }
-    else{
-        for (int i = 1; i < arr->nbre_elem; i++){
-            int add = 0;
-            for (int j = 0; j < rep->nbre_elem; j++){
-                if (arr->liste[i] == rep->liste[j]){
-                    add++;
-                    break;
-                }
-            }
-            if (add == 0){
-                pthread_mutex_lock(mutex);
-                int a = AppendNumber(arr->liste[i],rep);
-                pthread_mutex_unlock(mutex);
-                if (a == -1){return NULL;}
             }
         }
     }
@@ -231,8 +136,7 @@ void *calcul(void* arg) {
         pthread_mutex_unlock(usine->flags[0]);
         sem_post(usine->semaphores[0]); // signale aux "firstempty" qu'on a pris un élément
         
-        Repertoire_t_th *resultat = prime_divs(entree.liste[0], usine->rep, usine->flags[2]);
-
+        Repertoire_t_th *resultat = prime_divs_opti(entree.liste[0]);
         sem_wait(usine->semaphores[2]);  //Attend "secondempty"  >> une place vide ds le 2e tableau
         pthread_mutex_lock(usine->flags[1]);    // Protège le 2e tableau
         putRepertoire(resultat,usine->tabout);
@@ -269,7 +173,8 @@ void *ecriture(void* arg) {
             fprintf(impr->fichierOut, "Erreur: %lld est inférieur à 2 !", resultat.liste[0]);}
 
         else {
-            for (int i = 0; i < resultat.nbre_elem; i++) {fprintf(impr->fichierOut, "%lld ", resultat.liste[i]);}
+            for (int i = 0; i < resultat.nbre_elem; i++) {
+                fprintf(impr->fichierOut, "%lld ", resultat.liste[i]);}
         }
         fputc('\n',impr->fichierOut);
         free(resultat.liste);
