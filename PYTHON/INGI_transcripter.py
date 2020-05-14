@@ -68,7 +68,7 @@ def grapher_Amdahl(mean_arr,In) :
     Gain =  1/((1-Fraction_of_thread)+(Fraction_of_thread/Number_of_thread))
     ax.set_xlabel("Number of thread")
     ax.set_ylabel("Speed Up")
-    ax.set_title("Loi de Amdahl " + In + "sur les machines INGI",pad=30)
+    ax.set_title("Loi de Amdahl " + In + " sur les machines INGI",pad=30)
     ax.plot(Number_of_thread,mean_arr/mean_arr[0],'o--',label="Real World")
     ax.plot(Number_of_thread,Gain,"-",label="Amdahl's Law")
     plt.plot()
@@ -94,13 +94,12 @@ def transcripter(filename):
                 N_error = float(words[-1])
                 file.close()    
                 return big_mem_array,big_time_array,N_error
-            else : 
+            elif words[0] == "l'execution" : 
                 temp_mem_array.append(float(words[10]))
                 temp_time_array.append(float(words[7]))
 
 def main(mesure) :
     mem_arr, time_arr, n_error = transcripter("../DATA/" + mesure)
-    print(mesure[:-13])
     mean_arr = grapher_time(array=time_arr,n_error=n_error,In=mesure[:-13])
     grapher_memory(array=mem_arr,n_error=n_error,In=mesure[:-13])
     grapher_Amdahl(mean_arr=mean_arr,In=mesure[:-13])

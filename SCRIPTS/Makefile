@@ -30,3 +30,6 @@ python : fact ../PYTHON/Optimisation.py
 
 mesure_INGI : fact ../PYTHON/Opti_INGI.py
 	python3 ../PYTHON/Opti_INGI.py
+
+convert_INGI : ../PYTHON/INGI_transcripter.py
+	python3 ../PYTHON/INGI_transcripter.py
