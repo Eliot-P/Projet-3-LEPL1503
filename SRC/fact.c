@@ -73,7 +73,7 @@ Repertoire_t_th *prime_divs_opti(unsigned long long number){
     return arr;
 }
 
-///== FONCTIONS PROPRES AUX BUFFERS ==\\\
+///== FONCTIONS PROPRES AUX BUFFERS == ///
 
 void putNumber(Entrepot_Th *tab,unsigned long long number){
     //free((tab->buffer[tab->putindex].liste));

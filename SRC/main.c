@@ -20,7 +20,7 @@ int main(int argc,char* modes[]) {
 
   switch (strcmp(modes[1],"-N")){
   case 0 :
-    nbre_of_thread = modes[2];
+    nbre_of_thread = atoi(modes[2]);
     if (strcmp(modes[3],"-q")==0){quiet_condition = 1;}
     break;
   
@@ -29,7 +29,7 @@ int main(int argc,char* modes[]) {
     if (strcmp(modes[1],"-q")==0){quiet_condition = 1;}
     break;
   }
-  
+
   struct timeval start, fin;
   gettimeofday(&start, NULL);
   if(quiet_condition==1){printf("Execution avec %i threads\n",atoi(modes[2]));}
