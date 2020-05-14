@@ -24,3 +24,9 @@ cppcheck: ../SRC/fact.c
 
 run: fact
 	./fact -N 4 -q ../IN-OUT/Input.txt ../IN-OUT/Output.txt
+
+python : fact ../PYTHON/Optimisation.py
+	python3 ../PYTHON/Optimisation.py
+
+mesure_INGI : fact ../PYTHON/Opti_INGI.py
+	python3 ../PYTHON/Opti_INGI.py

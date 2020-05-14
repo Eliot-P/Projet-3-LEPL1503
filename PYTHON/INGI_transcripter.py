@@ -1,11 +1,10 @@
 import os
 from numpy import *
 import matplotlib.pyplot as plt
-import cpuinfo
 
 plt.style.use('ggplot')
 
-def grapher_time(array,n_error):
+def grapher_time(array,n_error,In):
     n = 1
     ax = plt.subplot()
     arr = asarray(array)
@@ -28,13 +27,13 @@ def grapher_time(array,n_error):
     ax.set_xlabel('Number of thread [N]')
     ax.set_ylabel('Time [ms]')
     ax.text(0.05, 0.1, '{} ERREURS'.format(n_error), fontsize=10, transform=plt.gcf().transFigure)
-    ax.set_title("Execution de fact avec l'exemple d'input sur un processeur " + cpuinfo.get_cpu_info()['brand'].split("w/")[0] ,pad=30)
-    plt.draw()
-    plt.savefig('../OTHER/Time_of_execution.png',bbox_inches='tight')
+    ax.set_title("Execution de fact avec " + In + " les machines INGI",pad=30)
+    plt.plot()
+    plt.savefig('../IMAGES/Time_of_execution_INGI_'+In+'.png',bbox_inches='tight')
     plt.close()
     return mean_arr
 
-def grapher_memory(array,n_error):
+def grapher_memory(array,n_error,In):
     n = 1
     ax2 = plt.subplot()
     arr = asarray(array)
@@ -57,56 +56,61 @@ def grapher_memory(array,n_error):
     ax2.set_xlabel('Number of thread [N]')
     ax2.set_ylabel('Memory usage [kB]')
     ax2.text(0.05, 0.1, '{} ERREURS'.format(n_error), fontsize=10, transform=plt.gcf().transFigure)
-    ax2.set_title("Execution de fact avec l'exemple d'input sur un processeur " + cpuinfo.get_cpu_info()['brand'].split("w/")[0] ,pad=30)
-    plt.draw()
-    plt.savefig('../OTHER/Memory_usage.png',bbox_inches='tight')
+    ax2.set_title("Execution de fact avec " + In + " les machines INGI",pad=30)
+    plt.plot()
+    plt.savefig('../IMAGES/Memory_usage_INGI_'+In+'.png',bbox_inches='tight')
     plt.close()
 
-def grapher_Amdahl(mean_arr) :
+def grapher_Amdahl(mean_arr,In) :
     ax = plt.subplot()
     Number_of_thread = arange(1,len(mean_arr)+1)
     Fraction_of_thread = 0.90
     Gain =  1/((1-Fraction_of_thread)+(Fraction_of_thread/Number_of_thread))
     ax.set_xlabel("Number of thread")
     ax.set_ylabel("Speed Up")
-    ax.set_title("Amdahl's Law",pad=30)
+    ax.set_title("Loi de Amdahl " + In + "sur les machines INGI",pad=30)
     ax.plot(Number_of_thread,mean_arr/mean_arr[0],'o--',label="Real World")
     ax.plot(Number_of_thread,Gain,"-",label="Amdahl's Law")
-    plt.draw()
-    plt.savefig('../OTHER/Amdahl.png',bbox_inches='tight')
+    plt.plot()
+    plt.savefig('../IMAGES/Amdahl_INGI_'+In+'.png',bbox_inches='tight')
     plt.close()
 
-def exec (Number_of_thread) : 
-    execution = os.popen('./../SCRIPTS/fact -N {} -q ../IN-OUT/Input.txt ../IN-OUT/Output.txt'.format(str(Number_of_thread))) #écrit dans le terminal
-    time_taken_raw = execution.readlines() #lit ce que l'execution écris dans le terminal
-    print(time_taken_raw[3].split(" ")[3])
-    print(time_taken_raw[2].split(" ")[3])
-    try :
-        time_taken = float(time_taken_raw[3].split(" ")[3])*1000#transforme en float et retire le "\n"
-        memory_taken = float(time_taken_raw[2].split(" ")[3])
-    except:
-        time_taken = -1
-    return time_taken,memory_taken
-
-def main (number_of_exec,max_number_of_thread):
-    big_array_of_time = []
-    big_array_of_memory = []
-    n_error = 0
-    for n in range (max_number_of_thread):
-        array_of_time_for_n_thread = []
-        array_of_memory_for_n_thread = []
-        for i in range (number_of_exec):
-            time_taken,memory_taken = exec(max_number_of_thread)
-            print("i={}".format(i))
-            if time_taken != -1 :
-                array_of_time_for_n_thread.append(time_taken)
-                array_of_memory_for_n_thread.append(memory_taken)
+def transcripter(filename):
+    file = open(filename,"r")
+    big_mem_array = []
+    big_time_array = []
+    temp_time_array = []
+    temp_mem_array = []
+    N_error = 0
+    for line in file.readlines() :
+        words = line.split(" ")
+        if words[0] == "---\n" :
+            big_mem_array.append(temp_mem_array)
+            big_time_array.append(temp_time_array)
+            temp_time_array = []
+            temp_mem_array = []
+        else :
+            if words[0] == "Nombre": 
+                N_error = float(words[-1])
+                file.close()    
+                return big_mem_array,big_time_array,N_error
             else : 
-                n_error += 1
-        big_array_of_time.append(array_of_time_for_n_thread)
-        big_array_of_memory.append(array_of_memory_for_n_thread)
-        print("n={}".format(n))
-    mean_arr = grapher_time(big_array_of_time,n_error)
-    grapher_memory(big_array_of_memory,n_error)
-    grapher_Amdahl(mean_arr)
-main(4,8)
+                temp_mem_array.append(float(words[10]))
+                temp_time_array.append(float(words[7]))
+
+def main(mesure) :
+    mem_arr, time_arr, n_error = transcripter("../DATA/" + mesure)
+    print(mesure[:-13])
+    mean_arr = grapher_time(array=time_arr,n_error=n_error,In=mesure[:-13])
+    grapher_memory(array=mem_arr,n_error=n_error,In=mesure[:-13])
+    grapher_Amdahl(mean_arr=mean_arr,In=mesure[:-13])
+    return 0
+
+def get_input():
+    mesure = input("Nom du fichier de mesure : ")
+    main(mesure)
+
+get_input()
+
+
+
