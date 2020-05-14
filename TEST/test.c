@@ -149,14 +149,14 @@ int takeRepertoire_test(){
 
 int test_output(){
     //fichier d'entrée
-    FILE *input_test= fopen("../IN-OUT/input_test.txt","r");
+    FILE *input_test= fopen("../TEST/input_test.txt","r");
     if (input_test == NULL){return -1;}
     //fichier à comparer avec la sortie
-    FILE *output_test= fopen("../IN-OUT/output_test.txt","r");
+    FILE *output_test= fopen("../TEST/output_test.txt","r");
     if (output_test == NULL){return -1;}
     //création du fichier output
-    principale(4, "../IN-OUT/input_test.txt", "../IN-OUT/output.txt");
-    FILE *output= fopen("../IN-OUT/output.txt","r");
+    principale(4, "../TEST/input_test.txt", "../TEST/output.txt");
+    FILE *output= fopen("../TEST/output.txt","r");
     if (output == NULL){return -1;}
     char line[30];
     char line_test[30];
@@ -171,13 +171,13 @@ int test_output(){
 
 int test_big_number(){
     //fichier d'entrée
-    FILE *input_test= fopen("../IN-OUT/big_numbers_in.txt","r");
+    FILE *input_test= fopen("../TEST/big_numbers_in.txt","r");
     if (input_test == NULL){return -1;}
     //fichier à comparer avec la sortie
-    FILE *output_test= fopen("../IN-OUT/big_numbers_out.txt","r");
+    FILE *output_test= fopen("../TEST/big_numbers_out.txt","r");
     if (output_test == NULL){return -1;}
     //création du fichier output
-    principale(4, "../IN-OUT/big_numbers_in.txt", "../IN-OUT/output.txt");
+    principale(4, "../TEST/big_numbers_in.txt", "../TEST/output.txt");
     FILE *output= fopen("./fichiers_test/output.txt","r");
     if (output == NULL){return -1;}
     char line[30];
