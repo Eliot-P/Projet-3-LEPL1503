@@ -1,4 +1,4 @@
-#include "fact.h"
+#include "../SRC/fact.h"
 #include <pthread.h>
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
