@@ -16,7 +16,7 @@ if [ $execution_mode -eq 2 ]; then
     rm -rf ../IN-OUT/DebugOutput.txt > /dev/null
     make fact > /dev/null
 	valgrind --leak-check=yes --log-file="../IN-OUT/DebugOutput.txt" -q ./fact -N 4 ../IN-OUT/Input.txt ../IN-OUT/Output.txt
-	cppcheck --enable=all --inconclusive  ../CODE/fact.c 2>> ../IN-OUT/DebugOutput.txt
+	cppcheck --enable=all --inconclusive  ../SRC/fact.c 2>> ../IN-OUT/DebugOutput.txt
 	./fact -N 4 -q ../IN-OUT/Input.txt ../IN-OUT/Output.txt >> ../IN-OUT/DebugOutput.txt
     cat ../IN-OUT/DebugOutput.txt
     rm -rf .../IN-OUT/Output.txt
@@ -34,8 +34,8 @@ fi
 if [ $execution_mode -eq 3 ]; then
     echo "Execution de fact"
     make clean > /dev/null
-    gcc -o ../OBJECT/fact.o -c ../CODE/fact.c -w -std=gnu9x -lpthread > /dev/null
-    gcc -o ../OBJECT/main.o -c ../CODE/main.c -w -std=gnu9x > /dev/null
+    gcc -o ../OBJECT/fact.o -c ../SRC/fact.c -w -std=gnu9x -lpthread > /dev/null
+    gcc -o ../OBJECT/main.o -c ../SRC/main.c -w -std=gnu9x > /dev/null
     gcc -o fact ../OBJECT/main.o ../OBJECT/fact.o  -w -std=gnu9x -lpthread > /dev/null
     echo "Nombre de thread ?"
     read N_thread
