@@ -89,6 +89,38 @@ int putNumber_test(){
 }
 
 int putRepertoire_test(){
+    //création d'un entrepot pour le test
+    Entrepot_Th *tab = (Entrepot_Th *) malloc(sizeof(struct entrepot));
+    if (tab == NULL) {
+        return -1;
+    }
+    tab->buffer = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th) * 8);
+    if (tab->buffer == NULL) {
+        return -1;
+    }
+    tab->putindex = 0;
+    tab->takeindex = 0;
+    tab->size = 8;
+    tab->nbre = 0;
+
+    for(int i = 0; i < 7; i++) {
+        //création du répertoire
+        Repertoire_t_th *rep = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th) * 8);
+        if (rep == NULL) {
+            return -1;
+        }
+
+        //création d'un nombre random pour vérifier que ce sera le même repertoire qui sera ajouté
+        int number = rand() % 1000;
+        rep->nbre_elem = number;
+
+        //on fait fonctionner putRepertoire
+        putRepertoire(rep, tab);
+        //on vérifie qu'elle fonctionne
+
+        CU_ASSERT_EQUAL((tab->buffer[i]).nbre_elem, number);
+        CU_ASSERT_EQUAL(tab->nbre, i+1);
+    }
     return 0;
 }
 
@@ -163,6 +195,7 @@ int main(){
     CU_pSuite suite = CU_add_suite("Prime test", 0, 0);
     //CU_add_test(suite,"tricky_cases",test_tricky_cases);
     CU_add_test(suite, "is_div Test", test_is_div);
+    CU_add_test(suite, "putRepertoire_test", putRepertoire_test);
     CU_add_test(suite,"prime_divs_test",test_prime_divs_opti);
     CU_add_test(suite,"test_output", test_output);
     CU_add_test(suite,"test_big_number", test_big_number);

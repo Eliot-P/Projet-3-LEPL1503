@@ -53,5 +53,6 @@
 	int fermer(FILE *, FILE *,int );
 	void imprimer(Repertoire_t_th *);
     void putNumber(Entrepot_Th *tab,unsigned long long number);
+    void putRepertoire(Repertoire_t_th *rep,Entrepot_Th *tab);
 	
 #endif
