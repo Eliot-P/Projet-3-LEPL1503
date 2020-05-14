@@ -7,13 +7,17 @@
 |fact.c|SRC|le code c|
 |main.c|SRC|la fonction main de fact.c permettant aussi de voir le temps d'éxécution ainsi que la mémoire utilisée|
 |fact.h|SRC|le fichier header de fact.c|
-|Optimisation.py|SRC|un programme python permettant de pratiquer des mesures expérimentales sur le code fact.c|
+|Optimisation.py|PYTHON|un programme python permettant de pratiquer des mesures expérimentales sur le code fact.c|
+|Opti_INGI.py|PYTHON|le programme permettant de faire des mesures experimentales sur les machines en ligne|
+|INGI_transcripter.py|PYTHON|le programme permettant de convertire les mesures experimentales en graphique|
 |test.c|TEST|le fichier contenant les tests CUnit du code|
 |...|TEMP|le dossier ou se trouver les fichiers objet lors de la compilation|
 |Makefile|SCRIPTS|le make file de ce projet|
 |Fact_shell.sh|SCRIPTS|un script shell permettant plusieurs mode d'execution|
 |...|OTHER|un dossier ou se trouve des fichiers annexes au projet mais inutile à la compilation|
 |...|IN-OUT|un dossier ou se trouve des exemples d'input à tester|
+|...|DATA|un dossier ou sont stockées les mesures experimentales|
+|...|IMAGES|un dossier contenant les graphiques et images nécessaire au rapport|
 
 ## Déscription du programme 
 
