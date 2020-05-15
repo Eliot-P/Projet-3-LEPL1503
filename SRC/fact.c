@@ -297,8 +297,8 @@ int principale(int N, char *input_file, char *output_file) {
     calc->semaphores[1] = &firstfill;
     calc->semaphores[2] = &secondemtpy;
     calc->semaphores[3] = &secondfill;
-    calc->flags[0] = &firstmutex;   // Protéger le tableau1
-    calc->flags[1] = &secondmutex;  //Protéger le tableau2
+    calc->flags[0] = &firstmutex;   
+    calc->flags[1] = &secondmutex;
 
     Imprimerie_Th *imp = (Imprimerie_Th *) malloc(sizeof(struct imprimerie));
     if (imp == NULL){
@@ -310,11 +310,12 @@ int principale(int N, char *input_file, char *output_file) {
         free(calc);
         return fermer(filein,fileout,-2);
     }
-    imp->fichierOut = fileout;  // fichier où on écrit les résultats
-    imp->tabout = tableau2;     // Tableau où on prend les éléments
+    imp->fichierOut = fileout;  
+    imp->tabout = tableau2;     
     imp->semaphores[0] = &secondemtpy;
     imp->semaphores[1] = &secondfill;
-    imp->flag = &secondmutex;       // Protéger tableau2 lors des accès
+    imp->flag = &secondmutex;       
+
 
     // 3) INITIALISATION DES THREADS //
 
