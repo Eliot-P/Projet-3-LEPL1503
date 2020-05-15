@@ -64,6 +64,7 @@ def grapher_memory(array,n_error,In):
     plt.close()
 
 def grapher_Amdahl(mean_arr,In) :
+    mean_arr = asarray(mean_arr)
     ax = plt.subplot()
     Number_of_thread = arange(1,len(mean_arr)+1)
     Fraction_of_thread = 0.90
@@ -71,8 +72,9 @@ def grapher_Amdahl(mean_arr,In) :
     ax.set_xlabel("Number of thread")
     ax.set_ylabel("Speed Up")
     ax.set_title("Loi de Amdahl " + In + " sur les machines INGI",pad=30)
-    ax.plot(Number_of_thread,mean_arr[0]/mean_arr,'o--',label="Real World")
-    ax.plot(Number_of_thread,Gain,"-",label="Amdahl's Law")
+    ax.plot(Number_of_thread[:],mean_arr[0]/mean_arr[:],'o--',label="Mesures")
+    ax.plot(Number_of_thread,Gain,"-",label="Loi de Amdahl")
+    ax.legend()
     plt.plot()
     plt.savefig('../IMAGES/Amdahl_INGI_'+In+'.png',bbox_inches='tight')
     plt.close()
