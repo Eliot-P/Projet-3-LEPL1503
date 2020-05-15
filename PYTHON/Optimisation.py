@@ -70,7 +70,7 @@ def grapher_Amdahl(mean_arr) :
     ax.set_xlabel("Number of thread")
     ax.set_ylabel("Speed Up")
     ax.set_title("Amdahl's Law",pad=30)
-    ax.plot(Number_of_thread,mean_arr/mean_arr[0],'o--',label="Real World")
+    ax.plot(Number_of_thread,mean_arr[0]/mean_arr,'o--',label="Real World")
     ax.plot(Number_of_thread,Gain,"-",label="Amdahl's Law")
     plt.plot()
     plt.savefig('../IMAGES/Amdahl.png',bbox_inches='tight')
