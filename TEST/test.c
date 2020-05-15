@@ -37,17 +37,12 @@ int AppendNumber_test(){
 }
 
 int test_prime_divs_opti(){   //Test de la fonction prime_divs_opti
-    //Liste des 30 premiers nombres premiers
     unsigned long long array_of_prime[] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113};
-    //Liste des 30 premiers nombres non-premiers
-    unsigned long long array_of_not_prime[] = {1,4,6,8,9,10,12,14,15,16,18,20,21,22,24,25,26,27,28,30,32,33,34,35,36,38,39,40,42,44};
-    for (int i = 0; i < 30; i++){
-        //on fait fonctionner la fonction
+   for (int i = 0; i < 30; i++){
         Repertoire_t_th * rep = prime_divs_opti(array_of_prime[i]);
         if(rep == NULL){
             return -1;
         }
-        //on vérifie si elle a bien fonctionné
         CU_ASSERT_EQUAL(1,rep->nbre_elem);
         CU_ASSERT_EQUAL(array_of_prime[i],rep->liste[0])
     }
@@ -190,13 +185,13 @@ int main(){
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("Prime test", 0, 0);
     //CU_add_test(suite,"tricky_cases",test_tricky_cases);
-    CU_add_test(suite, "is_div Test", test_is_div);
-    CU_add_test(suite, "putRepertoire_test", putRepertoire_test);
-    CU_add_test(suite,"prime_divs_test",test_prime_divs_opti);
-    CU_add_test(suite,"test_output", test_output);
-    CU_add_test(suite,"test_big_number", test_big_number);
-    CU_add_test(suite,"AppendNumber_test", AppendNumber_test);
-    CU_add_test(suite,"putNumber_test", putNumber_test);
+    CU_add_test(suite, "is_div Test", (CU_TestFunc) test_is_div);
+    CU_add_test(suite, "putRepertoire_test", (CU_TestFunc) putRepertoire_test);
+    CU_add_test(suite,"prime_divs_test", (CU_TestFunc) test_prime_divs_opti);
+    CU_add_test(suite,"test_output",(CU_TestFunc) test_output);
+    CU_add_test(suite,"test_big_number", (CU_TestFunc) test_big_number);
+    CU_add_test(suite,"AppendNumber_test", (CU_TestFunc) AppendNumber_test);
+    CU_add_test(suite,"putNumber_test",(CU_TestFunc) putNumber_test);
     CU_basic_run_tests();
     CU_cleanup_registry();
     return 0;
