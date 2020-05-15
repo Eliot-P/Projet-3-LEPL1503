@@ -146,7 +146,7 @@ int test_output(){
     FILE *output_test= fopen("../TEST/output_test.txt","r");
     if (output_test == NULL){return -1;}
     //création du fichier output
-    principale(4, "../TEST/input_test.txt", "../TEST/output.txt");
+    principale(1, "../TEST/input_test.txt", "../TEST/output.txt");
     FILE *output= fopen("../TEST/output.txt","r");
     if (output == NULL){return -1;}
     char line[30];
@@ -168,8 +168,8 @@ int test_big_number(){
     FILE *output_test= fopen("../TEST/big_numbers_out.txt","r");
     if (output_test == NULL){return -1;}
     //création du fichier output
-    principale(4, "../TEST/big_numbers_in.txt", "../TEST/output.txt");
-    FILE *output= fopen("./fichiers_test/output.txt","r");
+    principale(1, "../TEST/big_numbers_in.txt", "../TEST/output.txt");
+    FILE *output= fopen("../TEST/output.txt","r");
     if (output == NULL){return -1;}
     char line[30];
     char line_test[30];
