@@ -78,13 +78,16 @@ make test #Pour compiler les tests
 
 Nous continuons d'essayer d'améliorer les performances du programme au quotidien, cependant voici un graphique obtenu avec le programme Python disponible sur le git.
 
-![Graph](https://raw.githubusercontent.com/Eliot-P/public_png/master/Graph2.png)
+![Graph](https://raw.githubusercontent.com/Eliot-P/public_png/master/Time_of_execution_INGI_Input.png)
+![Graph](https://raw.githubusercontent.com/Eliot-P/public_png/master/Memory_usage_INGI_Input.png)
 
 Loi de Amdahl fixe une limite théorique sur le gain que l’on peut obtenir en parallélisant un programme :
 - Gain qui peut être obtenu de la parallélisation = 1/[(1-f)+f/N]. Avec f, la fraction du programme qui est parallélisable, et N, le nombre de threads.
 
 La fraction de notre programme qui est parallélisable f est 97%. Celle-ci est déduit en fonction du temps d'exécution du thread de lecture jusqu'au join du thread d'écriture sur le temps d'exécution total du programme.
 Attention cette loi est considérée comme un maximum théorique qui est difficile d’atteindre. Elle suppose que la parallélisation est parfaite, c’est-à-dire que la création et la terminaison de threads n’ont pas de coût en terme de performance. En pratique, c'est loin d'être le cas.
+
+![Graph](https://raw.githubusercontent.com/Eliot-P/public_png/master/Amdahl_INGI_Input.png)
 
 En espérant que ce README répondra à vos questions,\
 Cordialement,\
