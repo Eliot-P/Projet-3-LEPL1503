@@ -76,7 +76,6 @@ Repertoire_t_th *prime_divs_opti(unsigned long long number){
 ///== FONCTIONS PROPRES AUX BUFFERS == ///
 
 void putNumber(Entrepot_Th *tab,unsigned long long number){
-    //free((tab->buffer[tab->putindex].liste));
     (tab->buffer[tab->putindex]).liste = (unsigned long long *) malloc(sizeof(unsigned long long));
     (tab->buffer[tab->putindex]).liste[0] = number;
     (tab->buffer[tab->putindex]).nbre_elem = 1;
@@ -99,8 +98,8 @@ Repertoire_t_th takeRepertoire(Entrepot_Th *tab){
 
 void *lecture(void* arg){
     /*
-     * lecture est une fonction à un seul argument (comme ça on peut employer des threads dessus)
-     * lit la ligne, et place dans le lect->buffer le résultat
+     * lecture prend en argument une structure (de type Lecteur_Th) qui contient les informations 
+     * nécessaires à la lecture des nombres du fichier d'entré et à leur transmission dans le 1e buffer.
      */
     Lecteur_Th *lect =  (Lecteur_Th *) arg;
     while (fgets(lect->ligne,30,lect->fichier) != NULL) {
@@ -123,6 +122,11 @@ void *lecture(void* arg){
 }
 
 void *calcul(void* arg) {
+    /*
+    * calcul est une fonction qui prend en argument une structure (de type 'Usine_Th') contentant toutes les 
+    * informations nécessaires à la réception des nombres, le calcul de leur diviseurs premiers et à 
+    * la transmission de ces résultats dans le 2e buffer.
+    */
     Usine_Th *usine = (Usine_Th *) arg;
 
     while ((fin_de_lecture == 0) || (usine->tabin->nbre != 0)){
@@ -136,7 +140,7 @@ void *calcul(void* arg) {
         pthread_mutex_unlock(usine->flags[0]);
         sem_post(usine->semaphores[0]); // signale aux "firstempty" qu'on a pris un élément
         Repertoire_t_th *resultat = prime_divs_opti(entree.liste[0]);
-        sem_wait(usine->semaphores[2]);  //Attend "secondempty"  >> une place vide ds le 2e tableau
+        sem_wait(usine->semaphores[2]);  //Attend "secondempty"  > une place vide ds le 2e tableau
         pthread_mutex_lock(usine->flags[1]);    // Protège le 2e tableau
         putRepertoire(resultat,usine->tabout);
         pthread_mutex_unlock(usine->flags[1]);
@@ -154,11 +158,16 @@ void *calcul(void* arg) {
 }
 
 void *ecriture(void* arg) {
+    /*
+    * ecriture est une fonction qui prend comme argument une structure (de type 'Imprimerie_Th') contenant
+    * toutes les informations nécessaires à la réception des résultats dans le 2e tableau et à l'écriture de 
+    * ceux-ci dans le fichier de sortie.
+    */
     Imprimerie_Th *impr = (Imprimerie_Th *) arg;
     Repertoire_t_th resultat;
     while ((Threads_de_calculs_finis < (impr->tabout->size)/2) || (impr->tabout->nbre != 0)) {
 
-        sem_wait(impr->semaphores[1]);  //On attend des élément dans le tableau2: "secondfill"
+        sem_wait(impr->semaphores[1]);  //On attend des élément dans le tableau2 > "secondfill"
         if ((Threads_de_calculs_finis == (impr->tabout->size)/2) && (impr->tabout->nbre == 0)){break;}
 
         pthread_mutex_lock(impr->flag); // On protège le tableau
@@ -184,13 +193,15 @@ void *ecriture(void* arg) {
 
 int principale(int N, char *input_file, char *output_file) {
     /*
-     * pré: input != NULL ; output_file != NULL N >= NULL (si N = 0, cela signifie qu'on veut la valeur par
-     * défaut..> 4)
-     * input est un fichier qui contient un élément (int,char,float,...) par ligne
-     *
-     * post: écris dans chaque ligne de output_file la liste des diviseurs premiers du INT à la ligne correspondante dans
-     * input. Si jamais l'élément n'est pas un int, écris une erreur.
-     *
+     * principale est une fonction qui traite de manière concurrente l'écriture des diviseurs premiers des 
+     * nombres stockés sur chaque ligne du fichier 'input_file' dans le fichier 'output_file' en utilisant N
+     * thread de calcul.
+     * 
+     * pré: input_file, output_file != NULL et N >= 0  
+     * 
+     * post: 'output_file' contient tous les nombres présents dans 'input_file' ainsi que la liste leur diviseur 
+     * premier. Dans le cas où le nombre est inférieur à 2, un message d'erreur est écrit.
+     * 
      * return : 0 -> aucune erreur survenue
      *         -1 -> erreur causée par fopen()
      *         -2 -> erreur causée par malloc()
@@ -212,8 +223,8 @@ int principale(int N, char *input_file, char *output_file) {
     // 1) INITIALISATION DES VARIABLES //
     if (N <= 0){N = 4;}
 
-    unsigned long long maximum = 2*N;   // C'est la taille de nos deux buffers
-    char line[30];// là dedans qu'est stockée la ligne du fichier
+    unsigned long long maximum = 2*N;   // taille de nos tableaux
+    char line[30];// permet de stocker chaque ligne du fichier
 
     pthread_mutex_t firstmutex;  // Utilisé pour protéger l'accès au tableau1
     pthread_mutex_init(&firstmutex,NULL);
@@ -230,18 +241,13 @@ int principale(int N, char *input_file, char *output_file) {
     sem_init(&secondfill, 0, 0);
 
     // 2) INITIALISATION DES STRUCTURES //
-    Repertoire_t_th *rep = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
-    if (rep == NULL){return fermer(filein,fileout,-2);}
-    rep->nbre_elem = 0;
 
     Entrepot_Th *tableau1 = (Entrepot_Th *) malloc(sizeof(struct entrepot));
     if (tableau1 == NULL){
-        free(rep);
         return fermer(filein,fileout,-2);}
 
     tableau1->buffer = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th) * maximum);
     if (tableau1->buffer == NULL){
-        free(rep);
         free(tableau1);
         return fermer(filein,fileout,-2);}
     tableau1->putindex = 0;
@@ -252,7 +258,6 @@ int principale(int N, char *input_file, char *output_file) {
 
     Entrepot_Th *tableau2 = (Entrepot_Th *) malloc(sizeof(struct entrepot));
     if (tableau2 == NULL){
-        free(rep);
         free(tableau1->buffer);
         free(tableau1);
         return fermer(filein,fileout,-2);}
@@ -266,7 +271,6 @@ int principale(int N, char *input_file, char *output_file) {
 
     Lecteur_Th *lect = (Lecteur_Th *) malloc(sizeof(struct lecteur));
     if (lect == NULL){
-        free(rep);
         free(tableau1->buffer);
         free(tableau1);
         free(tableau2->buffer);
@@ -281,7 +285,6 @@ int principale(int N, char *input_file, char *output_file) {
 
     Usine_Th *calc = (Usine_Th *) malloc(sizeof(struct usine));
     if (calc == NULL){
-        free(rep);
         free(tableau1->buffer);
         free(tableau1);
         free(tableau2->buffer);
@@ -290,7 +293,6 @@ int principale(int N, char *input_file, char *output_file) {
         return fermer(filein,fileout,-2);}
     calc->tabin = tableau1;
     calc->tabout = tableau2;
-    calc->rep = rep;
     calc->semaphores[0] = &firstempty;
     calc->semaphores[1] = &firstfill;
     calc->semaphores[2] = &secondemtpy;
@@ -300,7 +302,6 @@ int principale(int N, char *input_file, char *output_file) {
 
     Imprimerie_Th *imp = (Imprimerie_Th *) malloc(sizeof(struct imprimerie));
     if (imp == NULL){
-        free(rep);
         free(tableau1->buffer);
         free(tableau1);
         free(tableau2->buffer);
@@ -350,8 +351,6 @@ int principale(int N, char *input_file, char *output_file) {
     free(lect);
 
     free(calc);
-    free(rep->liste);
-    free(rep);
 
     free(imp);
     // == FERMETURE == //

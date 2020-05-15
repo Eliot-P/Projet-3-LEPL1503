@@ -30,13 +30,11 @@
 	typedef struct usine{
     Entrepot_Th *tabin;
 	Entrepot_Th *tabout;
-	Repertoire_t_th *rep;
 	pthread_mutex_t *flags[2];
     sem_t *semaphores[4];
 }Usine_Th;
 
 	typedef struct imprimerie{
-    int N; 
 	FILE *fichierOut;   
     pthread_mutex_t *flag;  
 	sem_t *semaphores[2];   
@@ -51,7 +49,6 @@
 	void *calcul(void*);
 	void *lecture(void*);
 	int fermer(FILE *, FILE *,int );
-	void imprimer(Repertoire_t_th *);
     void putNumber(Entrepot_Th *tab,unsigned long long number);
     void putRepertoire(Repertoire_t_th *rep,Entrepot_Th *tab);
     Repertoire_t_th takeRepertoire(Entrepot_Th *tab);
