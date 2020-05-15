@@ -86,6 +86,8 @@ Loi de Amdahl fixe une limite théorique sur le gain que l’on peut obtenir en 
 La fraction de notre programme qui est parallélisable f est 97%. Celle-ci est déduit en fonction du temps d'exécution du thread de lecture jusqu'au join du thread d'écriture sur le temps d'exécution total du programme.
 Attention cette loi est considérée comme un maximum théorique qui est difficile d’atteindre. Elle suppose que la parallélisation est parfaite, c’est-à-dire que la création et la terminaison de threads n’ont pas de coût en terme de performance. En pratique, c'est loin d'être le cas.
 
+![Graph](https://forge.uclouvain.be/elipeeters/lepl1503-2020-groupe-q5/-/blob/master/IMAGES/Amdahl_INGI_Input.png)
+
 En espérant que ce README répondra à vos questions,\
 Cordialement,\
 Le groupe Q5.
