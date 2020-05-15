@@ -69,7 +69,7 @@ def grapher_Amdahl(mean_arr,In) :
     ax.set_xlabel("Number of thread")
     ax.set_ylabel("Speed Up")
     ax.set_title("Loi de Amdahl " + In + " sur les machines INGI",pad=30)
-    ax.plot(Number_of_thread,mean_arr/mean_arr[0],'o--',label="Real World")
+    ax.plot(Number_of_thread,mean_arr[0]/mean_arr,'o--',label="Real World")
     ax.plot(Number_of_thread,Gain,"-",label="Amdahl's Law")
     plt.plot()
     plt.savefig('../IMAGES/Amdahl_INGI_'+In+'.png',bbox_inches='tight')
