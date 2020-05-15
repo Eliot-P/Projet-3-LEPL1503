@@ -80,37 +80,39 @@ int putNumber_test(){
 }
 
 int putRepertoire_test(){
-    //création d'un entrepot pour le test
-    Entrepot_Th *tab = (Entrepot_Th *) malloc(sizeof(struct entrepot));
-    if (tab == NULL) {
-        return -1;
-    }
-    tab->buffer = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th) * 8);
-    if (tab->buffer == NULL) {
-        return -1;
-    }
-    tab->putindex = 0;
-    tab->takeindex = 0;
-    tab->size = 8;
-    tab->nbre = 0;
-
-    for(int i = 0; i < 7; i++) {
-        //création du répertoire
-        Repertoire_t_th *rep = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th) * 8);
-        if (rep == NULL) {
+    for(int j = 0; j<10; j++) {
+        //création d'un entrepot pour le test
+        Entrepot_Th *tab = (Entrepot_Th *) malloc(sizeof(struct entrepot));
+        if (tab == NULL) {
             return -1;
         }
+        tab->buffer = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th) * 8);
+        if (tab->buffer == NULL) {
+            return -1;
+        }
+        tab->putindex = 0;
+        tab->takeindex = 0;
+        tab->size = 8;
+        tab->nbre = 0;
 
-        //création d'un nombre random pour vérifier que ce sera le même repertoire qui sera ajouté
-        int number = rand() % 1000;
-        rep->nbre_elem = number;
+        for (int i = 0; i < 7; i++) {
+            //création du répertoire
+            Repertoire_t_th *rep = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th) * 8);
+            if (rep == NULL) {
+                return -1;
+            }
 
-        //on fait fonctionner putRepertoire
-        putRepertoire(rep, tab);
-        //on vérifie qu'elle fonctionne
+            //création d'un nombre random pour vérifier que ce sera le même repertoire qui sera ajouté
+            int number = rand() % 1000;
+            rep->nbre_elem = number;
 
-        CU_ASSERT_EQUAL((tab->buffer[i]).nbre_elem, number);
-        CU_ASSERT_EQUAL(tab->nbre, i+1);
+            //on fait fonctionner putRepertoire
+            putRepertoire(rep, tab);
+            //on vérifie qu'elle fonctionne
+
+            CU_ASSERT_EQUAL((tab->buffer[i]).nbre_elem, number);
+            CU_ASSERT_EQUAL(tab->nbre, i + 1);
+        }
     }
     return 0;
 }
