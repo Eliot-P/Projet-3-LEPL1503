@@ -67,7 +67,7 @@ def grapher_Amdahl(mean_arr,In) :
     mean_arr = asarray(mean_arr)
     ax = plt.subplot()
     Number_of_thread = arange(1,len(mean_arr)+1)
-    Fraction_of_thread = 0.90
+    Fraction_of_thread = 0.97
     Gain =  1/((1-Fraction_of_thread)+(Fraction_of_thread/Number_of_thread))
     ax.set_xlabel("Number of thread")
     ax.set_ylabel("Speed Up")
