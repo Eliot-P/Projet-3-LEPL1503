@@ -23,12 +23,8 @@ int AppendNumber_test(){
     if (rep == NULL){
         return -1;
     }
-    rep->liste = (unsigned long long *) malloc(sizeof(unsigned long long));
-    if (rep->liste == NULL){
-        return  -1;
-    }
+    
     rep->nbre_elem = 0;
-
     for(int i = 0; i < 100; i++){
         int number = rand() % 1000; //création d'un nombre random entre 0 et 999
         int err = AppendNumber(number, rep); // ajout de number
