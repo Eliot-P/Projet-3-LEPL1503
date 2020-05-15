@@ -1,0 +1,21 @@
+l'execution 1 avec 1 threads à prit 97933.618 [ms] et 4716.0 [kB] 
+l'execution 2 avec 1 threads à prit 96915.462 [ms] et 4724.0 [kB] 
+l'execution 3 avec 1 threads à prit 95112.607 [ms] et 4724.0 [kB] 
+l'execution 4 avec 1 threads à prit 96436.915 [ms] et 4724.0 [kB] 
+---
+l'execution 1 avec 2 threads à prit 48158.313 [ms] et 4724.0 [kB] 
+l'execution 2 avec 2 threads à prit 47144.499 [ms] et 4724.0 [kB] 
+l'execution 3 avec 2 threads à prit 47544.047 [ms] et 4724.0 [kB] 
+l'execution 4 avec 2 threads à prit 47902.988 [ms] et 4724.0 [kB] 
+---
+l'execution 1 avec 3 threads à prit 46361.615999999995 [ms] et 4724.0 [kB] 
+l'execution 2 avec 3 threads à prit 48575.237 [ms] et 4724.0 [kB] 
+l'execution 3 avec 3 threads à prit 45447.914 [ms] et 4724.0 [kB] 
+l'execution 4 avec 3 threads à prit 44024.259 [ms] et 4724.0 [kB] 
+---
+l'execution 1 avec 4 threads à prit 45341.272 [ms] et 4724.0 [kB] 
+l'execution 2 avec 4 threads à prit 43442.183999999994 [ms] et 4724.0 [kB] 
+l'execution 3 avec 4 threads à prit 43807.763 [ms] et 4724.0 [kB] 
+l'execution 4 avec 4 threads à prit 46023.606 [ms] et 4724.0 [kB] 
+---
+Nombre d'erreur total = 0
