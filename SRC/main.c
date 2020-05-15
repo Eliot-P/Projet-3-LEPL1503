@@ -47,7 +47,7 @@ int main(int argc,char* modes[]) {
   if (return_value == -4){printf(" -> erreur lors de la fermeture.");}
   printf("\n");
   
-  if(quiet_condition==1){printf("Mémoire utilisée = %ld kBytes\n",r_usage.ru_maxrss);}
-  if(quiet_condition==1){printf("Temps d'exécution = %f [s]\n", temps);}
+  if(quiet_condition==1){printf("Mémoire utilisée : %ld kBytes\n",r_usage.ru_maxrss);}
+  if(quiet_condition==1){printf("Temps d'exécution : %f [s]\n", temps);}
   return 0;
 }
