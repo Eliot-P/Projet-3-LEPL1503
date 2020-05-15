@@ -118,6 +118,38 @@ int putRepertoire_test(){
 }
 
 int takeRepertoire_test(){
+    //création d'un entrepot pour le test
+    Entrepot_Th *tab = (Entrepot_Th *) malloc(sizeof(struct entrepot));
+    if (tab == NULL) {
+        return -1;
+    }
+    tab->buffer = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th) * 8);
+    if (tab->buffer == NULL) {
+        return -1;
+    }
+    tab->putindex = 0;
+    tab->takeindex = 0;
+    tab->size = 8;
+    tab->nbre = 0;
+
+    for(int i = 0; i < 30; i++) {
+        //création d'un répertoire
+        Repertoire_t_th *rep = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th) * 8);
+        if (rep == NULL) {
+            return -1;
+        }
+        int number = rand() % 1000;
+        rep->nbre_elem = number;
+        //on ajoute le repertoire à l'entrepot
+        tab->buffer[tab->putindex] = *rep;
+        tab->putindex = (tab->putindex + 1) % tab->size;
+        tab->nbre++;
+
+        Repertoire_t_th take = takeRepertoire(tab);
+        CU_ASSERT_EQUAL(number,
+                        take.nbre_elem); //verifie que le repertoire retirer est le meme que celui qui avait ete ajouté
+        CU_ASSERT_EQUAL(0, tab->nbre);
+    }
     return 0;
 }
 
@@ -194,6 +226,7 @@ int main(){
     CU_add_test(suite,"test_big_number", (CU_TestFunc) test_big_number);
     CU_add_test(suite,"AppendNumber_test", (CU_TestFunc) AppendNumber_test);
     CU_add_test(suite,"putNumber_test",(CU_TestFunc) putNumber_test);
+    CU_add_test(suite,"takeRepertoire_test",(CU_TestFunc) takeRepertoire_test);
     CU_basic_run_tests();
     CU_cleanup_registry();
     return 0;

@@ -1,9 +1,9 @@
-l'execution 1 avec 1 threads à prit 1133.546 [ms] et 828.0 [kB] 
+l'execution 1 avec 1 threads à prit 920.268 [ms] et 1876.0 [kB] 
 ---
-l'execution 2 avec 1 threads à prit 1211.3899999999999 [ms] et 832.0 [kB] 
+l'execution 1 avec 2 threads à prit 1914.5970000000002 [ms] et 948.0 [kB] 
 ---
-l'execution 3 avec 1 threads à prit 1161.725 [ms] et 832.0 [kB] 
+l'execution 1 avec 3 threads à prit 1052.656 [ms] et 996.0 [kB] 
 ---
-l'execution 4 avec 1 threads à prit 1198.663 [ms] et 832.0 [kB] 
+l'execution 1 avec 4 threads à prit 932.991 [ms] et 1840.0 [kB] 
 ---
 Nombre d'erreur total = 0

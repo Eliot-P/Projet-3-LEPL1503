@@ -70,7 +70,7 @@ def grapher_Amdahl(mean_arr) :
     ax.set_xlabel("Number of thread")
     ax.set_ylabel("Speed Up")
     ax.set_title("Amdahl's Law",pad=30)
-    ax.plot(Number_of_thread,mean_arr/mean_arr[0],'o--',label="Real World")
+    ax.plot(Number_of_thread,mean_arr[0]/mean_arr,'o--',label="Real World")
     ax.plot(Number_of_thread,Gain,"-",label="Amdahl's Law")
     plt.plot()
     plt.savefig('../IMAGES/Amdahl.png',bbox_inches='tight')
@@ -94,7 +94,7 @@ def main (number_of_exec,max_number_of_thread):
         array_of_time_for_n_thread = []
         array_of_memory_for_n_thread = []
         for i in range (number_of_exec):
-            time_taken,memory_taken = exec(max_number_of_thread)
+            time_taken,memory_taken = exec(n)
             if time_taken != -1 :
                 array_of_time_for_n_thread.append(time_taken)
                 array_of_memory_for_n_thread.append(memory_taken)

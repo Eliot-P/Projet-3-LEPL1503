@@ -26,9 +26,9 @@ def main (number_of_exec,max_number_of_thread,In):
         array_of_time_for_n_thread = []
         array_of_memory_for_n_thread = []
         for i in range (number_of_exec):
-            time_taken,memory_taken = exec(max_number_of_thread,In)
+            time_taken,memory_taken = exec(n+1,In)
             if time_taken != -1 :
-                txt_saver(time=time_taken,memory=memory_taken,thread=i+1,execution=n+1,file=file)
+                txt_saver(time=time_taken,memory=memory_taken,thread=n+1,execution=i+1,file=file)
             else : 
                 error_string = "erreur à l'exectuion {} avec {} threads \n".format(n+1,i+1)
                 file.write(error_string)
