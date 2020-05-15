@@ -6,7 +6,8 @@ plt.style.use('ggplot')
 
 def grapher_time(array,n_error,In):
     n = 1
-    ax = plt.subplot()
+    f = plt.figure(figsize=(30,10),dpi=150)
+    ax = f.add_subplot(121)
     arr = asarray(array)
     mean_arr = []
     for n_thread in arr : 
@@ -26,8 +27,8 @@ def grapher_time(array,n_error,In):
     ax.axhline(amin(mean_numpy_arr))
     ax.set_xlabel('Number of thread [N]')
     ax.set_ylabel('Time [ms]')
-    ax.text(0.05, 0.1, '{} ERREURS'.format(n_error), fontsize=10, transform=plt.gcf().transFigure)
-    ax.set_title("Execution de fact avec " + In + " les machines INGI",pad=30)
+    ax.text(0.1, 0.05, '{} ERREURS'.format(n_error), fontsize=14, transform=plt.gcf().transFigure)
+    ax.set_title("Execution de fact avec " + In + " les machines INGI",pad=30,fontsize=35)
     plt.plot()
     plt.savefig('../IMAGES/Time_of_execution_INGI_'+In+'.png',bbox_inches='tight')
     plt.close()
@@ -35,7 +36,8 @@ def grapher_time(array,n_error,In):
 
 def grapher_memory(array,n_error,In):
     n = 1
-    ax2 = plt.subplot()
+    f = plt.figure(figsize=(30,10),dpi=150)
+    ax2 = f.add_subplot(121)
     arr = asarray(array)
     mean_arr = []
     for n_thread in arr : 
@@ -55,8 +57,8 @@ def grapher_memory(array,n_error,In):
     ax2.axhline(amin(mean_numpy_arr))
     ax2.set_xlabel('Number of thread [N]')
     ax2.set_ylabel('Memory usage [kB]')
-    ax2.text(0.05, 0.1, '{} ERREURS'.format(n_error), fontsize=10, transform=plt.gcf().transFigure)
-    ax2.set_title("Execution de fact avec " + In + " les machines INGI",pad=30)
+    ax2.text(0.1, 0.05, '{} ERREURS'.format(n_error), fontsize=14, transform=plt.gcf().transFigure)
+    ax2.set_title("Execution de fact avec " + In + " les machines INGI",pad=30,fontsize=35)
     plt.plot()
     plt.savefig('../IMAGES/Memory_usage_INGI_'+In+'.png',bbox_inches='tight')
     plt.close()
