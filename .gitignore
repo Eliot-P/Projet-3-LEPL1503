@@ -4,8 +4,6 @@ OBJECT/*.o
 #les fichiers text
 IN_OUT/Output.txt
 IN_OUT/DebugOutput.txt
-IN_OUT/Output_simple.txt
-IN_OUT/Output_thread.txt
 IN_OUT/stats.txt
 #les executables
 SCRIPTS/fact
