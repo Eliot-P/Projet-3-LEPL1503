@@ -2,9 +2,9 @@
 #les fichiers objets
 OBJECT/*.o
 #les fichiers text
-IN_OUT/Output.txt
-IN_OUT/DebugOutput.txt
-IN_OUT/stats.txt
+IN-OUT/Output.txt
+IN-OUT/DebugOutput.txt
+OTHER/stats.txt
 #les executables
 SCRIPTS/fact
 SCRIPTS/test
