@@ -94,7 +94,7 @@ def main (number_of_exec,max_number_of_thread):
         array_of_time_for_n_thread = []
         array_of_memory_for_n_thread = []
         for i in range (number_of_exec):
-            time_taken,memory_taken = exec(max_number_of_thread)
+            time_taken,memory_taken = exec(n)
             if time_taken != -1 :
                 array_of_time_for_n_thread.append(time_taken)
                 array_of_memory_for_n_thread.append(memory_taken)
