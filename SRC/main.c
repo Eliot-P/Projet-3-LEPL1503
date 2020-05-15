@@ -32,7 +32,7 @@ int main(int argc,char* modes[]) {
 
   struct timeval start, fin;
   gettimeofday(&start, NULL);
-  if(quiet_condition==1){printf("Execution avec %i threads\n",atoi(modes[2]));}
+  if(quiet_condition==1){printf("Execution avec %i threads\n",nbre_of_thread);}
   return_value = principale(nbre_of_thread,in,out);
 
   struct rusage r_usage;
