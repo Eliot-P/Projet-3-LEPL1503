@@ -16,26 +16,27 @@ int test_is_div(){
     CU_ASSERT_FALSE(is_div(19, 3));
     return 0;
 }
-
+/*/
 int AppendNumber_test(){
     //création d'un répertoire pour le test
-    Repertoire_t_th *rep = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
-    if (rep == NULL){
+    Repertoire_t_th *rep2 = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
+    if (rep2 == NULL){
         return -1;
     }
-    
-    rep->nbre_elem = 0;
-    for(int i = 0; i < 100; i++){
-        int number = rand() % 1000; //création d'un nombre random entre 0 et 999
-        int err = AppendNumber(number, rep); // ajout de number
+    rep2->nbre_elem = 0;
+    for(int i = 0; i < 10; i++){
+        
+        int number = rand() % 100; //création d'un nombre random entre 0 et 999
+        int err = AppendNumber((unsigned long long)number, rep2); // ajout de number
         if(err == -1){
             return -1;
         }
+        
         CU_ASSERT_EQUAL(number, rep->liste[i]) //vérifie si number à été ajouté
     }
     return 0;
 }
-
+*/
 int test_prime_divs_opti(){   //Test de la fonction prime_divs_opti
     unsigned long long array_of_prime[] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113};
    for (int i = 0; i < 30; i++){
