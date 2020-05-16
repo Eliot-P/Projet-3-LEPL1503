@@ -16,27 +16,7 @@ int test_is_div(){
     CU_ASSERT_FALSE(is_div(19, 3));
     return 0;
 }
-/*/
-int AppendNumber_test(){
-    //création d'un répertoire pour le test
-    Repertoire_t_th *rep2 = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
-    if (rep2 == NULL){
-        return -1;
-    }
-    rep2->nbre_elem = 0;
-    for(int i = 0; i < 10; i++){
-        
-        int number = rand() % 100; //création d'un nombre random entre 0 et 999
-        int err = AppendNumber((unsigned long long)number, rep2); // ajout de number
-        if(err == -1){
-            return -1;
-        }
-        
-        CU_ASSERT_EQUAL(number, rep->liste[i]) //vérifie si number à été ajouté
-    }
-    return 0;
-}
-*/
+
 int test_prime_divs_opti(){   //Test de la fonction prime_divs_opti
     unsigned long long array_of_prime[] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113};
    for (int i = 0; i < 30; i++){
@@ -155,44 +135,6 @@ int takeRepertoire_test(){
 }
 
 
-//tests globaux du programme
-
-/*int test_tricky_cases(){
-    Repertoire_t_th *test_struct = (Repertoire_t_th *) malloc(sizeof(struct repertoire_th));
-    if (test_struct == NULL){ return -1;}
-    pthread_mutex_t mutex;
-    unsigned long long array_of_tricky_number[] = {0};
-    CU_ASSERT_FALSE(is_div(1,0));
-    CU_ASSERT_TRUE(is_div(0,1));
-    for (int i = 0; i < 1; i++){
-        CU_ASSERT_EQUAL(prime_divs(array_of_tricky_number[i],test_struct,&mutex)->liste[0],array_of_tricky_number[i]);
-        CU_ASSERT_EQUAL(test_struct->nbre_elem, i+1);
-        CU_ASSERT_FALSE(is_prime(array_of_tricky_number[i],test_struct,&mutex));
-    }
-    free(test_struct);
-    return 0;
-}
-
-int test_output(){
-    //fichier d'entrée
-    FILE *input_test= fopen("TEST/input_test.txt","r");
-    if (input_test == NULL){return -1;}
-    //fichier à comparer avec la sortie
-    FILE *output_test= fopen("TEST/output_test.txt","r");
-    if (output_test == NULL){return -1;}
-    //création du fichier output
-    principale(1, "TEST/input_test.txt", "TEST/output.txt");
-    FILE *output= fopen("TEST/output.txt","r");
-    if (output == NULL){return -1;}
-    char line[30];
-    char line_test[30];
-    //comparaison entre les deux fichiers
-    while(fgets(line, 30, output) != NULL){
-        fgets(line_test, 30, output_test);
-        CU_ASSERT_EQUAL(*line, *line_test);
-    }
-    return 0;
-}*/
 
 
 int test_number(){
