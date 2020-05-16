@@ -170,7 +170,7 @@ int takeRepertoire_test(){
     }
     free(test_struct);
     return 0;
-}*/
+}
 
 int test_output(){
     //fichier d'entrée
@@ -191,18 +191,18 @@ int test_output(){
         CU_ASSERT_EQUAL(*line, *line_test);
     }
     return 0;
-}
+}*/
 
 
-int test_big_number(){
+int test_number(){
     //fichier d'entrée
-    FILE *input_test= fopen("../TEST/big_numbers_in.txt","r");
+    FILE *input_test= fopen("../TEST/numbers_in.txt","r");
     if (input_test == NULL){return -1;}
     //fichier à comparer avec la sortie
-    FILE *output_test= fopen("../TEST/big_numbers_out.txt","r");
+    FILE *output_test= fopen("../TEST/numbers_out.txt","r");
     if (output_test == NULL){return -1;}
     //création du fichier output
-    principale(1, "../TEST/big_numbers_in.txt", "../TEST/output.txt");
+    principale(1, "../TEST/numbers_in.txt", "../TEST/output.txt");
     FILE *output= fopen("../TEST/output.txt","r");
     if (output == NULL){return -1;}
     char line[30];
@@ -222,8 +222,8 @@ int main(){
     CU_add_test(suite, "is_div Test", (CU_TestFunc) test_is_div);
     CU_add_test(suite, "putRepertoire_test", (CU_TestFunc) putRepertoire_test);
     CU_add_test(suite,"prime_divs_test", (CU_TestFunc) test_prime_divs_opti);
-    CU_add_test(suite,"test_output",(CU_TestFunc) test_output);
-    CU_add_test(suite,"test_big_number", (CU_TestFunc) test_big_number);
+    //CU_add_test(suite,"test_output",(CU_TestFunc) test_output);
+    CU_add_test(suite,"test_number", (CU_TestFunc) test_number);
     CU_add_test(suite,"AppendNumber_test", (CU_TestFunc) AppendNumber_test);
     CU_add_test(suite,"putNumber_test",(CU_TestFunc) putNumber_test);
     CU_add_test(suite,"takeRepertoire_test",(CU_TestFunc) takeRepertoire_test);
