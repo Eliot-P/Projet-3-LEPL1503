@@ -161,13 +161,10 @@ int test_number(){
 int main(){
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("Prime test", 0, 0);
-    //CU_add_test(suite,"tricky_cases",test_tricky_cases);
     CU_add_test(suite, "is_div Test", (CU_TestFunc) test_is_div);
     CU_add_test(suite, "putRepertoire_test", (CU_TestFunc) putRepertoire_test);
     CU_add_test(suite,"prime_divs_test", (CU_TestFunc) test_prime_divs_opti);
-    //CU_add_test(suite,"test_output",(CU_TestFunc) test_output);
     CU_add_test(suite,"test_number", (CU_TestFunc) test_number);
-    //CU_add_test(suite,"AppendNumber_test", (CU_TestFunc) AppendNumber_test);
     CU_add_test(suite,"putNumber_test",(CU_TestFunc) putNumber_test);
     CU_add_test(suite,"takeRepertoire_test",(CU_TestFunc) takeRepertoire_test);
     CU_basic_run_tests();
