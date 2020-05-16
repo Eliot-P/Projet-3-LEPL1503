@@ -54,7 +54,6 @@ int putNumber_test(){
             CU_ASSERT_EQUAL((tab->buffer[i]).liste[0], number); //vérifie si number à été ajouté
             CU_ASSERT_EQUAL(1, (tab->buffer[i]).nbre_elem); //verifie que le nombre d'élément à été augmenté à 1
             CU_ASSERT_EQUAL(i + 1, tab->nbre); //verifie que le nbre augmente à chaque ajout
-            //free((tab->buffer[tab->putindex]).liste);
         }
     }
     return 0;
