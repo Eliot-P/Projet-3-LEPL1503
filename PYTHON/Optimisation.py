@@ -30,7 +30,7 @@ def grapher_time(array,n_error):
     ax.text(0.05, 0.1, '{} ERREURS'.format(n_error), fontsize=10, transform=plt.gcf().transFigure)
     ax.set_title("Execution de fact avec l'exemple d'input sur un processeur " + cpuinfo.get_cpu_info()['brand'].split("w/")[0] ,pad=30)
     plt.plot()
-    plt.savefig('../IMAGES/Time_of_execution.png',bbox_inches='tight')
+    plt.savefig('IMAGES/Time_of_execution.png',bbox_inches='tight')
     plt.close()
     return mean_arr
 
@@ -59,7 +59,7 @@ def grapher_memory(array,n_error):
     ax2.text(0.05, 0.1, '{} ERREURS'.format(n_error), fontsize=10, transform=plt.gcf().transFigure)
     ax2.set_title("Execution de fact avec l'exemple d'input sur un processeur " + cpuinfo.get_cpu_info()['brand'].split("w/")[0] ,pad=30)
     plt.plot()
-    plt.savefig('../IMAGES/Memory_usage.png',bbox_inches='tight')
+    plt.savefig('IMAGES/Memory_usage.png',bbox_inches='tight')
     plt.close()
 
 def grapher_Amdahl(mean_arr) :
@@ -73,11 +73,11 @@ def grapher_Amdahl(mean_arr) :
     ax.plot(Number_of_thread,mean_arr[0]/mean_arr,'o--',label="Real World")
     ax.plot(Number_of_thread,Gain,"-",label="Amdahl's Law")
     plt.plot()
-    plt.savefig('../IMAGES/Amdahl.png',bbox_inches='tight')
+    plt.savefig('IMAGES/Amdahl.png',bbox_inches='tight')
     plt.close()
 
 def exec (Number_of_thread) : 
-    execution = os.popen('./../SCRIPTS/fact -N {} -q ../IN-OUT/Input.txt ../IN-OUT/Output.txt'.format(str(Number_of_thread))) #écrit dans le terminal
+    execution = os.popen('./SCRIPTS/fact -N {} -q IN-OUT/Input.txt IN-OUT/Output.txt'.format(str(Number_of_thread))) #écrit dans le terminal
     time_taken_raw = execution.readlines() #lit ce que l'execution écris dans le terminal
     try :
         time_taken = float(time_taken_raw[3].split(" ")[3])*1000#transforme en float et retire le "\n"

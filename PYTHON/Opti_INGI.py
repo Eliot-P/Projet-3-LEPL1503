@@ -9,7 +9,7 @@ def txt_saver(time,memory,thread,execution,file) :
 
 
 def exec (Number_of_thread,In) : 
-    execution = os.popen(('./../SCRIPTS/fact -N {} -q ../IN-OUT/' + In +' ../IN-OUT/Output_python.txt').format(str(Number_of_thread))) #écrit dans le terminal
+    execution = os.popen(('./SCRIPTS/fact -N {} -q IN-OUT/' + In +' IN-OUT/Output_python.txt').format(str(Number_of_thread))) #écrit dans le terminal
     time_taken_raw = execution.readlines() #lit ce que l'execution écris dans le terminal
     try :
         time_taken = float(time_taken_raw[3].split(" ")[3])*1000#transforme en float et retire le "\n"
@@ -20,7 +20,7 @@ def exec (Number_of_thread,In) :
 
 def main (number_of_exec,max_number_of_thread,In):
     n_error = 0
-    fileplace = "../DATA/" + In[:-4] + "_time_out.txt"
+    fileplace = "DATA/" + In[:-4] + "_time_out.txt"
     file = open(fileplace,"w+")
     for n in range (max_number_of_thread):
         array_of_time_for_n_thread = []

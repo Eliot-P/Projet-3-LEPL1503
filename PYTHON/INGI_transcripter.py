@@ -30,7 +30,7 @@ def grapher_time(array,n_error,In):
     ax.text(0.1, 0.05, '{} ERREURS'.format(n_error), fontsize=14, transform=plt.gcf().transFigure)
     ax.set_title("Execution de fact avec " + In + " les machines INGI",pad=30,fontsize=35)
     plt.plot()
-    plt.savefig('../IMAGES/Time_of_execution_INGI_'+In+'.png',bbox_inches='tight')
+    plt.savefig('IMAGES/Time_of_execution_INGI_'+In+'.png',bbox_inches='tight')
     plt.close()
     return mean_arr
 
@@ -60,7 +60,7 @@ def grapher_memory(array,n_error,In):
     ax2.text(0.1, 0.05, '{} ERREURS'.format(n_error), fontsize=14, transform=plt.gcf().transFigure)
     ax2.set_title("Execution de fact avec " + In + " les machines INGI",pad=30,fontsize=35)
     plt.plot()
-    plt.savefig('../IMAGES/Memory_usage_INGI_'+In+'.png',bbox_inches='tight')
+    plt.savefig('IMAGES/Memory_usage_INGI_'+In+'.png',bbox_inches='tight')
     plt.close()
 
 def grapher_Amdahl(mean_arr,In) :
@@ -76,7 +76,7 @@ def grapher_Amdahl(mean_arr,In) :
     ax.plot(Number_of_thread,Gain,"-",label="Loi de Amdahl")
     ax.legend()
     plt.plot()
-    plt.savefig('../IMAGES/Amdahl_INGI_'+In+'.png',bbox_inches='tight')
+    plt.savefig('IMAGES/Amdahl_INGI_'+In+'.png',bbox_inches='tight')
     plt.close()
 
 def transcripter(filename):
@@ -103,7 +103,7 @@ def transcripter(filename):
                 temp_time_array.append(float(words[7]))
 
 def main(mesure) :
-    mem_arr, time_arr, n_error = transcripter("../DATA/" + mesure)
+    mem_arr, time_arr, n_error = transcripter("DATA/" + mesure)
     mean_arr = grapher_time(array=time_arr,n_error=n_error,In=mesure[:-13])
     grapher_memory(array=mem_arr,n_error=n_error,In=mesure[:-13])
     grapher_Amdahl(mean_arr=mean_arr,In=mesure[:-13])
