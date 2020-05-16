@@ -9,17 +9,17 @@
 |fact.h|SRC|le fichier header de fact.c|
 |Optimisation.py|PYTHON|un programme python permettant de pratiquer des mesures expérimentales sur le code fact.c|
 |Opti_INGI.py|PYTHON|le programme permettant de faire des mesures experimentales sur les machines en ligne|
-|INGI_transcripter.py|PYTHON|le programme permettant de convertire les mesures experimentales en graphique|
+|INGI_transcripter.py|PYTHON|le programme permettant de convertir les mesures experimentales en graphique|
 |test.c|TEST|le fichier contenant les tests CUnit du code|
 |...|TEMP|le dossier ou se trouver les fichiers objet lors de la compilation|
-|Makefile|SCRIPTS|le make file de ce projet|
-|Fact_shell.sh|SCRIPTS|un script shell permettant plusieurs mode d'execution|
+|Makefile|...|le make file de ce projet|
+|Fact_shell.sh|...|un script shell permettant plusieurs mode d'execution|
 |...|OTHER|un dossier ou se trouve des fichiers annexes au projet mais inutile à la compilation|
 |...|IN-OUT|un dossier ou se trouve des exemples d'input à tester|
 |...|DATA|un dossier ou sont stockées les mesures experimentales|
 |...|IMAGES|un dossier contenant les graphiques et images nécessaire au rapport|
 
-## Déscription du programme 
+## Description du programme 
 
 Le programme réalisé est un programme écrit en C, avec du multithreading. Celui-ci prend en entrée un fichier contenant une liste d'entier (ligne par ligne), et renvoie dans le fichier de sortie ces entiers suivis de leurs diviseurs premiers (ligne par ligne).
 L'architecture employée est un double producer - consummer. Les tableaux servant à stocker les lignes du fichier/leur diviseurs premiers sont des structures de types "entrepots" qui contiennent différentes variables suffisamment explicites. Il est important de remarquer que les tableaux ne sont pas des tableaux de unsigned long long mais bien des tableaux de structure "repertoire".
@@ -31,7 +31,7 @@ L'architecture employée est un double producer - consummer. Les tableaux servan
 
 De manière générale le code contient des commentaires permettant de mieux comprendre son fonctionnement.
 
-## Déscription des fonctions principales
+## Description des fonctions principales
 
 - La fonction is_div : Retourne True si i divise number, sinon False.
 - La fonction is_prime : Retourne 1 si number est un nombre premier, retourne 0 si le nombre n'est pas premier et -1 en cas d'erreur.
@@ -41,7 +41,7 @@ De manière générale le code contient des commentaires permettant de mieux com
 - La fonction calcul : Calcul les diviseurs premiers d’un entier dans buffer.
 - La fonction ecriture : Écrit l’entier suivi de ses diviseurs premiers dans le fichier de sortie.
 
-## Comment executer le programme ?
+## Comment exécuter le programme ?
 
 Pour éxecuter le programme, il y a plusieurs manières : soit par le makefile soit par le script shell.
 
