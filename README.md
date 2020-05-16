@@ -59,7 +59,7 @@ make fact
 ```
 Le makefile se chargera lui même de créer le répetoire TEMP ou seront placer les fichiers objet. Ensuite il suffit d'executer le programme fact. Ce dernier dispose du mode d'éxecution -q permettant d'afficher certainnes informations dans la sortie standart. L'option -N permet de choisir le nombre de thread d'éxecution. Si cette option n'est pas activée, le nombre de thread par défaut est 4, cependant ce n'est pas d'office le nombre de threads optimal, ceci dépend du processeur utilisé et du nombre de coeur ou thead dont il dispose. En règle général fact s'exécute ainsi : 
 ```bash
-./fact [-N n] [-q] ../IN-OUT/input.txt ../IN-OUT/output.txt
+./fact [-N n] [-q] IN-OUT/input.txt IN-OUT/output.txt
 ```
 Il est aussi possible d'utiliser la commande 'make run' afin d'exécuter le programme avec un exemple d'input fournis.
 
